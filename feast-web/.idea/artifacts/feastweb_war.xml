@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="feastweb:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="feast-web.war">
+      <element id="artifact" artifact-name="feastweb:war exploded" />
+    </root>
+  </artifact>
+</component>
