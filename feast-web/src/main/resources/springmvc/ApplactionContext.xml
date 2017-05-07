@@ -23,6 +23,8 @@
         <property name="suffix" value=".jsp" />
     </bean>-->
 
+    <mvc:resources mapping="/s/**" location="/s/" cache-period="7776000" />
+
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean class="org.springframework.http.converter.StringHttpMessageConverter" />
