@@ -1,5 +1,6 @@
 package com.feast.demo.ad.service.impl;
 
+import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
@@ -52,6 +53,27 @@ public class AdServiceImpl implements AdService {
         }
 
         return list;
+    }
+
+    /**
+     * 根据参数返回指定类型广告的远程url
+     * @param type
+     * @param width
+     * @param height
+     * @return
+     */
+    public String getRemoteUrl(AdTargetType type, Integer width, Integer height) {
+        switch(type){
+            case html:
+                return "/s/html/"+width+"_"+height+".html";
+            case jpg:
+                return "/s/images/ad/"+width+"_"+height+"."+type;
+            case png:
+                return "/s/images/ad/"+width+"_"+height+"."+type;
+            case gif:
+                return "/s/images/ad/"+width+"_"+height+"."+type;
+            default:return null;
+        }
     }
 
     private String getRandomString() {

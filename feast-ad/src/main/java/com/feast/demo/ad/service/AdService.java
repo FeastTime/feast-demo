@@ -1,5 +1,6 @@
 package com.feast.demo.ad.service;
 
+import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.ad.entity.TAd;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface AdService {
     public String transferString(String msg);
 
     public List<TAd> getAdList(Integer num);
+
+    public String getRemoteUrl(AdTargetType type, Integer width, Integer height);
 }
