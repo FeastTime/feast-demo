@@ -84,6 +84,11 @@
       <artifactId>kryo-serializers</artifactId>
       <version>0.41</version>
     </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.1.15</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
