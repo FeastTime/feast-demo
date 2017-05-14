@@ -25,16 +25,23 @@ public class AdvertismentController {
     private AdverstismentService adverstismentService;
 
     @ResponseBody
-    @RequestMapping(value = "/{type}_{w}_{h}/",method = RequestMethod.GET)
+    @RequestMapping(value = "/getSilentAD/",method = RequestMethod.GET)
     public Map<String,Object> getHtmlAdvertisments(
-            @PathVariable("type")AdTargetType type,
-            @PathVariable("w") Integer width,
-            @PathVariable("h") Integer height
+            @RequestParam("type")AdTargetType type,
+            @RequestParam("AdWith") Integer width,
+            @RequestParam("AdHeight") Integer height
     ){
         Map<String,Object> result = Maps.newHashMap();
         String url = adverstismentService.getRemontAdUrl(type,width,height);
+        Map<String,Object> adInfo = Maps.newHashMap();
+        adInfo.put("Adm",url);
+        adInfo.put("AdmType","html");
+        adInfo.put("Height",height);
+        adInfo.put("Width",width);
+        adInfo.put("Price",100);
         if(!StringUtils.isEmpty(url)){
-            result.put("url",url);
+            result.put("Ad",adInfo);
+            result.put("ID","124567890");
             result.put("success",true);
         }else{
             result.put("success",false);

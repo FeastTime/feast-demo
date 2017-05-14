@@ -1,130 +1,156 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.feast.demo.web</groupId>
-  <artifactId>feast-web</artifactId>
-  <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>feast-web Maven Webapp</name>
-  <url>http://maven.apache.org</url>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.feast.demo.web</groupId>
+    <artifactId>feast-web</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>feast-web Maven Webapp</name>
+    <url>http://maven.apache.org</url>
 
-  <properties>
-    <spring.version>4.2.4.RELEASE</spring.version>
-    <spring-orm.version>4.3.5.RELEASE</spring-orm.version>
-    <jackson.version>2.4.3</jackson.version>
-  </properties>
-  <dependencies>
+    <properties>
+        <spring.version>4.2.4.RELEASE</spring.version>
+        <spring-orm.version>4.3.5.RELEASE</spring-orm.version>
+        <jackson.version>2.4.3</jackson.version>
+    </properties>
 
-    <dependency>
-      <groupId>com.feast.demo</groupId>
-      <artifactId>feast-order</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.feast.demo</groupId>
+            <artifactId>feast-order</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.feast.demo</groupId>
-      <artifactId>feast-menu</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+        <dependency>
+            <groupId>com.feast.demo</groupId>
+            <artifactId>feast-menu</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.feast.demo</groupId>
-      <artifactId>feast-ad</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
+        <dependency>
+            <groupId>com.feast.demo</groupId>
+            <artifactId>feast-ad</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>org.springframework.data</groupId>
-      <artifactId>spring-data-jpa</artifactId>
-      <version>1.10.6.RELEASE</version>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.10.6.RELEASE</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>2.7.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.esotericsoftware</groupId>
-      <artifactId>kryo-shaded</artifactId>
-      <version>3.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>de.javakaffee</groupId>
-      <artifactId>kryo-serializers</artifactId>
-      <version>0.41</version>
-    </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.7.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo-shaded</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.javakaffee</groupId>
+            <artifactId>kryo-serializers</artifactId>
+            <version>0.41</version>
+        </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
 
-  <build>
-    <finalName>feast-web</finalName>
-    <!--<filters>
-      <filter>src/main/webapp/META-INF/auto-config.properties</filter>
-    </filters>-->
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.0</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>3.0.0</version>
-        <!--<configuration>
-          <webResources>
-            <resource>
-              &lt;!&ndash; 元配置文件的目录，相对于pom.xml文件的路径 &ndash;&gt;
-              <directory>src/main/webapp/WEB-INF</directory>
-              &lt;!&ndash; 是否过滤文件，也就是是否启动auto-config的功能 &ndash;&gt;
-              &lt;!&ndash;<filtering>true</filtering>&ndash;&gt;
-              &lt;!&ndash; 目标路径 &ndash;&gt;
-              <targetPath>WEB-INF</targetPath>
-            </resource>
-          </webResources>
-        </configuration>-->
-      </plugin>
-    </plugins>
-  </build>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.31</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>feast-web</finalName>
+        <!--<filters>
+          <filter>src/main/webapp/META-INF/auto-config.properties</filter>
+        </filters>-->
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.0.0</version>
+                <!--<configuration>
+                  <webResources>
+                    <resource>
+                      &lt;!&ndash; 元配置文件的目录，相对于pom.xml文件的路径 &ndash;&gt;
+                      <directory>src/main/webapp/WEB-INF</directory>
+                      &lt;!&ndash; 是否过滤文件，也就是是否启动auto-config的功能 &ndash;&gt;
+                      &lt;!&ndash;<filtering>true</filtering>&ndash;&gt;
+                      &lt;!&ndash; 目标路径 &ndash;&gt;
+                      <targetPath>WEB-INF</targetPath>
+                    </resource>
+                  </webResources>
+                </configuration>-->
+            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.tomcat.maven</groupId>-->
+                <!--<artifactId>tomcat7-maven-plugin</artifactId>-->
+                <!--<version>2.2</version>-->
+                <!--<configuration>-->
+                    <!--<finalName>feastweb</finalName>-->
+                    <!--<port>8080</port>-->
+                    <!--<uriEncoding>UTF-8</uriEncoding>-->
+                    <!--<path>/feastweb</path>-->
+                    <!--<url>http://localhost:8080/</url>-->
+                    <!--<server>tomcat7</server>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        </plugins>
+    </build>
 </project>

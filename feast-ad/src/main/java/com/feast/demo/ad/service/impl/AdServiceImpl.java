@@ -5,6 +5,7 @@ import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,17 +64,25 @@ public class AdServiceImpl implements AdService {
      * @return
      */
     public String getRemoteUrl(AdTargetType type, Integer width, Integer height) {
+        String url = "";
         switch(type){
             case html:
-                return "/s/html/"+width+"_"+height+".html";
+                url = "/s/html/"+width+"_"+height;
+                if(width==1920 && height==1130){
+                    url +="_"+((new Date()).getTime()%2);
+                }
+                break;
             case jpg:
-                return "/s/images/ad/"+width+"_"+height+"."+type;
+                url = "/s/images/ad/"+width+"_"+height;
+                break;
             case png:
-                return "/s/images/ad/"+width+"_"+height+"."+type;
+                url = "/s/images/ad/"+width+"_"+height;
+                break;
             case gif:
-                return "/s/images/ad/"+width+"_"+height+"."+type;
-            default:return null;
+                url = "/s/images/ad/"+width+"_"+height;
+                break;
         }
+        return url.equals("")?null:url+"."+type;
     }
 
     private String getRandomString() {
