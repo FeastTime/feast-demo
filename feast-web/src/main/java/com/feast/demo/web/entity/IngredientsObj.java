@@ -1,30 +1,17 @@
 package com.feast.demo.web.entity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Created by aries on 2017/5/10.
+ * Created by aries on 2017/5/14.
  */
-public class UserObj {
+public class IngredientsObj {
 
-    private String androidID;
     private String imei;
+    private String androidID;
     private String ipv4;
     private String mac;
-    private String mobileNO;
+    private String dishID;
     private String resultCode;
-    private String token;
-
-    public String getAndroidID() {
-        return androidID;
-    }
-
-    public void setAndroidID(String androidID) {
-        this.androidID = androidID;
-    }
+    private IngredientsList ingredientsList;
 
     public String getImei() {
         return imei;
@@ -32,6 +19,14 @@ public class UserObj {
 
     public void setImei(String imei) {
         this.imei = imei;
+    }
+
+    public String getAndroidID() {
+        return androidID;
+    }
+
+    public void setAndroidID(String androidID) {
+        this.androidID = androidID;
     }
 
     public String getIpv4() {
@@ -50,12 +45,12 @@ public class UserObj {
         this.mac = mac;
     }
 
-    public String getMobileNO() {
-        return mobileNO;
+    public String getDishID() {
+        return dishID;
     }
 
-    public void setMobileNO(String mobileNO) {
-        this.mobileNO = mobileNO;
+    public void setDishID(String dishID) {
+        this.dishID = dishID;
     }
 
     public String getResultCode() {
@@ -66,11 +61,11 @@ public class UserObj {
         this.resultCode = resultCode;
     }
 
-    public String getToken() {
-        return token;
+    public IngredientsList getIngredientsList() {
+        return ingredientsList;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setIngredientsList(IngredientsList ingredientsList) {
+        this.ingredientsList = ingredientsList;
     }
 }
