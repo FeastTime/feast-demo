@@ -1,13 +1,14 @@
 package com.feast.demo.web.service;
 
-import org.springframework.stereotype.Service;
 import com.feast.demo.web.entity.UserObj;
+import org.springframework.stereotype.Service;
+
 /**
  * Created by pinyou on 17-4-11.
  */
 
 @Service
-public class UserRemoteApiStatusService {
+public class QueryIngredientsService {
 
 
     public UserObj getStatus(UserObj user,String flag){

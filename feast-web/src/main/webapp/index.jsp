@@ -1,6 +1,5 @@
 <html>
 <body>
-<h2>Hello World!</h2>
-<img src="./s/images/img1.jpg"/>
+<h2>Hello World!111fsdafsa</h2>
 </body>
 </html>

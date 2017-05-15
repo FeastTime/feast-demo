@@ -1,24 +1,23 @@
 package com.feast.demo.web.controller;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
-import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.web.entity.UserObj;
+import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.service.UserRemoteApiStatusService;
-import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * Created by ggke on 2017/4/10.
  */
 
 @Controller
-@RequestMapping(value = "/user")
-public class UserAppController {
+@RequestMapping(value = "/queryIngredients")
+public class QueryIngredientsController {
 
     @Resource
     private UserRemoteApiStatusService userRemoteApiStatusService;
@@ -45,11 +44,9 @@ public class UserAppController {
 
         UserObj resultObj = userRemoteApiStatusService.getStatus(user,"login");
 
-
-
-
-
-
+        if("0".equals(resultObj.getResultCode())){
+            LoginMemory.set(user.getMobileNO(),user);
+        }
         return JSON.toJSONString(resultObj);
     }
 
