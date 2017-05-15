@@ -1,11 +1,13 @@
 package com.feast.demo.web.controller;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.dubbo.common.json.JSONObject;
 import com.feast.demo.web.entity.OrderObj;
-import com.feast.demo.web.service.AdverstismentService;
+import com.feast.demo.web.memory.OrderMemory;
 import com.feast.demo.web.service.OrderService;
-import com.google.common.collect.Maps;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import com.feast.demo.web.entity.OrderObj;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -13,29 +15,31 @@ import java.util.Map;
 /**
  * Created by wpp on 2017/5/10.
  */
+@Controller
+@RequestMapping(value = "/order")
 public class OrderController {
 
     @Resource
     private OrderService orderService;
 
-    @Resource
-    private static OrderObj orderObj;
-
     @ResponseBody
     @RequestMapping(value = "/createOrder",method = RequestMethod.GET)
-    public Map<String,Object> createOrder(@ModelAttribute("order") OrderObj orderObj1){
-        System.out.println("androidID is:"+orderObj1.getAndroidID());
-        System.out.println("imei is:"+orderObj1.getImei());
-        System.out.println("ipv4 is:"+orderObj1.getIpv4());
-        System.out.println("mac is:"+orderObj1.getMac());
-        System.out.println("mobileNO is:"+orderObj1.getMobileNO());
+    public String createOrder(@RequestParam("json") JSONObject jsono){
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
 
-        Map<String,Object> result = Maps.newHashMap();
+        JSONObject rtnJson = new JSONObject();
+        OrderObj orderObj = new OrderObj();
 
-        orderObj = orderService.getCreatedOrder(orderObj);
+        orderObj = orderService.getCreatedOrder(jsono);
+        OrderMemory.set(orderObj.getOrderID(), orderObj);
 
-        result.put("order",orderService.getCreatedOrder(orderObj));
+        rtnJson.put("resultCode", orderObj.getResultCode());
+        rtnJson.put("orderID", orderObj.getOrderID());
 
-        return result;
+        return JSON.toJSONString(rtnJson);
     }
 }
