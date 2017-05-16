@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class PersonalStatisticsController {
     private PersonalStatisticsService personalStatisticsService;
 
     @RequestMapping(value = "/getPersonalStatisticsDetail/",method = RequestMethod.GET)
+    @ResponseBody
     public Map<String,Object> getPersonalStatisticsDetail(
             @RequestParam(value = "imei",required = false) String imei,
             @RequestParam(value = "androidID",required = false) String androidID,
@@ -43,12 +45,12 @@ public class PersonalStatisticsController {
 
         //图表数据
         Map<String,Object> healthAnalysisChart = Maps.newHashMap();
-        healthAnalysisChart.put("fat",personalStatisticsService.getCharts("fat"));
-        healthAnalysisChart.put("carbohydrate",personalStatisticsService.getCharts("carbohydrate"));
-        healthAnalysisChart.put("protein",personalStatisticsService.getCharts("protein"));
-        healthAnalysisChart.put("sodium",personalStatisticsService.getCharts("sodium"));
+        healthAnalysisChart.put("fat",personalStatisticsService.getCoordinatePointCharts("fat"));
+        healthAnalysisChart.put("carbohydrate",personalStatisticsService.getCoordinatePointCharts("carbohydrate"));
+        healthAnalysisChart.put("protein",personalStatisticsService.getCoordinatePointCharts("protein"));
+        healthAnalysisChart.put("sodium",personalStatisticsService.getCoordinatePointCharts("sodium"));
         result.put("healthAnalysisChart",healthAnalysisChart);
-
+        result.put("consumeChart",personalStatisticsService.getCoordinateMultiPointCharts("consumeChart"));
         return result;
     }
 }
