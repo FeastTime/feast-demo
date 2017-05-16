@@ -2,22 +2,24 @@ package com.feast.demo.web.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by ggke on 2017/5/15.
  */
 
 @Data
-public class CoordinatePoint {
+public class CoordinateMultiPoint {
 
     /**
-     * y轴数据
+     * y轴数据，同一X轴或Y轴有可能有多个数值，所以用数组
      */
-    private String yAxisNum;//125",
+    private List<String> yAxisNum;//125",
 
     /**
-     * x轴数据
+     * x轴数据，同一X轴或Y轴有可能有多个数值，所以用数组
      */
-    private String xAxisNum;//":"4",
+    private List<String> xAxisNum;//":"4",
 
     /**
      * X轴文字信息
