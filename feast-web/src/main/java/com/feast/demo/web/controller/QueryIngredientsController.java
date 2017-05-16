@@ -1,9 +1,10 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.feast.demo.web.entity.IngredientsObj;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
-import com.feast.demo.web.service.UserRemoteApiStatusService;
+import com.feast.demo.web.service.QueryIngredientsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,21 +17,26 @@ import javax.annotation.Resource;
  */
 
 @Controller
-@RequestMapping(value = "/queryIngredients")
+@RequestMapping(value = "/menu")
 public class QueryIngredientsController {
 
     @Resource
-    private UserRemoteApiStatusService userRemoteApiStatusService;
+    private QueryIngredientsService queryIngredientsService;
 
-    @RequestMapping(value = "/register",method = RequestMethod.POST)
-    public String regUser(@ModelAttribute("user") UserObj user) {
-        System.out.println("androidID is:"+user.getAndroidID());
-        System.out.println("imei is:"+user.getImei());
-        System.out.println("ipv4 is:"+user.getIpv4());
-        System.out.println("mac is:"+user.getMac());
-        System.out.println("mobileNO is:"+user.getMobileNO());
+    @RequestMapping(value = "/queryIngredients",method = RequestMethod.POST)
+    public String qryIngredients(@ModelAttribute("ingredientsObj") IngredientsObj ingredientsObj) {
+        System.out.println("imei is:"+ingredientsObj.getImei());
+        System.out.println("androidID is:"+ingredientsObj.getAndroidID());
+        System.out.println("ipv4 is:"+ingredientsObj.getIpv4());
+        System.out.println("mac is:"+ingredientsObj.getMac());
+        System.out.println("dishID is:"+ingredientsObj.getDishID());
 
-        UserObj resultObj = userRemoteApiStatusService.getStatus(user,"register");
+        UserObj resultObj = queryIngredientsService.getStatus(user,"register");
+
+
+
+
+
         return JSON.toJSONString(resultObj);
     }
 
