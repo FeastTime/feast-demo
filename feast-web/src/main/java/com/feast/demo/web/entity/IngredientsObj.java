@@ -1,5 +1,7 @@
 package com.feast.demo.web.entity;
 
+import java.util.ArrayList;
+
 /**
  * Created by aries on 2017/5/14.
  */
@@ -11,7 +13,8 @@ public class IngredientsObj {
     private String mac;
     private String dishID;
     private String resultCode;
-    private IngredientsList ingredientsList;
+    private String resultMsg;
+    private ArrayList ingredientsList;
 
     public String getImei() {
         return imei;
@@ -61,11 +64,19 @@ public class IngredientsObj {
         this.resultCode = resultCode;
     }
 
-    public IngredientsList getIngredientsList() {
+    public ArrayList getIngredientsList() {
         return ingredientsList;
     }
 
-    public void setIngredientsList(IngredientsList ingredientsList) {
+    public void setIngredientsList(ArrayList ingredientsList) {
         this.ingredientsList = ingredientsList;
+    }
+
+    public String getResultMsg() {
+        return resultMsg;
+    }
+
+    public void setResultMsg(String resultMsg) {
+        this.resultMsg = resultMsg;
     }
 }

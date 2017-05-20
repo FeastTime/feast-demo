@@ -31,30 +31,11 @@ public class QueryIngredientsController {
         System.out.println("mac is:"+ingredientsObj.getMac());
         System.out.println("dishID is:"+ingredientsObj.getDishID());
 
-        UserObj resultObj = queryIngredientsService.getStatus(user,"register");
-
-
-
-
+        IngredientsObj resultObj = queryIngredientsService.getIngredientsInfo(ingredientsObj);
 
         return JSON.toJSONString(resultObj);
     }
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String loginUser(@ModelAttribute("user") UserObj user) {
-        System.out.println("androidID is:"+user.getAndroidID());
-        System.out.println("imei is:"+user.getImei());
-        System.out.println("ipv4 is:"+user.getIpv4());
-        System.out.println("mac is:"+user.getMac());
-        System.out.println("mobileNO is:"+user.getMobileNO());
-
-        UserObj resultObj = userRemoteApiStatusService.getStatus(user,"login");
-
-        if("0".equals(resultObj.getResultCode())){
-            LoginMemory.set(user.getMobileNO(),user);
-        }
-        return JSON.toJSONString(resultObj);
-    }
 
 
 }

@@ -1,7 +1,11 @@
 package com.feast.demo.web.service;
 
-import com.feast.demo.web.entity.UserObj;
+import com.feast.demo.web.entity.IngredientsList;
+import com.feast.demo.web.entity.IngredientsObj;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pinyou on 17-4-11.
@@ -11,26 +15,56 @@ import org.springframework.stereotype.Service;
 public class QueryIngredientsService {
 
 
-    public UserObj getStatus(UserObj user,String flag){
+    public IngredientsObj getIngredientsInfo(IngredientsObj ingredientsObj){
 
-        System.out.println("androidID is:"+user.getAndroidID());
-        System.out.println("imei is:"+user.getImei());
-        System.out.println("ipv4 is:"+user.getIpv4());
-        System.out.println("mac is:"+user.getMac());
-        System.out.println("mobileNO is:"+user.getMobileNO());
-        if("register".equals(flag)){
-            System.out.println("register");
+
+
+        System.out.println("androidID is:"+ingredientsObj.getAndroidID());
+        System.out.println("imei is:"+ingredientsObj.getImei());
+        System.out.println("ipv4 is:"+ingredientsObj.getIpv4());
+        System.out.println("mac is:"+ingredientsObj.getMac());
+        System.out.println("dishID is:"+ingredientsObj.getDishID());
+        String dishID = ingredientsObj.getDishID();
+        if(!"".equals(dishID)){
+
+            if("2017052016313400000001".equals(dishID)){
+                ingredientsObj.setResultCode("0");
+
+                ArrayList ingredientsList = new ArrayList();
+
+                IngredientsList ingredientsBean = new IngredientsList();
+                ingredientsBean.setIngredientName("鸡肉");
+                ingredientsBean.setNumber("2");
+                ingredientsBean.setWeight("200");
+                ingredientsBean.setCalories("350");
+                ingredientsList.add(ingredientsBean);
+
+                ingredientsBean = new IngredientsList();
+                ingredientsBean.setIngredientName("猪肉");
+                ingredientsBean.setNumber("3");
+                ingredientsBean.setWeight("500");
+                ingredientsBean.setCalories("550");
+                ingredientsList.add(ingredientsBean);
+
+                ingredientsBean = new IngredientsList();
+                ingredientsBean.setIngredientName("白菜");
+                ingredientsBean.setNumber("20");
+                ingredientsBean.setWeight("200");
+                ingredientsBean.setCalories("350");
+                ingredientsList.add(ingredientsBean);
+
+                ingredientsObj.setIngredientsList(ingredientsList);
+
+            }else{
+                ingredientsObj.setResultCode("1");
+                ingredientsObj.setResultMsg("该菜品信息不存在！");
+            }
+
         }else{
-            System.out.println("login");
+            ingredientsObj.setResultCode("1");
+            ingredientsObj.setResultMsg("菜品ID为空！");
         }
-
-
-
-        user.setResultCode("0");
-        user.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
-        return user;
+        return ingredientsObj;
     }
-
-
 
 }
