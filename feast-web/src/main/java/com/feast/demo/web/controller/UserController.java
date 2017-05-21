@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 
@@ -23,6 +24,7 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)
+    @ResponseBody
     public String regUser(@ModelAttribute("user") UserObj user) {
         System.out.println("androidID is:"+user.getAndroidID());
         System.out.println("imei is:"+user.getImei());
@@ -35,6 +37,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @ResponseBody
     public String loginUser(@ModelAttribute("user") UserObj user) {
         System.out.println("androidID is:"+user.getAndroidID());
         System.out.println("imei is:"+user.getImei());
@@ -51,6 +54,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout",method = RequestMethod.POST)
+    @ResponseBody
     public String logoutUser(@ModelAttribute("user") UserObj user) {
         System.out.println("androidID is:"+user.getAndroidID());
         System.out.println("imei is:"+user.getImei());

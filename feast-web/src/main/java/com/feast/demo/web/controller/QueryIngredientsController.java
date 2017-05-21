@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 
@@ -24,6 +25,7 @@ public class QueryIngredientsController {
     private QueryIngredientsService queryIngredientsService;
 
     @RequestMapping(value = "/queryIngredients",method = RequestMethod.POST)
+    @ResponseBody
     public String qryIngredients(@ModelAttribute("ingredientsObj") IngredientsObj ingredientsObj) {
         System.out.println("imei is:"+ingredientsObj.getImei());
         System.out.println("androidID is:"+ingredientsObj.getAndroidID());
