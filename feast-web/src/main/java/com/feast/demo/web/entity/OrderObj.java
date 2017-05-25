@@ -1,5 +1,8 @@
 package com.feast.demo.web.entity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Created by wpp on 2017/5/9.
  */
@@ -12,6 +15,8 @@ public class OrderObj {
     private String token;
     private String resultCode;
     private String orderID;
+    private HashMap<String, MyDishObj> myDishMap;
+    private HashMap<String, RecommendDishObj> recommendDishMap;
 
     public String getImei() {
         return imei;
@@ -76,4 +81,22 @@ public class OrderObj {
     public void setOrderID(String orderID) {
         this.orderID = orderID;
     }
+
+    public HashMap<String, MyDishObj> getMyDishMap() {
+        return myDishMap;
+    }
+
+    public void setMyDishMap(HashMap<String, MyDishObj> myDishMap) {
+        this.myDishMap = myDishMap;
+    }
+
+    public HashMap<String, RecommendDishObj> getRecommendDishMap() {
+        return recommendDishMap;
+    }
+
+    public void setRecommendDishMap(HashMap<String, RecommendDishObj> recommendDishMap) {
+        this.recommendDishMap = recommendDishMap;
+    }
+
+
 }
