@@ -48,6 +48,7 @@ public class OrderController {
         return JSON.toJSONString(rtnJson);
     }
 
+
     @ResponseBody
     @RequestMapping(value = "/addShoppingCart",method = RequestMethod.POST)
     public String addShoppingCart(@RequestParam("json") JSONObject jsono){
@@ -73,6 +74,110 @@ public class OrderController {
         // 是否需要实现价格计算
         rtnJson.put("totalPrice", "236.00");
         rtnJson.put("discountSale", "11.00");
+
+        return JSON.toJSONString(rtnJson);
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/removeShoppingCart",method = RequestMethod.POST)
+    public String removeShoppingCart(@RequestParam("json") JSONObject jsono){
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("ID is:"+jsono.getString("ID"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+
+        JSONObject rtnJson = new JSONObject();
+
+        String orderID = jsono.getString("orderID");
+        OrderObj orderObj = OrderMemory.get(orderID);
+        orderObj = orderService.removeMyDish(jsono, orderObj);
+        OrderMemory.set(orderObj.getOrderID(), orderObj);
+
+        rtnJson.put("resultCode", orderObj.getResultCode());
+        rtnJson.put("orderID", orderObj.getOrderID());
+
+        rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
+        rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
+        // 是否需要实现价格计算
+        rtnJson.put("totalPrice", "233.00");
+        rtnJson.put("discountSale", "11.00");
+
+        return JSON.toJSONString(rtnJson);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/getShoppingCartList",method = RequestMethod.POST)
+    public String getShoppingCartList(@RequestParam("json") JSONObject jsono){
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("ID is:"+jsono.getString("ID"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+
+        JSONObject rtnJson = new JSONObject();
+
+        String orderID = jsono.getString("orderID");
+        OrderObj orderObj = OrderMemory.get(orderID);
+
+        rtnJson.put("resultCode", orderObj.getResultCode());
+        rtnJson.put("orderID", orderObj.getOrderID());
+
+        rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
+        rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
+        // 是否需要实现价格计算
+        rtnJson.put("totalPrice", "233.00");
+        rtnJson.put("discountSale", "11.00");
+
+        return JSON.toJSONString(rtnJson);
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/placeOrder",method = RequestMethod.POST)
+    public String placeOrder(@RequestParam("json") JSONObject jsono){
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+
+        JSONObject rtnJson = new JSONObject();
+
+        String orderID = jsono.getString("orderID");
+        OrderObj orderObj = OrderMemory.get(orderID);
+
+        rtnJson.put("resultCode", "0"); // orderObj.getResultCode()
+        rtnJson.put("orderID", orderObj.getOrderID());
+
+        return JSON.toJSONString(rtnJson);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/payOrder",method = RequestMethod.POST)
+    public String payOrder(@RequestParam("json") JSONObject jsono){
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+
+        JSONObject rtnJson = new JSONObject();
+
+        String orderID = jsono.getString("orderID");
+        OrderObj orderObj = OrderMemory.get(orderID);
+
+        rtnJson.put("amount", "233.00");
+        rtnJson.put("discount", "11.00");
+        rtnJson.put("resultCode", "0"); // orderObj.getResultCode()
+        rtnJson.put("orderID", orderObj.getOrderID());
 
         return JSON.toJSONString(rtnJson);
     }
