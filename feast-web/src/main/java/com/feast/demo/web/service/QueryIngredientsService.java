@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @Service
-public class UserRemoteApiStatusService {
+public class QueryIngredientsService {
 
 
     public IngredientsObj getIngredientsInfo(IngredientsObj ingredientsObj){
