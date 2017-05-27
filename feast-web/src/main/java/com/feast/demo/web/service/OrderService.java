@@ -104,4 +104,43 @@ public class OrderService {
         return orderObj;
     }
 
+    public OrderObj removeMyDish(JSONObject jsono, OrderObj orderObj){
+
+        System.out.println("remove Dish start...");
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("ID is:"+jsono.getString("ID"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+
+        String id = jsono.getString("ID");
+
+        HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
+        if(myDishMap.containsKey(id)){
+            myDishMap.remove(id);
+            // 暂时不做批量修改购物车数量，默认每次删除一个菜
+        }else{
+            // 购物车没有此菜品暂时不做处理
+        }
+
+        HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
+        RecommendDishObj recommendDish = new RecommendDishObj();
+        // 以下数据为大数据平台所得，并关联数据库查询
+        recommendDish.setAmount("1");
+        recommendDish.setBeforeOrderTimes("3");
+        recommendDish.setDishID("1002");
+        recommendDish.setDishImgUrl("http://www.baidu.com/");
+        recommendDish.setDishName("京酱肉丝");
+        recommendDish.setDishNO("00001002");
+        recommendDish.setExtraFlag("1");
+        recommendDish.setTodayPrice("10");
+
+        recommendDishMap.put(id, recommendDish);
+
+        System.out.println("remove Dish success...");
+
+        return orderObj;
+    }
+
 }
