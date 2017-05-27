@@ -11,13 +11,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring.version>4.2.4.RELEASE</spring.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -58,7 +59,7 @@
     </dependencies>
 
     <build>
-        <finalName>feast-menu</finalName>
+        <finalName>feast-order</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

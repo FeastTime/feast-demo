@@ -10,7 +10,8 @@
     <!-- 应用配置 各业务平台根据name区分 -->
     <dubbo:application name="adProvider"/>
 
-    <dubbo:protocol name="dubbo" host="127.0.0.1" port="20882" serialization="kryo"/>
+    <dubbo:protocol name="dubbo" port="20882" serialization="kryo"/>
+
     <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
 
     <!--uncomment this if you want to test dubbo's monitor-->
