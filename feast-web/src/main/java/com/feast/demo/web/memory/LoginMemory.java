@@ -39,7 +39,7 @@ public class LoginMemory {
         map.put(key, userObj);
     }
 
-    public void remove(String key){
+    public static void remove(String key){
         map.remove(key);
     }
 

@@ -1,5 +1,7 @@
 package com.feast.demo.web.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.util.StringUtils;
 import org.springframework.stereotype.Service;
 import com.feast.demo.web.entity.UserObj;
 /**
@@ -9,54 +11,55 @@ import com.feast.demo.web.entity.UserObj;
 @Service
 public class UserService {
 
-    public UserObj getStatus(UserObj user, String flag) {
+    public UserObj getStatus(JSONObject jsonObj, String flag) {
 
-        System.out.println("androidID is:" + user.getAndroidID());
-        System.out.println("imei is:" + user.getImei());
-        System.out.println("ipv4 is:" + user.getIpv4());
-        System.out.println("mac is:" + user.getMac());
-        System.out.println("mobileNO is:" + user.getMobileNO());
+        System.out.println("androidID is:"+jsonObj.getString("androidID"));
+        System.out.println("imei is:"+jsonObj.getString("imei"));
+        System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
+        System.out.println("mac is:"+jsonObj.getString("mac"));
+        System.out.println("mobileNO is:"+jsonObj.getString("mobileNO"));
+
+        UserObj userObj = new UserObj();
+
         if ("register".equals(flag) || "login".equals(flag)) {
-            String mobileNo = user.getMobileNO();
+            String mobileNo = jsonObj.getString("mobileNO");
             if (!"".equals(mobileNo)) {
                 if ("register".equals(flag)) {
                     if ("13301018888".equals(mobileNo)) {
-                        user.setResultCode("0");
-                        user.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
+                        userObj.setResultCode("0");
+                        userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
                     } else {
-                        user.setResultCode("1");
-                        user.setResultMsg("该手机号已注册，请更换手机号！");
+                        userObj.setResultCode("1");
+                        userObj.setResultMsg(StringUtils.encode("该手机号已注册，请更换手机号！"));
                     }
                 } else if ("login".equals(flag)) {
                     if ("13301019999".equals(mobileNo)) {
-                        user.setResultCode("0");
-                        user.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
+                        userObj.setResultCode("0");
+                        userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
                     } else {
-                        user.setResultCode("1");
-                        user.setResultMsg("该手机号已注册，请更换手机号！");
+                        userObj.setResultCode("1");
+                        userObj.setResultMsg(StringUtils.encode("该手机号不存在，请更换手机号！"));
                     }
                 } else {
-                    user.setResultCode("1");
-                    user.setResultMsg("非法操作，请重试！");
+                    userObj.setResultCode("1");
+                    userObj.setResultMsg(StringUtils.encode("非法操作，请重试！"));
                 }
             } else {
-                user.setResultCode("1");
-                user.setResultMsg("手机号为空！");
+                userObj.setResultCode("1");
+                userObj.setResultMsg(StringUtils.encode("手机号为空！"));
             }
         }
         if("logout".equals(flag)){
-            String token = user.getToken();
+            String token = jsonObj.getString("token");
             if("ljiqsdgf54sdfweq6565f7wes51635sad4f65f".equals(token)){
-                user.setResultCode("0");
-                user.setResultMsg("成功退出");
+                userObj.setResultCode("0");
+                userObj.setResultMsg(StringUtils.encode("成功退出"));
             }else{
-                user.setResultCode("1");
-                user.setResultMsg("退出异常，请重新尝试！");
+                userObj.setResultCode("1");
+                userObj.setResultMsg(StringUtils.encode("退出异常，请重新尝试！"));
             }
         }
-
-        return user;
-
+        return userObj;
     }
 }
 

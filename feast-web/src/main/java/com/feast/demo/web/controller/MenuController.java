@@ -2,6 +2,7 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.web.entity.IngredientsObj;
 import com.feast.demo.web.entity.MenuObj;
@@ -25,20 +26,22 @@ public class MenuController {
     @Resource
     private MenuService menuService;
 
-    @RequestMapping(value = "/menu",method = RequestMethod.POST)
     @ResponseBody
-    public String qryIngredients(@ModelAttribute("ingredientsObj") MenuObj menuObj) {
-        System.out.println("imei is:"+menuObj.getImei());
-        System.out.println("androidID is:"+menuObj.getAndroidID());
-        System.out.println("ipv4 is:"+menuObj.getIpv4());
-        System.out.println("mac is:"+menuObj.getMac());
-        System.out.println("mobileNO is:"+menuObj.getMobileNO());
-        System.out.println("token is:"+menuObj.getToken());
-        System.out.println("orderID is:"+menuObj.getOrderID());
-        System.out.println("classType is:"+menuObj.getClassType());
-        System.out.println("page is:"+menuObj.getPage());
+    @RequestMapping(value = "/menu",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String qryMenu(@RequestBody String text){
+        text = com.feast.demo.web.util.StringUtils.decode(text);
+        JSONObject jsono  = JSON.parseObject(text);
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
+        System.out.println("token is:"+jsono.getString("token"));
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+        System.out.println("classType is:"+jsono.getString("classType"));
+        System.out.println("page is:"+jsono.getString("page"));
 
-        MenuObj resultObj = menuService.getMenusInfo(menuObj);
+        MenuObj resultObj = menuService.getMenusInfo(jsono);
 
         return JSON.toJSONString(resultObj);
     }

@@ -16,6 +16,7 @@ public class IngredientsObj {
     private String resultMsg;
     private ArrayList ingredientsList;
 
+
     public String getImei() {
         return imei;
     }
