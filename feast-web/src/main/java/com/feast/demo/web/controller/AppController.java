@@ -24,7 +24,7 @@ public class AppController {
     @Resource
     private RemoteApiStatusService remoteApiStatusService;
 
-    @RequestMapping(value = "/status",method = RequestMethod.GET)
+    @RequestMapping(value = "/status",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> c1(
             @RequestParam(value = "p",required = false) String p
@@ -38,7 +38,7 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/status2",method = RequestMethod.GET)
+    @RequestMapping(value = "/status2",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> c2(
             @RequestParam(value = "p",required = false) String p
@@ -52,7 +52,7 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/transferEntity",method = RequestMethod.GET)
+    @RequestMapping(value = "/transferEntity",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> transferEntity(
             @RequestParam("name") String name
@@ -65,7 +65,7 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/transferMsg",method = RequestMethod.GET)
+    @RequestMapping(value = "/transferMsg",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> transferMsg(
             @RequestParam("msg") String msg
@@ -76,7 +76,7 @@ public class AppController {
         return result;
     }
 
-    @RequestMapping(value = "/adlist",method = RequestMethod.GET)
+    @RequestMapping(value = "/adlist",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> transferMsg(
             @RequestParam("num") Integer num

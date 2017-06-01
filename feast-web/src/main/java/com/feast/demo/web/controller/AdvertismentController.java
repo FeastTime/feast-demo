@@ -25,7 +25,7 @@ public class AdvertismentController {
     private AdverstismentService adverstismentService;
 
     @ResponseBody
-    @RequestMapping(value = "/getSilentAD/",method = RequestMethod.GET)
+    @RequestMapping(value = "/getSilentAD/",method = {RequestMethod.POST,RequestMethod.GET})
     public Map<String,Object> getHtmlAdvertisments(
             @RequestParam("type")AdTargetType type,
             @RequestParam("AdWith") Integer width,
