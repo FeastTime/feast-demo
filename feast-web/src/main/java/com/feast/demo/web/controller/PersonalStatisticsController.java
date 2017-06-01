@@ -22,7 +22,7 @@ public class PersonalStatisticsController {
     @Resource
     private PersonalStatisticsService personalStatisticsService;
 
-    @RequestMapping(value = "/getPersonalStatisticsDetail/",method = RequestMethod.GET)
+    @RequestMapping(value = "/getPersonalStatisticsDetail/",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> getPersonalStatisticsDetail(
             @RequestParam(value = "imei",required = false) String imei,
