@@ -1,18 +1,15 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.dubbo.common.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
-import com.feast.demo.web.entity.MyDishObj;
 import com.feast.demo.web.entity.OrderObj;
-import com.feast.demo.web.entity.RecommendDishObj;
 import com.feast.demo.web.memory.OrderMemory;
 import com.feast.demo.web.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,7 +26,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/createOrder",method = RequestMethod.POST)
-    public String createOrder(@RequestParam("json") JSONObject jsono){
+    public String createOrder(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
@@ -51,7 +50,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/addShoppingCart",method = RequestMethod.POST)
-    public String addShoppingCart(@RequestParam("json") JSONObject jsono){
+    public String addShoppingCart(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
@@ -82,7 +83,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/removeShoppingCart",method = RequestMethod.POST)
-    public String removeShoppingCart(@RequestParam("json") JSONObject jsono){
+    public String removeShoppingCart(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
@@ -112,7 +115,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/getShoppingCartList",method = RequestMethod.POST)
-    public String getShoppingCartList(@RequestParam("json") JSONObject jsono){
+    public String getShoppingCartList(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
@@ -141,7 +146,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/placeOrder",method = RequestMethod.POST)
-    public String placeOrder(@RequestParam("json") JSONObject jsono){
+    public String placeOrder(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
@@ -162,7 +169,9 @@ public class OrderController {
 
     @ResponseBody
     @RequestMapping(value = "/payOrder",method = RequestMethod.POST)
-    public String payOrder(@RequestParam("json") JSONObject jsono){
+    public String payOrder(@RequestBody String jsonString){
+        System.out.println(jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
