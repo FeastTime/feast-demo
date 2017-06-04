@@ -35,6 +35,7 @@ public class UserService {
                 } else if ("login".equals(flag)) {
                     if ("13301019999".equals(mobileNo)) {
                         userObj.setResultCode("0");
+                        userObj.setMobileNO("13301019999");
                         userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
                     } else {
                         userObj.setResultCode("1");
