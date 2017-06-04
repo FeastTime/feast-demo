@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.memory.OrderMemory;
 import com.feast.demo.web.service.OrderService;
+import com.feast.demo.web.util.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,11 @@ public class OrderController {
     private OrderService orderService;
 
     @ResponseBody
-    @RequestMapping(value = "/createOrder",method = RequestMethod.POST)
+    @RequestMapping(value = "/createOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String createOrder(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("createOrder old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("createOrder new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
@@ -49,9 +52,11 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/addShoppingCart",method = RequestMethod.POST)
+    @RequestMapping(value = "/addShoppingCart",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String addShoppingCart(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("addShoppingCart old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("addShoppingCart new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
@@ -82,9 +87,11 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/removeShoppingCart",method = RequestMethod.POST)
+    @RequestMapping(value = "/removeShoppingCart",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String removeShoppingCart(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("removeShoppingCart old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("removeShoppingCart new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
@@ -114,9 +121,11 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/getShoppingCartList",method = RequestMethod.POST)
+    @RequestMapping(value = "/getShoppingCartList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String getShoppingCartList(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("getShoppingCartList old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("getShoppingCartList new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
@@ -145,9 +154,11 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/placeOrder",method = RequestMethod.POST)
+    @RequestMapping(value = "/placeOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String placeOrder(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("placeOrder old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("placeOrder new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
@@ -168,9 +179,11 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/payOrder",method = RequestMethod.POST)
+    @RequestMapping(value = "/payOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String payOrder(@RequestBody String jsonString){
-        System.out.println(jsonString);
+        System.out.println("payOrder old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("payOrder new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
