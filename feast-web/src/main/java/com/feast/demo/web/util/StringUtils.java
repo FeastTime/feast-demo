@@ -11,7 +11,11 @@ public class StringUtils {
 
         try {
             String result = URLDecoder.decode(input, "UTF-8");
-            return result.substring(0, result.length() - 1);
+            if("=".equals(result.substring(result.length() - 1))){
+                return result.substring(0, result.length() - 1);
+            }else{
+                return result;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

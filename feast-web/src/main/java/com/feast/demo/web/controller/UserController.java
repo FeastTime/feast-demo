@@ -44,7 +44,9 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text){
+        System.out.println("转之前"+text);
         text = StringUtils.decode(text);
+        System.out.println("转之后"+text);
         JSONObject jsono  = JSON.parseObject(text);
         System.out.println("androidID is:"+jsono.getString("androidID"));
         System.out.println("imei is:"+jsono.getString("imei"));
