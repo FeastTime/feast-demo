@@ -1,13 +1,14 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.entity.IngredientsObj;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
-import com.feast.demo.web.service.UserRemoteApiStatusService;
+import com.feast.demo.web.service.QueryIngredientsService;
+import com.feast.demo.web.util.StringUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -16,37 +17,24 @@ import javax.annotation.Resource;
  */
 
 @Controller
-@RequestMapping(value = "/queryIngredients")
+@RequestMapping(value = "/menu")
 public class QueryIngredientsController {
 
     @Resource
-    private UserRemoteApiStatusService userRemoteApiStatusService;
+    private QueryIngredientsService queryIngredientsService;
+    @ResponseBody
+    @RequestMapping(value = "/queryIngredients",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String qryIngredients(@RequestBody String text){
+        text = StringUtils.decode(text);
+        JSONObject jsono  = JSON.parseObject(text);
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("dishID is:"+jsono.getString("dishID"));
 
-    @RequestMapping(value = "/register",method = RequestMethod.POST)
-    public String regUser(@ModelAttribute("user") UserObj user) {
-        System.out.println("androidID is:"+user.getAndroidID());
-        System.out.println("imei is:"+user.getImei());
-        System.out.println("ipv4 is:"+user.getIpv4());
-        System.out.println("mac is:"+user.getMac());
-        System.out.println("mobileNO is:"+user.getMobileNO());
+        IngredientsObj resultObj = queryIngredientsService.getIngredientsInfo(jsono);
 
-        UserObj resultObj = userRemoteApiStatusService.getStatus(user,"register");
-        return JSON.toJSONString(resultObj);
-    }
-
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String loginUser(@ModelAttribute("user") UserObj user) {
-        System.out.println("androidID is:"+user.getAndroidID());
-        System.out.println("imei is:"+user.getImei());
-        System.out.println("ipv4 is:"+user.getIpv4());
-        System.out.println("mac is:"+user.getMac());
-        System.out.println("mobileNO is:"+user.getMobileNO());
-
-        UserObj resultObj = userRemoteApiStatusService.getStatus(user,"login");
-
-        if("0".equals(resultObj.getResultCode())){
-            LoginMemory.set(user.getMobileNO(),user);
-        }
         return JSON.toJSONString(resultObj);
     }
 

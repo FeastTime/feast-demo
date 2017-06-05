@@ -17,6 +17,7 @@ public class UserObj {
     private String mobileNO;
     private String resultCode;
     private String token;
+    private String resultMsg;
 
     public String getAndroidID() {
         return androidID;
@@ -72,5 +73,13 @@ public class UserObj {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getResultMsg() {
+        return resultMsg;
+    }
+
+    public void setResultMsg(String resultMsg) {
+        this.resultMsg = resultMsg;
     }
 }
