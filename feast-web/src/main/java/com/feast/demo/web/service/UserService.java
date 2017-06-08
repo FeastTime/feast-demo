@@ -1,6 +1,7 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
 import org.springframework.stereotype.Service;
 import com.feast.demo.web.entity.UserObj;
@@ -38,8 +39,16 @@ public class UserService {
                         userObj.setMobileNO("13301019999");
                         userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
                     } else {
-                        userObj.setResultCode("1");
-                        userObj.setResultMsg(StringUtils.encode("该手机号不存在，请更换手机号！"));
+                        if (LoginMemory.get(mobileNo) !=null){
+                            userObj.setResultCode("0");
+                            userObj.setMobileNO(mobileNo);
+                            userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
+                        }else{
+                            userObj.setResultCode("0");
+                            userObj.setMobileNO(mobileNo);
+                            userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
+                        }
+
                     }
                 } else {
                     userObj.setResultCode("1");
