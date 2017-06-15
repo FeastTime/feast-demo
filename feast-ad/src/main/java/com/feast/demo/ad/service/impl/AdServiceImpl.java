@@ -5,8 +5,10 @@ import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by pinyou on 17-4-11.
@@ -83,6 +85,18 @@ public class AdServiceImpl implements AdService {
                 break;
         }
         return url.equals("")?null:url+"."+type;
+    }
+
+    public List<String> getAdArray(Integer num,String width,String height){
+        List<String> result = Lists.newArrayList();
+        if(num<1){
+            return result;
+        }
+        String directory =  File.separator+ "s"+File.separator+"html"+File.separator+"ad"+File.separator+width + "_" + height +File.separator;
+        for(int i=0;i<num;i++){
+            result.add(directory + (new Random()).nextInt(10)+".html");
+        }
+        return result;
     }
 
     private String getRandomString() {

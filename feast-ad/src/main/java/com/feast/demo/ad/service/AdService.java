@@ -19,4 +19,6 @@ public interface AdService {
     public List<TAd> getAdList(Integer num);
 
     public String getRemoteUrl(AdTargetType type, Integer width, Integer height);
+
+    public List<String> getAdArray(Integer num,String width,String height);
 }

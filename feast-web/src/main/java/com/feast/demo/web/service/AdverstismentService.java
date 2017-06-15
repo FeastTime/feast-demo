@@ -5,6 +5,8 @@ import com.feast.demo.ad.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by gk on 17-5-9.
  * 广告信息service
@@ -18,5 +20,9 @@ public class AdverstismentService {
 
     public String getRemontAdUrl(AdTargetType type, Integer width, Integer height){
         return adRemoteService.getRemoteUrl(type,width,height);
+    }
+
+    public List<String> getAdArray(Integer num,String width,String height){
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.feast.demo.web.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.web.service.AdverstismentService;
 import com.google.common.collect.Maps;
@@ -43,6 +45,23 @@ public class AdvertismentController {
         }else{
             result.put("success",false);
         }
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/adArray/",method = RequestMethod.POST)
+    public Map<String,Object> getAdArray(@RequestBody String params){
+        Map<String,Object> result = Maps.newHashMap();
+        JSONObject paramsJson = JSON.parseObject( com.feast.demo.web.util.StringUtils.decode(params));
+        int num = paramsJson.getInteger("num");
+        int width = paramsJson.getInteger("width");
+        int height= paramsJson.getInteger("height");
+        String token = paramsJson.getString("token");
+        result.put("num",num);
+        result.put("width",width);
+        result.put("height",height);
+        result.put("token",token);
+
         return result;
     }
 }
