@@ -1,9 +1,15 @@
 package com.feast.demo.ad.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
+import com.feast.demo.ad.dao.AdvertisementDao;
+import com.feast.demo.ad.dao.AdvertisementDaoImpl;
 import com.feast.demo.ad.entity.AdTargetType;
+import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.Date;
@@ -13,7 +19,15 @@ import java.util.Random;
 /**
  * Created by pinyou on 17-4-11.
  */
+@Service
 public class AdServiceImpl implements AdService {
+
+    @Autowired
+    private AdvertisementDao advertisementDao;
+
+    public List<Advertisement> findAll(){
+        return (List<Advertisement>) advertisementDao.findAll2();
+    }
 
     /**
      * 无参调用

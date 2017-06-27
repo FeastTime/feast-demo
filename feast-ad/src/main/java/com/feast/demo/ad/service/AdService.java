@@ -1,6 +1,7 @@
 package com.feast.demo.ad.service;
 
 import com.feast.demo.ad.entity.AdTargetType;
+import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.entity.TAd;
 
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
  * Created by pinyou on 17-4-11.
  */
 public interface AdService {
+
+    public List<Advertisement> findAll();
 
     public String status();
 
