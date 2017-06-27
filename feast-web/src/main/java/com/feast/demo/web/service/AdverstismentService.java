@@ -1,6 +1,7 @@
 package com.feast.demo.web.service;
 
 import com.feast.demo.ad.entity.AdTargetType;
+import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class AdverstismentService {
     }
 
     public List<String> getAdArray(Integer num,String width,String height){
-        return null;
+        return adRemoteService.getAdArray(num,width,height);
+    }
+
+    public List<Advertisement> findAll(){
+        return adRemoteService.findAll();
     }
 }
