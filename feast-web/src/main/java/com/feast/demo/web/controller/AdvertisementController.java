@@ -10,6 +10,9 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by gk on 17-5-9.
@@ -18,7 +21,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/ad")
-public class AdvertismentController {
+public class AdvertisementController {
 
     @Resource
     private AdverstismentService adverstismentService;
@@ -61,6 +64,23 @@ public class AdvertismentController {
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
+        result.put("data",adverstismentService.getAdArray(num,width+"",height+""));
+        Executor single = Executors.newSingleThreadExecutor();
+        Executor fix = Executors.newFixedThreadPool(15);
+        single.execute(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(123);
+            }
+        });
+        return result;
+    }
+
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getAll(){
+        Map<String,Object> result = Maps.newHashMap();
+        result.put("data",adverstismentService.findAll());
 
         return result;
     }
