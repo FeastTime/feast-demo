@@ -78,12 +78,4 @@ public class AdvertisementController {
         return result;
     }
 
-    @RequestMapping(value = "/all",method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String,Object> getAll(){
-        Map<String,Object> result = Maps.newHashMap();
-        result.put("data",adverstismentService.findAll());
-
-        return result;
-    }
 }
