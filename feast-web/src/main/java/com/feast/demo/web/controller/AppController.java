@@ -87,4 +87,13 @@ public class AppController {
         return result;
     }
 
+    @RequestMapping(value = "/dbstate/",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getAll(){
+        Map<String,Object> result = Maps.newHashMap();
+        result.put("data",remoteApiStatusService.getDbState());
+
+        return result;
+    }
+
 }

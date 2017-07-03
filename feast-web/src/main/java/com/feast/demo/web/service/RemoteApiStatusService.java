@@ -1,9 +1,10 @@
 package com.feast.demo.web.service;
 
-import com.feast.demo.menu.service.MenuService;
-import com.feast.demo.order.service.OrderListService;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
+import com.feast.demo.menu.service.MenuService;
+import com.feast.demo.order.service.TOrderService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,16 @@ import java.util.Map;
 public class RemoteApiStatusService {
 
     @Autowired
-    private OrderListService orderRemoteService;
+    private TOrderService orderRemoteService;
 
     @Autowired
     private MenuService menuRemoteService;
 
     @Autowired
     private AdService adRemoteService;
+
+    @Autowired
+    private AdverstismentService adverstismentService;
 
     public Map<String,Object> getStatus(){
         Map<String,Object> map = Maps.newHashMap();
@@ -45,5 +49,12 @@ public class RemoteApiStatusService {
 
     public List<TAd> getAdList(int num){
         return adRemoteService.getAdList(num);
+    }
+
+    public List<Object> getDbState(){
+        List<Object> list = Lists.newArrayList();
+        list.addAll(adverstismentService.findAll());
+        list.addAll(orderRemoteService.findAll());
+        return list;
     }
 }

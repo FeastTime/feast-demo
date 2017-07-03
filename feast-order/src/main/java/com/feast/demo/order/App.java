@@ -1,8 +1,11 @@
 package com.feast.demo.order;
 
+import com.feast.demo.order.entity.TOrder;
+import com.feast.demo.order.service.TOrderService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -12,16 +15,21 @@ public class App {
 
     public static void main(String ...args){
         String configLocation = "classpath*:/META-INF/spring/spring-*.xml";
-        ApplicationContext context = new ClassPathXmlApplicationContext(
-                configLocation);
-        String[] names = context.getBeanDefinitionNames();
-        System.out.print("Beans:");
-        for (String string : names)
-            System.out.print(string + ",");
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
+//        String[] names = context.getBeanDefinitionNames();
+//        for(String name:names){
+//            System.out.println(name);
+//        }
+        TOrderService ads = (TOrderService) context.getBean("TOrderServiceImpl");
+        List<TOrder> list = ads.findAll();
+        for(TOrder o: list){
+            System.out.println(o);
+        }
+        System.out.println("start serivce.");
         while(true){
             try {
-                TimeUnit.SECONDS.sleep(5l);
-                System.out.print(".");
+                TimeUnit.SECONDS.sleep(60l);
+                System.out.println("ok.");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
