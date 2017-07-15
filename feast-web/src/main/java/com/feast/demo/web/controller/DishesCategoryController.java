@@ -25,7 +25,7 @@ public class DishesCategoryController {
     private GetDishesCategoryService getDishesCategoryService;
 
     @ResponseBody
-    @RequestMapping(value = "/dishesCategory",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    @RequestMapping(value = "/getDishesCategoryList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String regUser(@RequestBody String text){
         text = StringUtils.decode(text);
         JSONObject jsono  = JSON.parseObject(text);
