@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.web.service.AdverstismentService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -70,15 +71,12 @@ public class AdvertisementController {
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
-        result.put("data",adverstismentService.getAdArray(num,width+"",height+""));
-        Executor single = Executors.newSingleThreadExecutor();
-        Executor fix = Executors.newFixedThreadPool(15);
-        single.execute(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(123);
-            }
-        });
+        List<String> urls = adverstismentService.getAdArray(num,width+"",height+"");
+        List<String> _urls = Lists.newArrayList();
+        for(String url:urls){
+            _urls.add(path+url);
+        }
+        result.put("data",_urls);
         return result;
     }
 
