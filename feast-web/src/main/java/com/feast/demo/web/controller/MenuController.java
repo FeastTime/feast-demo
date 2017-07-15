@@ -1,19 +1,16 @@
 package com.feast.demo.web.controller;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.ad.entity.TAd;
-import com.feast.demo.web.entity.IngredientsObj;
 import com.feast.demo.web.entity.MenuObj;
 import com.feast.demo.web.service.MenuService;
-import com.feast.demo.web.service.QueryIngredientsService;
-import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * Created by matao on 2017/5/7.
