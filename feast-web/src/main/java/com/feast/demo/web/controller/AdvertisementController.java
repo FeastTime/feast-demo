@@ -28,6 +28,10 @@ public class AdvertisementController {
     @Resource
     private AdverstismentService adverstismentService;
 
+    private static final String path="http://47.94.16.58:9798/feast-web";
+
+    public static final String AdmTypeDynamic = "dynamicCreative";
+
     @ResponseBody
     @RequestMapping(value = "/getSilentAD/",method = RequestMethod.POST)
     public Map<String,Object> getHtmlAdvertisments(
@@ -38,8 +42,8 @@ public class AdvertisementController {
         Map<String,Object> result = Maps.newHashMap();
         String url = adverstismentService.getRemontAdUrl(type,width,height);
         Map<String,Object> adInfo = Maps.newHashMap();
-        adInfo.put("Adm",url);
-        adInfo.put("AdmType","html");
+        adInfo.put("Adm",path+url);
+        adInfo.put("AdmType",AdmTypeDynamic);
         adInfo.put("Height",height);
         adInfo.put("Width",width);
         adInfo.put("Price",100);

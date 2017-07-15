@@ -13,6 +13,8 @@ public interface AdService {
 
     public List<Advertisement> findAll();
 
+    public void save(Advertisement advertisement);
+
     public String status();
 
     public String transferEntity(TAd tad);
