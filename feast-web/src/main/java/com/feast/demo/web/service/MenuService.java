@@ -40,13 +40,13 @@ public class MenuService {
              * 1004 鱼类
              */
             String classType = jsonObj.getString("classType");
+            DishesList DishesBean = new DishesList();
+            ArrayList dishesList = new ArrayList();
+
             if ("1001".equals(classType)) {
                 String page = jsonObj.getString("page");
                 menuObj.setResultCode("0");
-
                 menuObj.setTmpId("A");
-                ArrayList dishesList = new ArrayList();
-                DishesList DishesBean = new DishesList();
 
                 DishesBean.setDishID("00000001");
                 DishesBean.setDishNO("000000001");
@@ -84,7 +84,33 @@ public class MenuService {
                 DishesBean.setTitleADUrl("http://aaa.html");
                 DishesBean.setEatTimes("4");
                 DishesBean.setDishName(StringUtils.encode("虾酱荷兰豆炒鲜鱿"));
-                DishesBean.setDetail(StringUtils.encode("其实将橄榄菜炒四季豆换为豌豆亦可，豌豆更香甜，加入鸡柳就成为一道很好下饭的家常小菜。"));
+                DishesBean.setDetail(StringUtils.encode("荷兰豆香甜爽脆，与新鲜鱿鱼加入虾酱同炒，是一道十分惹味的家常小炒。"));
+                DishesBean.setTime("11:00-13:00");
+                DishesBean.setCost("45.00");
+                DishesBean.setPrice("22.00");
+                DishesBean.setCstFlag("1");
+                DishesBean.setSales("14");
+                DishesBean.setWaitTime("5");
+                DishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                DishesBean.setStarlevel("5");
+                DishesBean.setPungencyDegree("4");
+                DishesBean.setTmpId("000000000201");
+                DishesBean.setPageId("1");
+                dishesList.add(DishesBean);
+
+                DishesBean = new DishesList();
+
+                DishesBean.setDishID("00000003");
+                DishesBean.setDishNO("000000003");
+                DishesBean.setDishImgUrl("");
+                DishesBean.setTvUrl("glcwdcjl.mp4");
+                DishesBean.setHotFlag("0");
+                DishesBean.setMaterialFlag("0");
+                DishesBean.setTitleADImgUrl("http://aaa.jpg");
+                DishesBean.setTitleADUrl("http://aaa.html");
+                DishesBean.setEatTimes("4");
+                DishesBean.setDishName(StringUtils.encode("云耳豌豆炒带子"));
+                DishesBean.setDetail(StringUtils.encode("云耳有很多种，其中以老鼠耳为最上乘，特别爽脆，与香甜碗豆及带子同炒，健康又易煮。"));
                 DishesBean.setTime("11:00-13:00");
                 DishesBean.setCost("45.00");
                 DishesBean.setPrice("33.00");
@@ -97,11 +123,64 @@ public class MenuService {
                 DishesBean.setTmpId("000000000201");
                 DishesBean.setPageId("1");
                 dishesList.add(DishesBean);
-
                 menuObj.setDishesList(dishesList);
 
             } else if ("1002".equals(classType)) {
-                menuObj.setResultCode("0");
+                DishesBean = new DishesList();
+
+                DishesBean.setDishID("00000004");
+                DishesBean.setDishNO("000000004");
+                DishesBean.setDishImgUrl("");
+                DishesBean.setTvUrl("glcwdcjl.mp4");
+                DishesBean.setHotFlag("0");
+                DishesBean.setMaterialFlag("0");
+                DishesBean.setTitleADImgUrl("http://aaa.jpg");
+                DishesBean.setTitleADUrl("http://aaa.html");
+                DishesBean.setEatTimes("4");
+                DishesBean.setDishName(StringUtils.encode("月亮虾饼"));
+                DishesBean.setDetail(StringUtils.encode("月亮虾饼是一种台湾小食，经油炸后，金黄色的香脆春卷皮就好像月亮一样，所以叫做月亮虾饼。"));
+                DishesBean.setTime("11:00-13:00");
+                DishesBean.setCost("45.00");
+                DishesBean.setPrice("33.00");
+                DishesBean.setCstFlag("1");
+                DishesBean.setSales("14");
+                DishesBean.setWaitTime("5");
+                DishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                DishesBean.setStarlevel("5");
+                DishesBean.setPungencyDegree("4");
+                DishesBean.setTmpId("000000000201");
+                DishesBean.setPageId("2");
+                dishesList.add(DishesBean);
+
+                DishesBean = new DishesList();
+
+                DishesBean.setDishID("00000004");
+                DishesBean.setDishNO("000000004");
+                DishesBean.setDishImgUrl("");
+                DishesBean.setTvUrl("glcwdcjl.mp4");
+                DishesBean.setHotFlag("0");
+                DishesBean.setMaterialFlag("0");
+                DishesBean.setTitleADImgUrl("http://aaa.jpg");
+                DishesBean.setTitleADUrl("http://aaa.html");
+                DishesBean.setEatTimes("4");
+                DishesBean.setDishName(StringUtils.encode("汁烧四季豆牛肉卷"));
+                DishesBean.setDetail(StringUtils.encode("四季豆富含蛋白质和多种氨基酸，用牛肉卷起卖相吸引，简单又美味。"));
+                DishesBean.setTime("11:00-13:00");
+                DishesBean.setCost("45.00");
+                DishesBean.setPrice("33.00");
+                DishesBean.setCstFlag("1");
+                DishesBean.setSales("14");
+                DishesBean.setWaitTime("5");
+                DishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                DishesBean.setStarlevel("5");
+                DishesBean.setPungencyDegree("4");
+                DishesBean.setTmpId("000000000201");
+                DishesBean.setPageId("2");
+                dishesList.add(DishesBean);
+
+
+
+                menuObj.setDishesList(dishesList);
             }else if ("1003".equals(classType)) {
                 menuObj.setResultCode("0");
             }else if ("1004".equals(classType)) {
