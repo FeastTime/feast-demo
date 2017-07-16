@@ -151,6 +151,10 @@ public class OrderController {
         rtnJson.put("totalPrice", "233.00");
         rtnJson.put("discountSale", "11.00");
 
+        rtnJson.put("orderTime", new Date().getTime());
+        rtnJson.put("needTime", "150");
+        rtnJson.put("status", "1");
+
         return JSON.toJSONString(rtnJson);
     }
 
