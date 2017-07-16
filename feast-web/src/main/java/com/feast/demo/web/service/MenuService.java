@@ -50,12 +50,12 @@ public class MenuService {
 
                 DishesBean.setDishID("00000001");
                 DishesBean.setDishNO("000000001");
-                DishesBean.setDishImgUrl("glcwdcjl.jpg");
+                DishesBean.setDishImgUrl("https://note.youdao.com/yws/api/group/47100452/file/142972465?method=getImage&WLP=true&width=640&height=640&version=1&cstk=QXu4Rr3S");
                 DishesBean.setTvUrl("glcwdcjl.mp4");
                 DishesBean.setHotFlag("0");
                 DishesBean.setMaterialFlag("0");
-                DishesBean.setTitleADImgUrl("http://aaa.jpg");
-                DishesBean.setTitleADUrl("http://aaa.html");
+                DishesBean.setTitleADImgUrl("http://guanmin.jpg");
+                DishesBean.setTitleADUrl("http://guanmin.html");
                 DishesBean.setEatTimes("4");
                 DishesBean.setDishName(StringUtils.encode("橄榄菜豌豆炒鸡柳"));
                 DishesBean.setDetail(StringUtils.encode("其实将橄榄菜炒四季豆换为豌豆亦可，豌豆更香甜，加入鸡柳就成为一道很好下饭的家常小菜。"));
@@ -66,6 +66,34 @@ public class MenuService {
                 DishesBean.setSales("14");
                 DishesBean.setWaitTime("5");
                 DishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                DishesBean.setStarlevel("3");
+                DishesBean.setPungencyDegree("5");
+                DishesBean.setTmpId("000000000201");
+                DishesBean.setPageId("1");
+                dishesList.add(DishesBean);
+
+                DishesBean = new DishesList();
+
+                DishesBean.setDishID("00000002");
+                DishesBean.setDishNO("000000002");
+                DishesBean.setDishImgUrl("");
+                DishesBean.setTvUrl("glcwdcjl.mp4");
+                DishesBean.setHotFlag("0");
+                DishesBean.setMaterialFlag("0");
+                DishesBean.setTitleADImgUrl("http://aaa.jpg");
+                DishesBean.setTitleADUrl("http://aaa.html");
+                DishesBean.setEatTimes("4");
+                DishesBean.setDishName(StringUtils.encode("虾酱荷兰豆炒鲜鱿"));
+                DishesBean.setDetail(StringUtils.encode("其实将橄榄菜炒四季豆换为豌豆亦可，豌豆更香甜，加入鸡柳就成为一道很好下饭的家常小菜。"));
+                DishesBean.setTime("11:00-13:00");
+                DishesBean.setCost("45.00");
+                DishesBean.setPrice("33.00");
+                DishesBean.setCstFlag("1");
+                DishesBean.setSales("14");
+                DishesBean.setWaitTime("5");
+                DishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                DishesBean.setStarlevel("5");
+                DishesBean.setPungencyDegree("4");
                 DishesBean.setTmpId("000000000201");
                 DishesBean.setPageId("1");
                 dishesList.add(DishesBean);
