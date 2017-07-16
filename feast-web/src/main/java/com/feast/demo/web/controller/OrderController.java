@@ -185,36 +185,6 @@ public class OrderController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/getOrderListStatus",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String getOrderListStatus(@RequestBody String jsonString){
-        System.out.println("getOrderListStatus old = " + jsonString);
-        jsonString = StringUtils.decode(jsonString);
-        JSONObject jsono = JSONObject.parseObject(jsonString);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("ID is:"+jsono.getString("ID"));
-        System.out.println("orderID is:"+jsono.getString("orderID"));
-
-        JSONObject rtnJson = new JSONObject();
-
-        String orderID = jsono.getString("orderID");
-        OrderObj orderObj = OrderMemory.get(orderID);
-
-        rtnJson.put("resultCode", orderObj.getResultCode());
-        rtnJson.put("orderID", orderObj.getOrderID());
-
-        rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
-        rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
-        // 是否需要实现价格计算
-        rtnJson.put("totalPrice", "233.00");
-        rtnJson.put("discountSale", "11.00");
-
-        return JSON.toJSONString(rtnJson);
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/payOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String payOrder(@RequestBody String jsonString){
         System.out.println("payOrder old = " + jsonString);
