@@ -71,6 +71,7 @@ public class AdvertisementController {
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
+        num = 24;//暂时固定为24
         List<String> urls = adverstismentService.getAdArray(num,width+"",height+"");
         List<String> _urls = Lists.newArrayList();
         for(String url:urls){
