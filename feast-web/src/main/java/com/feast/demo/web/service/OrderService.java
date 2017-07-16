@@ -6,6 +6,7 @@ import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.entity.RecommendDishObj;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 
 
@@ -79,6 +80,9 @@ public class OrderService {
             myDish.setExtraFlag("1");
             myDish.setPrice("18");
             myDish.setTodayPrice("16");
+            myDish.setStartTime(new Date().getTime());
+            myDish.setNeedTime(15);
+            myDish.setState((byte)'0');
             myDish.setDishID(jsono.getString("ID"));
 
             myDishMap.put(id, myDish);
