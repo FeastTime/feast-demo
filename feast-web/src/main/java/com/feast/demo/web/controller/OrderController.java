@@ -11,9 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wpp on 2017/5/10.
@@ -80,6 +78,13 @@ public class OrderController {
         // 是否需要实现价格计算
         rtnJson.put("totalPrice", "236.00");
         rtnJson.put("discountSale", "11.00");
+        Random random = new Random();
+        int randomM = random.nextInt(20)+1;
+
+        rtnJson.put("orderTime", new Date().getTime()+ randomM*60*1000);
+        randomM = random.nextInt(10)+1;
+        rtnJson.put("needTime", "" + randomM*60*1000);
+        rtnJson.put("status", "0");
 
         return JSON.toJSONString(rtnJson);
     }
@@ -119,7 +124,6 @@ public class OrderController {
         return JSON.toJSONString(rtnJson);
     }
 
-
     @ResponseBody
     @RequestMapping(value = "/getShoppingCartList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String getShoppingCartList(@RequestBody String jsonString){
@@ -143,10 +147,14 @@ public class OrderController {
         rtnJson.put("orderID", orderObj.getOrderID());
 
         rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
-        rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
+        rtnJson.put("myOrderList",  parseMapToJSONArray(orderObj.getMyDishMap()));
         // 是否需要实现价格计算
         rtnJson.put("totalPrice", "233.00");
         rtnJson.put("discountSale", "11.00");
+
+        rtnJson.put("orderTime", new Date().getTime());
+        rtnJson.put("needTime", "150");
+        rtnJson.put("status", "1");
 
         return JSON.toJSONString(rtnJson);
     }
@@ -171,12 +179,15 @@ public class OrderController {
         String orderID = jsono.getString("orderID");
         OrderObj orderObj = OrderMemory.get(orderID);
 
+        orderObj.setOrderTime(new Date().getTime());
+        orderObj.setNeedTime(150);
+        orderObj.setState((byte)'1');
+
         rtnJson.put("resultCode", "0"); // orderObj.getResultCode()
         rtnJson.put("orderID", orderObj.getOrderID());
 
         return JSON.toJSONString(rtnJson);
     }
-
 
     @ResponseBody
     @RequestMapping(value = "/payOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")

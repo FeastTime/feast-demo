@@ -31,4 +31,14 @@ public class Advertisement {
     private Integer width;
 
     private Integer height;
+
+    public Advertisement(){
+        Timestamp t = new Timestamp(System.currentTimeMillis());
+        this.setCreation(t);
+    }
+
+    public void setCreation(Timestamp creation) {
+        this.creation = creation;
+    }
+
 }

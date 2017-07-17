@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.web.service.AdverstismentService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -26,6 +27,10 @@ public class AdvertisementController {
     @Resource
     private AdverstismentService adverstismentService;
 
+    private static final String path="http://47.94.16.58:9798/feast-web";
+
+    public static final String AdmTypeDynamic = "dynamicCreative";
+
     @ResponseBody
     @RequestMapping(value = "/getSilentAD/",method = {RequestMethod.POST,RequestMethod.GET})
     public Map<String,Object> getHtmlAdvertisments(
@@ -36,8 +41,8 @@ public class AdvertisementController {
         Map<String,Object> result = Maps.newHashMap();
         String url = adverstismentService.getRemontAdUrl(type,width,height);
         Map<String,Object> adInfo = Maps.newHashMap();
-        adInfo.put("Adm",url);
-        adInfo.put("AdmType","html");
+        adInfo.put("Adm",path+url);
+        adInfo.put("AdmType",AdmTypeDynamic);
         adInfo.put("Height",height);
         adInfo.put("Width",width);
         adInfo.put("Price",100);
@@ -64,15 +69,13 @@ public class AdvertisementController {
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
-        result.put("data",adverstismentService.getAdArray(num,width+"",height+""));
-        Executor single = Executors.newSingleThreadExecutor();
-        Executor fix = Executors.newFixedThreadPool(15);
-        single.execute(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(123);
-            }
-        });
+        num = 24;//暂时固定为24
+        List<String> urls = adverstismentService.getAdArray(num,width+"",height+"");
+        List<String> _urls = Lists.newArrayList();
+        for(String url:urls){
+            _urls.add(path+url);
+        }
+        result.put("data",_urls);
         return result;
     }
 

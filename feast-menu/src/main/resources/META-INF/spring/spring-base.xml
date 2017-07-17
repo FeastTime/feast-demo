@@ -74,22 +74,6 @@
         <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>
 
-    <bean id="simpleAspect" class="com.feast.demo.ad.utils.SimpleAspect"
-    ></bean>
-
-    <!-- 配置AOP -->
-    <aop:config>
-        <!-- 配置切点表达式  -->
-        <aop:pointcut id="pointcut" expression="execution(public !void com.feast.demo.ad.service.impl.*.*(..))" />
-        <!-- 配置切面及配置 -->
-        <aop:aspect order="2" ref="simpleAspect">
-            <!-- 前置通知 -->
-            <aop:before method="beforMethod" pointcut-ref="pointcut"/>
-            <!-- 后置通知 -->
-            <aop:after method="afterMethod" pointcut-ref="pointcut"/>
-        </aop:aspect>
-    </aop:config>
-
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
     <aop:aspectj-autoproxy proxy-target-class="true" />
 

@@ -10,6 +10,7 @@ import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.Date;
@@ -20,6 +21,7 @@ import java.util.Random;
  * Created by pinyou on 17-4-11.
  */
 @Service
+@Transactional(readOnly = true)
 public class AdServiceImpl implements AdService {
 
     @Autowired
@@ -27,6 +29,11 @@ public class AdServiceImpl implements AdService {
 
     public List<Advertisement> findAll(){
         return (List<Advertisement>) advertisementDao.findAll2();
+    }
+
+    @Transactional(readOnly = false)
+    public void save(Advertisement advertisement) {
+        advertisementDao.save(advertisement);
     }
 
     /**

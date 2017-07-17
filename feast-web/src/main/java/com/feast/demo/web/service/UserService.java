@@ -44,6 +44,7 @@ public class UserService {
                             userObj.setMobileNO(mobileNo);
                             userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");
                         }else{
+                            //插入操作
                             userObj.setResultCode("0");
                             userObj.setMobileNO(mobileNo);
                             userObj.setToken("ljiqsdgf54sdfweq6565f7wes51635sad4f65f");

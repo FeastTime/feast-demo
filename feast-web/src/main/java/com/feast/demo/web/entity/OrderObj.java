@@ -15,6 +15,12 @@ public class OrderObj {
     private String token;
     private String resultCode;
     private String orderID;
+    // 下单时间
+    private long orderTime;
+    // 需要时间
+    private long needTime;
+    // 状态  0:未下单 1:已下单 2:已完成
+    private byte state;
     private HashMap<String, MyDishObj> myDishMap;
     private HashMap<String, RecommendDishObj> recommendDishMap;
 
@@ -97,6 +103,28 @@ public class OrderObj {
     public void setRecommendDishMap(HashMap<String, RecommendDishObj> recommendDishMap) {
         this.recommendDishMap = recommendDishMap;
     }
+    public long getOrderTime() {
+        return orderTime;
+    }
 
+    public void setOrderTime(long orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public long getNeedTime() {
+        return needTime;
+    }
+
+    public void setNeedTime(long needTime) {
+        this.needTime = needTime;
+    }
+
+    public byte getState() {
+        return state;
+    }
+
+    public void setState(byte state) {
+        this.state = state;
+    }
 
 }
