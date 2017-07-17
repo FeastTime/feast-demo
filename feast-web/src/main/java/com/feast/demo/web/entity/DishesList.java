@@ -24,6 +24,8 @@ public class DishesList {
     private String sales;
     private String waitTime;
     private String exponent;
+    private String starlevel;
+    private String pungencyDegree;
     private String tmpId;
     private String pageId;
 
@@ -185,5 +187,21 @@ public class DishesList {
 
     public void setPageId(String pageId) {
         this.pageId = pageId;
+    }
+
+    public String getStarlevel() {
+        return starlevel;
+    }
+
+    public void setStarlevel(String starlevel) {
+        this.starlevel = starlevel;
+    }
+
+    public String getPungencyDegree() {
+        return pungencyDegree;
+    }
+
+    public void setPungencyDegree(String pungencyDegree) {
+        this.pungencyDegree = pungencyDegree;
     }
 }
