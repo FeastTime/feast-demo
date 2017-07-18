@@ -36,6 +36,7 @@ public class RemoteApiStatusService {
         map.put("order service status",orderRemoteService.status());
         map.put("menu service status",menuRemoteService.getStatus());
         map.put("ad service status",adRemoteService.status());
+        System.out.println(Thread.currentThread().getId());
         return map;
     }
 
@@ -55,6 +56,7 @@ public class RemoteApiStatusService {
         List<Object> list = Lists.newArrayList();
         list.addAll(adverstismentService.findAll());
         list.addAll(orderRemoteService.findAll());
+        list.addAll(menuRemoteService.findAll());
         return list;
     }
 }
