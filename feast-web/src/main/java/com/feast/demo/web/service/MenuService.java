@@ -46,13 +46,13 @@ public class MenuService {
 
         menuObj.setResultCode("0");
         menuObj.setTmpId("A");
-        if ("1001".equals(classType)) {
+        if ("1000".equals(classType)) {
             if ("1".equals(page)) {
                 DishesBean = new DishesList();
                 DishesBean.setDishID("00000001");
                 DishesBean.setDishNO("000000001");
                 DishesBean.setDishImgUrl("http://img1.cache.netease.com/catchpic/9/92/92610F9BA2CD76B691A435FD30BF367A.jpg");
-                DishesBean.setTvUrl("glcwdcjl.mp4");
+                DishesBean.setTvUrl("http://47.94.16.58:9799/static/mv/glcsjl.mp4");
                 DishesBean.setHotFlag("0");
                 DishesBean.setMaterialFlag("0");
                 DishesBean.setTitleADImgUrl("http://guanmin.jpg");
