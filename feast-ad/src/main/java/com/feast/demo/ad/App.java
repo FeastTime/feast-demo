@@ -19,16 +19,11 @@ public class App
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 configLocation);
         AdService ads = (AdService) context.getBean("adServiceImpl");
-        Advertisement ad = new Advertisement();
-        ad.setType("html");
-        ad.setHeight(300);
-        ad.setWidth(300);
-        ads.save(ad);
 //        List<Advertisement> list = ads.findAll();
 //        for(Advertisement ad: list){
 //            System.out.println(ad);
 //        }
-//        System.out.println("start serivce.");
+        System.out.println("start serivce.");
         while(true){
             try {
                 TimeUnit.SECONDS.sleep(60l);

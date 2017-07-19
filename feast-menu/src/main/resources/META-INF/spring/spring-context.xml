@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd  http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd ">
     <!-- 正常基于spring bean配置 -->
 
-    <bean id="menuServiceImpl" class="com.feast.demo.menu.service.impl.MenuServiceImpl"></bean>
+    <!--<bean id="menuServiceImpl" class="com.feast.demo.menu.service.impl.MenuServiceImpl"></bean>-->
+
+    <!-- 使用注解方式暴露接口 -->
+    <dubbo:annotation package="com.feast.demo.menu.service" />
 
 </beans>

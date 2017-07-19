@@ -28,12 +28,14 @@ public class AppController {
     @ResponseBody
     public Map<String,Object> c1(
             @RequestParam(value = "p",required = false) String p
-    ){
+    ) throws InterruptedException {
         Map<String,Object> result = Maps.newHashMap();
         if(StringUtils.isNotEmpty(p)){
             result.put("p",p);
         }
+        System.out.println(Thread.currentThread().getId());
         result.put("status","OK!");
+        Thread.sleep(15000);
         result.putAll(remoteApiStatusService.getStatus());
         return result;
     }
