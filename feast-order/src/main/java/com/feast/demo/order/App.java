@@ -2,6 +2,8 @@ package com.feast.demo.order;
 
 import com.feast.demo.order.entity.TOrder;
 import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.user.entity.User;
+import com.feast.demo.user.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -25,6 +27,9 @@ public class App {
         for(TOrder o: list){
             System.out.println(o);
         }
+        UserService us = (UserService) context.getBean("userServiceImpl");
+        User user = us.findByMobileNo(13800138000l);
+        System.out.println(user);
         System.out.println("start serivce.");
         while(true){
             try {

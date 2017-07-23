@@ -19,4 +19,6 @@
 
     <dubbo:service interface="com.feast.demo.order.service.TOrderService" protocol="dubbo" ref="TOrderServiceImpl"/>
 
+    <dubbo:service interface="com.feast.demo.user.service.UserService" protocol="dubbo" ref="userServiceImpl"/>
+
 </beans>
