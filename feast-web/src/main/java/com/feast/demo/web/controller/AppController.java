@@ -33,9 +33,7 @@ public class AppController {
         if(StringUtils.isNotEmpty(p)){
             result.put("p",p);
         }
-        System.out.println(Thread.currentThread().getId());
         result.put("status","OK!");
-        Thread.sleep(15000);
         result.putAll(remoteApiStatusService.getStatus());
         return result;
     }

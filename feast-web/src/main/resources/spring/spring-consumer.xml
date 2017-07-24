@@ -15,4 +15,7 @@
 
     <dubbo:reference id="adRemoteService" interface="com.feast.demo.ad.service.AdService"/>
 
+    <dubbo:reference id="userRemoteService" interface="com.feast.demo.user.service.UserService"/>
+
+
 </beans>

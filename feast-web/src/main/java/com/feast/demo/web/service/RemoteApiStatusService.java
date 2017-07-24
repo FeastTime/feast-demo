@@ -4,6 +4,7 @@ import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.feast.demo.menu.service.MenuService;
 import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.user.entity.User;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class RemoteApiStatusService {
     @Autowired
     private AdverstismentService adverstismentService;
 
+    @Autowired
+    private com.feast.demo.user.service.UserService userRemoteService;
+
     public Map<String,Object> getStatus(){
         Map<String,Object> map = Maps.newHashMap();
         map.put("order service status",orderRemoteService.status());
@@ -57,6 +61,7 @@ public class RemoteApiStatusService {
         list.addAll(adverstismentService.findAll());
         list.addAll(orderRemoteService.findAll());
         list.addAll(menuRemoteService.findAll());
+        list.add(userRemoteService.findByMobileNo(13800138000l));
         return list;
     }
 }
