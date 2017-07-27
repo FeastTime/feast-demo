@@ -1,8 +1,10 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.feast.demo.web.entity.UserObj;
 /**
@@ -11,6 +13,9 @@ import com.feast.demo.web.entity.UserObj;
 
 @Service
 public class UserService {
+
+    @Autowired
+    private com.feast.demo.user.service.UserService userRemoteService;
 
     public UserObj getStatus(JSONObject jsonObj, String flag) {
 
@@ -71,6 +76,15 @@ public class UserService {
             }
         }
         return userObj;
+    }
+
+    /**
+     * 根据手机号码查询用户
+     * @param mobileNo
+     * @return
+     */
+    public User fingByMobileNo(Long mobileNo){
+        return userRemoteService.findByMobileNo(mobileNo);
     }
 }
 
