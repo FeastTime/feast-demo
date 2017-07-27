@@ -63,19 +63,23 @@ public class UserController {
       //  UserObj resultObj = userService.getStatus(jsono,"login");
         String resultMsg = "";
         Boolean success = true;
+        //访客
         if(mobileNo == null){
-            resultMsg = "手机号为空！";
-            success = false;
+            resultMsg = "访客登录成功";
+            result.put("token","fangketoken:asieurqknro239480984234lkasj");
+            success = true;
+        }//用户登录
+        else{
+            User user = userService.fingByMobileNo(mobileNo);
+            if(user == null){
+                resultMsg = "您的手机号没有注册，请注册";
+                success = false;
+            }else{
+                LoginMemory.set(user.getMobileNo()+"",user);
+                resultMsg = "欢迎您登录成功!";
+                result.put("token","token:asieurqknro239480984234lkasj");
+            }
         }
-        User user = userService.fingByMobileNo(mobileNo);
-        if(user == null){
-            resultMsg = "您的手机号没有注册，请注册";
-            success = false;
-        }else{
-            LoginMemory.set(user.getMobileNo()+"",user);
-            result.put("token","token:asieurqknro239480984234lkasj");
-        }
-
         result.put("resultCode",success);
         result.put("resultMsg",resultMsg);
 
