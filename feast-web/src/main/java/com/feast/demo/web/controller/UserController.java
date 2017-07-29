@@ -32,18 +32,23 @@ public class UserController {
 
     @ResponseBody
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String regUser(@RequestBody String text){
+    public String register(@RequestBody String text) {
+        Map<Object,Object> result = Maps.newHashMap();
+        System.out.println("转之前"+text);
         text = StringUtils.decode(text);
+        System.out.println("转之后"+text);
+        User user = JSONObject.parseObject(text,User.class);
         JSONObject jsono  = JSON.parseObject(text);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
-
-        UserObj resultObj = userService.getStatus(jsono,"register");
-
-        return JSON.toJSONString(resultObj);
+        String msg = userService.createUser(user);
+        if(StringUtils.isEmpty(msg)){
+            result.put("resultCode",true);
+            result.put("resultMsg",null);
+            result.put("token","token:asieurqknro239480984234lkasj");
+        }else{
+            result.put("resultCode",false);
+            result.put("resultMsg",msg);
+        }
+        return JSON.toJSONString(result);
     }
 
     @ResponseBody

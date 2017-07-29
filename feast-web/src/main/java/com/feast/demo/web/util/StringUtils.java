@@ -5,8 +5,9 @@ import java.net.URLEncoder;
 
 /**
  * Created by aries on 2017/5/29.
+ *继承apache common的StringUtils类，在能够使用已有的String操作的方法基础上添加一些自己的方法
  */
-public class StringUtils {
+public class StringUtils extends org.apache.commons.lang.StringUtils{
     public static String decode(String input) {
 
         try {

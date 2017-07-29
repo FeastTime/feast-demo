@@ -86,5 +86,18 @@ public class UserService {
     public User fingByMobileNo(Long mobileNo){
         return userRemoteService.findByMobileNo(mobileNo);
     }
+
+    public String createUser(User user){
+        String msg = null;
+        if(user.getMobileNo()==null){
+            msg = "手机号码不能为空";
+        }else if(fingByMobileNo(user.getMobileNo()) != null){
+            msg = "该手机号已经注册过，请登录";
+        }
+        if(StringUtils.isEmpty(msg)){
+            userRemoteService.create(user);
+        }
+        return msg;
+    }
 }
 
