@@ -8,4 +8,8 @@ import com.feast.demo.user.entity.User;
 public interface UserService {
 
     public User findByMobileNo(Long mobileNo);
+
+    public void create(User user);
+
+    public void update(User user);
 }

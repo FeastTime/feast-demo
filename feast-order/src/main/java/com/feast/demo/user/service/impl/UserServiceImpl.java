@@ -5,6 +5,9 @@ import com.feast.demo.user.dao.UserDao;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.ReadOnlyBufferException;
 
 /**
  * Created by ggke on 2017/7/23.
@@ -20,5 +23,23 @@ public class UserServiceImpl implements UserService{
             return null;
         }
         return userDao.findByMobileNo(mobileNo);
+    }
+
+    /**
+     * 创建用户
+     * @param user
+     */
+    @Transactional(readOnly = false)
+    public void create(User user) {
+        userDao.save(user);
+    }
+
+    /**
+     * 修改用户
+     * @param user
+     */
+    @Transactional(readOnly = false)
+    public void update(User user) {
+        userDao.save(user);
     }
 }

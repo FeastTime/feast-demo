@@ -1,6 +1,7 @@
 package com.feast.demo.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name="user")
 @Data
-public class User {
+public class User extends TimedEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,21 +23,7 @@ public class User {
     /**
      * 乐观锁
      */
-    private Long version;
-
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "YYYY/MM/DD hh:mm:ss", timezone="GMT+8")
-    @Column(updatable = false, nullable = false)
-    private Timestamp creation;
-
-    /**
-     * 最后修改时间
-     */
-    @JsonFormat(pattern = "YYYY/MM/DD hh:mm:ss", timezone="GMT+8")
-    @Column(updatable = false, nullable = false)
-    private Timestamp lastModified;
+    private Long version=-1l;
 
     /**
      * imei
