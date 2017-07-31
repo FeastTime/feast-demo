@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -55,35 +53,37 @@ public class UserController {
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text) {
         Map<Object,Object> result = Maps.newHashMap();
-        System.out.println("转之前"+text);
-        text = StringUtils.decode(text);
-        System.out.println("转之后"+text);
+//        System.out.println("转之前"+text);
+//        text = StringUtils.decode(text);
+//        System.out.println("转之后"+text);
+//        JSONObject jsono  = JSON.parseObject(text);
+//        System.out.println("androidID is:"+jsono.getString("androidID"));
+//        System.out.println("imei is:"+jsono.getString("imei"));
+//        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+//        System.out.println("mac is:"+jsono.getString("mac"));
+//        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
+//        Long mobileNo = jsono.getLong("mobileNO");
+        User _user = JSONObject.parseObject(text,User.class);
         JSONObject jsono  = JSON.parseObject(text);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
-        Long mobileNo = jsono.getLong("mobileNO");
-      //  UserObj resultObj = userService.getStatus(jsono,"login");
         String resultMsg = "";
         Boolean success = true;
         //访客
-        if(mobileNo == null){
+        if(_user.getMobileNo() == null){
             resultMsg = "访客登录成功";
             result.put("token","fangketoken:asieurqknro239480984234lkasj");
             success = true;
-        }//用户登录
-        else{
-            User user = userService.fingByMobileNo(mobileNo);
+        }
+        else{//用户登录
+            //查询数据库
+            User user = userService.fingByMobileNo(_user.getMobileNo());
             if(user == null){
-                resultMsg = "您的手机号没有注册，请注册";
-                success = false;
-            }else{
-                LoginMemory.set(user.getMobileNo()+"",user);
-                resultMsg = "欢迎您登录成功!";
-                result.put("token","token:asieurqknro239480984234lkasj");
+                //手机号没有注册过，直接注册
+                String msg = userService.createUser(_user);
+                user = _user;
             }
+            LoginMemory.set(user.getMobileNo()+"",user);
+            resultMsg = "欢迎您登录成功!";
+            result.put("token","token:asieurqknro239480984234lkasj");
         }
         result.put("resultCode",success);
         result.put("resultMsg",resultMsg);
