@@ -2,14 +2,15 @@ package com.feast.demo.ad.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.ad.dao.AdvertisementDao;
-import com.feast.demo.ad.dao.AdvertisementDaoImpl;
 import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.google.common.collect.Lists;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -118,6 +119,21 @@ public class AdServiceImpl implements AdService {
             result.add(directory + (new Random()).nextInt(10)+".html");
         }
         return result;
+    }
+
+    public Page<Advertisement> findByPage(Pageable pageable) {
+        return advertisementDao.findByPage(pageable);
+    }
+
+    /**
+     *
+     * @param page 第几页
+     * @param size 每页几条
+     * @return
+     */
+    public Page<Advertisement> findByPage(int page,int size) {
+        PageRequest pageRequest = new PageRequest(page,size);
+        return advertisementDao.findByPage(pageRequest);
     }
 
     private String getRandomString() {

@@ -3,6 +3,8 @@ package com.feast.demo.ad.service;
 import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.entity.TAd;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface AdService {
     public String getRemoteUrl(AdTargetType type, Integer width, Integer height);
 
     public List<String> getAdArray(Integer num,String width,String height);
+
+    public Page<Advertisement> findByPage(Pageable pageable);
 }
