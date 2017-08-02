@@ -48,6 +48,7 @@ public class UserController {
             result.put("resultCode",false);
             result.put("resultMsg",msg);
         }
+
         return JSON.toJSONString(result);
     }
 
