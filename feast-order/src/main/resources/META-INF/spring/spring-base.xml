@@ -64,6 +64,8 @@
             <list>
                 <value>com.feast.demo.order</value>
                 <value>com.feast.demo.user</value>
+                <value>com.feast.demo.device</value>
+                <value>com.feast.demo.store</value>
             </list>
         </property>
     </bean>
@@ -85,6 +87,15 @@
     <jpa:repositories base-package="com.feast.demo.user.dao"
                       entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
 
+    <jpa:repositories base-package="com.feast.demo.device.dao"
+                      entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
+
+    <jpa:repositories base-package="com.feast.demo.store.dao"
+                      entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
+
+
     <context:component-scan base-package="com.feast.demo.order" />
     <context:component-scan base-package="com.feast.demo.user" />
+    <context:component-scan base-package="com.feast.demo.device" />
+    <context:component-scan base-package="com.feast.demo.store" />
 </beans>

@@ -1,6 +1,8 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.device.service.DeviceService;
+import com.feast.demo.store.service.StoreService;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;

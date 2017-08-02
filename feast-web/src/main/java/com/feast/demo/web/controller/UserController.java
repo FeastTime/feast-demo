@@ -2,9 +2,11 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.device.entity.Device;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
+import com.feast.demo.web.service.DeviceService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -29,6 +31,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private DeviceService deviceService;
 
     @ResponseBody
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
@@ -65,10 +70,16 @@ public class UserController {
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
         System.out.println("mac is:"+jsono.getString("mac"));
         System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
+        System.out.println("imei is:"+jsono.getString("imei"));
         Long mobileNo = jsono.getLong("mobileNO");
       //  UserObj resultObj = userService.getStatus(jsono,"login");
         String resultMsg = "";
+        String imei = jsono.getString("imei");
         Boolean success = true;
+        if(imei != null){
+            Device device = deviceService.findDeviceInfoByImei(imei);
+            result.put("storeId",device.getStore().getId());
+        }
         //访客
         if(mobileNo == null){
             resultMsg = "访客登录成功";
