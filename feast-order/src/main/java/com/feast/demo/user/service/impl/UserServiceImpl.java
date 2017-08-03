@@ -52,6 +52,6 @@ public class UserServiceImpl implements UserService{
      */
     public Page<User> findByPage(int page,int size){
         PageRequest pageRequest = new PageRequest(page,size);
-        return userDao.findByPage(pageRequest);
+        return userDao.findByPage2(pageRequest);
     }
 }

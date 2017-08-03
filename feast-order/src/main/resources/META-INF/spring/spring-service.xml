@@ -21,4 +21,8 @@
 
     <dubbo:service interface="com.feast.demo.user.service.UserService" protocol="dubbo" ref="userServiceImpl"/>
 
+    <dubbo:service interface="com.feast.demo.device.service.DeviceService" protocol="dubbo" ref="deviceServiceImpl"/>
+
+    <dubbo:service interface="com.feast.demo.store.service.StoreService" protocol="dubbo" ref="storeServiceImpl"/>
+
 </beans>

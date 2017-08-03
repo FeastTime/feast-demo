@@ -2,9 +2,11 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.device.entity.Device;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
+import com.feast.demo.web.service.DeviceService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -27,6 +31,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private DeviceService deviceService;
 
     @ResponseBody
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
@@ -46,6 +53,7 @@ public class UserController {
             result.put("resultCode",false);
             result.put("resultMsg",msg);
         }
+
         return JSON.toJSONString(result);
     }
 
@@ -53,37 +61,41 @@ public class UserController {
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text) {
         Map<Object,Object> result = Maps.newHashMap();
-//        System.out.println("转之前"+text);
-//        text = StringUtils.decode(text);
-//        System.out.println("转之后"+text);
-//        JSONObject jsono  = JSON.parseObject(text);
-//        System.out.println("androidID is:"+jsono.getString("androidID"));
-//        System.out.println("imei is:"+jsono.getString("imei"));
-//        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-//        System.out.println("mac is:"+jsono.getString("mac"));
-//        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
-//        Long mobileNo = jsono.getLong("mobileNO");
-        User _user = JSONObject.parseObject(text,User.class);
+        System.out.println("转之前"+text);
+        text = StringUtils.decode(text);
+        System.out.println("转之后"+text);
         JSONObject jsono  = JSON.parseObject(text);
+        System.out.println("androidID is:"+jsono.getString("androidID"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
+        System.out.println("mac is:"+jsono.getString("mac"));
+        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
+        System.out.println("imei is:"+jsono.getString("imei"));
+        Long mobileNo = jsono.getLong("mobileNO");
+      //  UserObj resultObj = userService.getStatus(jsono,"login");
         String resultMsg = "";
+        String imei = jsono.getString("imei");
         Boolean success = true;
+        if(imei != null){
+            Device device = deviceService.findDeviceInfoByImei(imei);
+            result.put("storeId",device.getStore().getId());
+        }
         //访客
-        if(_user.getMobileNo() == null){
+        if(mobileNo == null){
             resultMsg = "访客登录成功";
             result.put("token","fangketoken:asieurqknro239480984234lkasj");
             success = true;
-        }
-        else{//用户登录
-            //查询数据库
-            User user = userService.fingByMobileNo(_user.getMobileNo());
+        }//用户登录
+        else{
+            User user = userService.fingByMobileNo(mobileNo);
             if(user == null){
-                //手机号没有注册过，直接注册
-                String msg = userService.createUser(_user);
-                user = _user;
+                resultMsg = "您的手机号没有注册，请注册";
+                success = false;
+            }else{
+                LoginMemory.set(user.getMobileNo()+"",user);
+                resultMsg = "欢迎您登录成功!";
+                result.put("token","token:asieurqknro239480984234lkasj");
             }
-            LoginMemory.set(user.getMobileNo()+"",user);
-            resultMsg = "欢迎您登录成功!";
-            result.put("token","token:asieurqknro239480984234lkasj");
         }
         result.put("resultCode",success);
         result.put("resultMsg",resultMsg);

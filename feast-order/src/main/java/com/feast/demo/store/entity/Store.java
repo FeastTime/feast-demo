@@ -1,12 +1,14 @@
 package com.feast.demo.store.entity;
 
+import com.sun.org.glassfish.gmbal.ManagedAttribute;
 import lombok.Data;
 
 import javax.persistence.*;
 
 /**
- * Created by pinyou on 17-7-31.
+ * Created by ggke on 2017/8/2.
  */
+
 @Entity
 @Data
 @Table(name = "store_info")
@@ -17,7 +19,8 @@ public class Store {
     private Long id;
 
     /**
-     * 店铺名称
+     *店铺名称
      */
     private String name;
+
 }

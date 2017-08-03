@@ -14,6 +14,6 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     @Query("select u from User u where u.mobileNo=?1")
     User findByMobileNo(Long mobileNo);
 
-    @Query(countQuery = "select count(u) from User u",value = "select c from User u order by u.id")
-    Page<User> findByPage(Pageable pageable);
+    @Query(countQuery = "select count(u) from User u",value = "select u from User u order by u.id")
+    Page<User> findByPage2(Pageable pageable);
 }
