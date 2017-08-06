@@ -11,6 +11,7 @@ public class DishesCategoryObj {
     private String androidID;
     private String ipv4;
     private String mac;
+    private String storeID;
     private String resultCode;
     private String resultMsg;
     private ArrayList dishesCategoryList;
@@ -65,6 +66,14 @@ public class DishesCategoryObj {
 
     public ArrayList getDishesCategoryList() {
         return dishesCategoryList;
+    }
+
+    public String getStoreID() {
+        return storeID;
+    }
+
+    public void setStoreID(String storeID) {
+        this.storeID = storeID;
     }
 
     public void setDishesCategoryList(ArrayList dishesCategoryList) {
