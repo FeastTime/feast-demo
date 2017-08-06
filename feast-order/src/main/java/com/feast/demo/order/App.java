@@ -4,6 +4,8 @@ import com.feast.demo.device.entity.Device;
 import com.feast.demo.device.service.DeviceService;
 import com.feast.demo.order.entity.TOrder;
 import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.store.entity.Store;
+import com.feast.demo.store.service.StoreService;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.user.service.UserService;
 import org.springframework.context.ApplicationContext;
@@ -24,12 +26,11 @@ public class App {
 //        for(String name:names){
 //            System.out.println(name);
 //        }
-//        DeviceService ads = (DeviceService) context.getBean("deviceServiceImpl");
-//        Device d = ads.fingByImei("123456789012345");
-//        System.out.println(d);
-//        UserService us = (UserService) context.getBean("userServiceImpl");
-//        User user = us.findByMobileNo(13800138000l);
-//        System.out.println(user);
+        StoreService ads = (StoreService) context.getBean("storeServiceImpl");
+        Store store = ads.findById(1l);
+        for(Device d:store.getDevices()){
+            System.out.println(d);
+        }
         System.out.println("start serivce.");
         while(true){
             try {
