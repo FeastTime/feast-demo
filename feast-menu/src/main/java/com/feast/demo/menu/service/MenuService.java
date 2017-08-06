@@ -1,14 +1,12 @@
 package com.feast.demo.menu.service;
 
-import com.feast.demo.menu.entity.TMenu;
+import com.feast.demo.menu.entity.DishesCategory;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Created by ggke on 2017/4/4.
+ * Created by aries on 2017/8/6.
  */
 public interface MenuService {
-    public String getStatus();
-
-    public List<TMenu> findAll();
+    public ArrayList<DishesCategory> findDishesCategoryByStoreid(String storeid);
 }

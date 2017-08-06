@@ -1,27 +1,28 @@
 package com.feast.demo.menu.service.impl;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
-import com.feast.demo.menu.dao.TMenuDao;
-import com.feast.demo.menu.entity.TMenu;
+import com.feast.demo.menu.dao.MenuDao;
+import com.feast.demo.menu.entity.DishesCategory;
 import com.feast.demo.menu.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Created by ggke on 2017/4/4.
+ * Created by matao on 2017/8/6.
  */
 @Service()
 public class MenuServiceImpl implements MenuService {
 
     @Autowired
-    private TMenuDao tMenuDao;
+    private MenuDao menuDao;
 
-    public String getStatus() {
-        return "from menu service.ok!";
-    }
 
-    public List<TMenu> findAll() {
-        return (List<TMenu>) tMenuDao.findAll();
+    public ArrayList<DishesCategory> findDishesCategoryByStoreid(String storeid) {
+        if(StringUtils.isNotEmpty(storeid)){
+            return menuDao.findDishesCategoryByStoreid(storeid);
+        }
+        return null;
     }
 }
