@@ -22,8 +22,8 @@ public class DishesCategoryService {
     @Autowired
     private com.feast.demo.menu.service.MenuService menuRemoteService;
 
-    public DishesCategoryObj findDishesCategoryByStoreid(String  StoreId) {
-
+    public DishesCategoryObj findDishesCategoryByStoreid(JSONObject jsonObj) {
+        String  StoreId= jsonObj.getString("storeID");
         ArrayList dishesCategoryList = menuRemoteService.findDishesCategoryByStoreid(StoreId);
         DishesCategoryObj dishesCategoryObj = new DishesCategoryObj();
         if (dishesCategoryList != null && dishesCategoryList.size()>0){
