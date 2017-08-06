@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  */
 
 @Entity
-@Table(name="TMenu")
+@Table(name="tmenu")
 @Data
 public class TMenu implements Serializable {
 
