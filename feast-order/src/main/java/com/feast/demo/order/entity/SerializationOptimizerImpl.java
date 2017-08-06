@@ -8,11 +8,12 @@ import java.util.List;
 
 /**
  * Created by ggke on 2017/4/12.
+ * Update by wangpp on 2017/8/3.
  */
-public class SerializationOptimizerImpl   implements SerializationOptimizer {
+public class SerializationOptimizerImpl implements SerializationOptimizer {
     public Collection<Class> getSerializableClasses() {
         List<Class> classes = new LinkedList<Class>();
-        classes.add(TOrder.class);
+        classes.add(OrderInfo.class);
         return classes;
     }
 }
