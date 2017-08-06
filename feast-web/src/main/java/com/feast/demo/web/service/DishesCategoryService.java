@@ -22,25 +22,30 @@ public class DishesCategoryService {
     @Autowired
     private com.feast.demo.menu.service.MenuService menuRemoteService;
 
-    public DishesCategoryObj findDishesCategoryByStoreid(String  StoreId) {
-
+    public DishesCategoryObj findDishesCategoryByStoreid(JSONObject jsonObj) {
+        String  StoreId= jsonObj.getString("storeID");
         ArrayList dishesCategoryList = menuRemoteService.findDishesCategoryByStoreid(StoreId);
         DishesCategoryObj dishesCategoryObj = new DishesCategoryObj();
-        if (dishesCategoryList != null && dishesCategoryList.size()>0){
-            dishesCategoryObj.setResultCode("0");
-            DishesCategoryList dishesCategoryBean =null;
-            for(int i=0; i<dishesCategoryList.size(); i++){
-                DishesCategory dc = (DishesCategory) dishesCategoryList.get(i);
-                dishesCategoryBean = new DishesCategoryList();
-                dishesCategoryBean.setCategoryName(StringUtils.encode(dc.getCategoryname()));
-                dishesCategoryBean.setCategoryId(String.valueOf(dc.getCategoryid()));
-                dishesCategoryList.add(dishesCategoryBean);
+        try {
+            if (dishesCategoryList != null && dishesCategoryList.size() > 0) {
+                dishesCategoryObj.setResultCode("0");
+                DishesCategoryList dishesCategoryBean = null;
+                for (int i = 0; i < dishesCategoryList.size(); i++) {
+                    DishesCategory dc = (DishesCategory) dishesCategoryList.get(i);
+                    dishesCategoryBean = new DishesCategoryList();
+                    dishesCategoryBean.setCategoryName(StringUtils.encode(dc.getCategoryname()));
+                    dishesCategoryBean.setCategoryId(String.valueOf(dc.getCategoryid()));
+                    dishesCategoryList.add(dishesCategoryBean);
 
+                }
+                dishesCategoryObj.setDishesCategoryList(dishesCategoryList);
+            } else {
+                dishesCategoryObj.setResultCode("0");
+                dishesCategoryObj.setDishesCategoryList(null);
             }
-            dishesCategoryObj.setDishesCategoryList(dishesCategoryList);
-        }else{
+        }catch (Exception e){
             dishesCategoryObj.setResultCode("1");
-            dishesCategoryObj.setDishesCategoryList(null);
+            e.printStackTrace();
         }
         return dishesCategoryObj;
     }
