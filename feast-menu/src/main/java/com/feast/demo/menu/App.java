@@ -1,11 +1,8 @@
 package com.feast.demo.menu;
 
-import com.feast.demo.menu.entity.Menu;
-import com.feast.demo.menu.service.MenuService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**

@@ -1,6 +1,5 @@
 package com.feast.demo.menu.entity;
 
-import com.feast.demo.store.entity.Store;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -29,8 +28,8 @@ public class DishesCategory {
      */
 //    private String storeid;
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "storeid", nullable = false)
     private Store store;
     @Column(insertable = false, updatable = false, nullable = false)
-    private Long storeId;
+    private String storeid;
 }
