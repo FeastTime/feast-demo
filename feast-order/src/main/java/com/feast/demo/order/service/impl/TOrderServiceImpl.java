@@ -2,6 +2,8 @@ package com.feast.demo.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.order.dao.TOrderDao;
+import com.feast.demo.order.dao.TOrderDetailDao;
+import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.order.service.TOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class TOrderServiceImpl implements TOrderService {
     @Autowired
     private TOrderDao tOrderDao;
 
+    @Autowired
+    private TOrderDetailDao tOrderDetailDao;
+
     public List<OrderInfo> findAll() {
         return (List<OrderInfo>) tOrderDao.findAll();
     }
@@ -34,7 +39,7 @@ public class TOrderServiceImpl implements TOrderService {
     }
 
     /**
-     * 修改购物车
+     * 更新订单表
      * @param order
      */
     @Transactional(readOnly = false)
@@ -43,12 +48,21 @@ public class TOrderServiceImpl implements TOrderService {
     }
 
     /**
-     * 删除购物车
-     * @param order
+     * 更新明细表
+     * @param orderDetail
      */
     @Transactional(readOnly = false)
-    public void delete(OrderInfo order) {
-        tOrderDao.delete(order);
+    public void update(OrderDetail orderDetail) {
+        tOrderDetailDao.save(orderDetail);
+    }
+
+    /**
+     * 删除明细表
+     * @param orderID
+     */
+    @Transactional(readOnly = false)
+    public void delete(Long orderID, Long dishID) {
+        tOrderDetailDao.deleteDetailByDishID(orderID, dishID);
     }
 
     public String status() {

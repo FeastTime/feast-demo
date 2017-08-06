@@ -1,9 +1,12 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.order.entity.OrderDetail;
+import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.web.entity.MyDishObj;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.entity.RecommendDishObj;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,6 +18,9 @@ import java.util.HashMap;
  */
 @Service
 public class OrderService {
+
+    @Autowired
+    private com.feast.demo.order.service.TOrderService remoteTOrderService;
 
     public OrderObj getCreatedOrder(JSONObject jsono){
 
@@ -45,6 +51,16 @@ public class OrderService {
         orderObj.setResultCode("0");
         orderObj.setMyDishMap(new HashMap<String, MyDishObj>());
         orderObj.setRecommendDishMap(new HashMap<String, RecommendDishObj>());
+
+
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(orderID));
+
+
+        // 保存数据库
+        remoteTOrderService.create(orderInfo);
+
+
         System.out.println("Create order success...");
 
         return orderObj;
@@ -59,17 +75,30 @@ public class OrderService {
         System.out.println("imei is:"+jsono.getString("imei"));
         System.out.println("ipv4 is:"+jsono.getString("ipv4"));
         System.out.println("mac is:"+jsono.getString("mac"));
+        // 菜品ID
         System.out.println("ID is:"+jsono.getString("ID"));
         System.out.println("orderID is:"+jsono.getString("orderID"));
 
         String id = jsono.getString("ID");
+        // 加入购物车：更新订单表
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(jsono.getString("orderID")));
+        // 其他信息。。。。
+
+        OrderDetail orderDetail = new OrderDetail();
 
         HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
         if(myDishMap.containsKey(id)){
             int tempAmout = Integer.valueOf(myDishMap.get(id).getAmount());
             myDishMap.get(id).setAmount(String.valueOf(tempAmout+1));
+            orderDetail.setAmount(tempAmout+1);
             // 暂时不做批量修改购物车数量，默认每次只添加一个菜
         }else{
+            // 根据菜品ID查询菜品信息《调用菜品查询实现》
+            orderDetail.setDishid(Long.valueOf(jsono.getString("ID")));
+            orderDetail.setOrderid(Long.valueOf(jsono.getString("orderID")));
+            orderDetail.setAmount(1);
+
             MyDishObj myDish = new MyDishObj();
             myDish.setDishID(id);
             // 以下数据为查询数据库所得，DEMO中可在配置文件中写死，读取配置文件获取
@@ -87,6 +116,9 @@ public class OrderService {
 
             myDishMap.put(id, myDish);
         }
+
+        remoteTOrderService.update(orderInfo);
+        remoteTOrderService.update(orderDetail);
 
         HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
         RecommendDishObj recommendDish = new RecommendDishObj();
@@ -118,11 +150,38 @@ public class OrderService {
         System.out.println("orderID is:"+jsono.getString("orderID"));
 
         String id = jsono.getString("ID");
+        Long dishID = Long.valueOf(jsono.getString("ID"));
+        Long orderID = Long.valueOf(jsono.getString("orderID"));
+
+
+        // 删除菜品：更新订单表/订单明细表
+        OrderInfo orderInfo = new OrderInfo();
+        OrderDetail orderDetail = new OrderDetail();
+
 
         HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
+
         if(myDishMap.containsKey(id)){
-            myDishMap.remove(id);
-            // 暂时不做批量修改购物车数量，默认每次删除一个菜
+            if("1".equals(myDishMap.get(id).getAmount())){
+                myDishMap.remove(id);
+                orderInfo.setOrderid(orderID);
+                // 订单表其他信息。。。。
+                remoteTOrderService.update(orderInfo);
+                remoteTOrderService.delete(orderID, dishID);
+            }else{
+                int amount = Integer.valueOf(myDishMap.get(id).getAmount());
+                myDishMap.get(id).setAmount(String.valueOf(amount-1));
+                orderInfo.setOrderid(orderID);
+                // 订单表其他信息。。。。
+                orderDetail.setDishid(dishID);
+                orderDetail.setOrderid(orderID);
+                orderDetail.setAmount(amount-1);
+
+                remoteTOrderService.update(orderInfo);
+                remoteTOrderService.update(orderDetail);
+
+            }
+
         }else{
             // 购物车没有此菜品暂时不做处理
         }
