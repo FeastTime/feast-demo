@@ -1,5 +1,6 @@
 package com.feast.demo.store.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.feast.demo.device.entity.Device;
 import com.sun.org.glassfish.gmbal.ManagedAttribute;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Data
 @Table(name = "store_info")
 @ToString(exclude = {"devices"})
+@JsonIgnoreProperties(value = { "devices"})
 @EqualsAndHashCode(exclude = {"devices"})
 public class Store {
 
