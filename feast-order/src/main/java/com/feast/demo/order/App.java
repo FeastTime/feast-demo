@@ -28,9 +28,9 @@ public class App {
 //        }
         StoreService ads = (StoreService) context.getBean("storeServiceImpl");
         Store store = ads.findById(1l);
-        for(Device d:store.getDevices()){
-            System.out.println(d);
-        }
+//        for(Device d:store.getDevices()){
+//            System.out.println(d);
+//        }
         System.out.println("start serivce.");
         while(true){
             try {

@@ -2,7 +2,6 @@ package com.feast.demo.store.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.feast.demo.device.entity.Device;
-import com.sun.org.glassfish.gmbal.ManagedAttribute;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,9 +16,9 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "store_info")
-@ToString(exclude = {"devices"})
-@JsonIgnoreProperties(value = { "devices"})
-@EqualsAndHashCode(exclude = {"devices"})
+//@ToString(exclude = {"devices"})
+//@JsonIgnoreProperties(value = { "devices"})
+//@EqualsAndHashCode(exclude = {"devices"})
 public class Store {
 
     @Id
@@ -31,7 +30,7 @@ public class Store {
      */
     private String name;
 
-    @OneToMany(mappedBy = "store",fetch = FetchType.EAGER)
-    private Set<Device> devices;
+//    @OneToMany(mappedBy = "store",fetch = FetchType.EAGER)
+//    private Set<Device> devices;
 
 }
