@@ -1,5 +1,6 @@
 package com.feast.demo.order.service;
 
+import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.order.entity.TOrder;
 
@@ -18,7 +19,9 @@ public interface TOrderService {
 
     public void update(OrderInfo orderInfo);
 
-    public void delete(OrderInfo orderInfo);
+    public void update(OrderDetail orderDetail);
+
+    public void delete(Long orderID, Long dishID);
 
     public List<OrderInfo> findByOrderId(Long orderID);
 
