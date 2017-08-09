@@ -1,0 +1,26 @@
+<head>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+url:<input type="text" id="url" name=""/><br/>
+    协议:<input type="text" id="prot" name=""/><br/>
+参数:<textarea id="params"></textarea>
+<button onclick="javascript:submitRequest();">提交</button>
+<div id="content">
+</div>
+</body>
+<script>
+    function submitRequest(){
+        var url = "./"+$("#url").val();
+        var params = $("#params").val()+"";
+        var prot = $("#prot").val();
+        $.ajax({
+            url:url,
+            type:prot,
+            data:params,
+            success:function(data){
+                $("#content").html(data);
+            }
+        })
+    }
+</script>
+</html>
