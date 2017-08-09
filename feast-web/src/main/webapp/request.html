@@ -19,6 +19,9 @@ url:<input type="text" id="url" name=""/><br/>
             data:params,
             success:function(data){
                 $("#content").html(data);
+            },
+            error : function(responseStr) {
+                $("#content").html(responseStr.responseText);
             }
         })
     }
