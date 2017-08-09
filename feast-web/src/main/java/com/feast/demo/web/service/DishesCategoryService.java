@@ -7,10 +7,12 @@ import com.feast.demo.web.entity.DishesCategoryObj;
 import com.feast.demo.web.entity.IngredientsList;
 import com.feast.demo.web.entity.IngredientsObj;
 import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by aries on 17-8-6.
@@ -23,22 +25,22 @@ public class DishesCategoryService {
     private com.feast.demo.menu.service.MenuService menuRemoteService;
 
     public DishesCategoryObj findDishesCategoryByStoreid(JSONObject jsonObj) {
-        String  StoreId= jsonObj.getString("storeID");
-        ArrayList dishesCategoryList = menuRemoteService.findDishesCategoryByStoreid(StoreId);
+        String  StoreId= jsonObj.getString("storeId");
+        ArrayList<DishesCategory> dishesCategoryList = menuRemoteService.findDishesCategoryByStoreid(StoreId);
         DishesCategoryObj dishesCategoryObj = new DishesCategoryObj();
+        List<DishesCategoryList> dishesCategoryBeanList = Lists.newArrayList();
         try {
             if (dishesCategoryList != null && dishesCategoryList.size() > 0) {
                 dishesCategoryObj.setResultCode("0");
-                DishesCategoryList dishesCategoryBean = null;
                 for (int i = 0; i < dishesCategoryList.size(); i++) {
-                    DishesCategory dc = (DishesCategory) dishesCategoryList.get(i);
-                    dishesCategoryBean = new DishesCategoryList();
-                    dishesCategoryBean.setCategoryName(StringUtils.encode(dc.getCategoryname()));
-                    dishesCategoryBean.setCategoryId(String.valueOf(dc.getCategoryid()));
-                    dishesCategoryList.add(dishesCategoryBean);
+                    DishesCategory dc = dishesCategoryList.get(i);
+                    DishesCategoryList dishesCategoryListBean = new DishesCategoryList();
+                    dishesCategoryListBean.setCategoryName(dc.getCategoryname());
+                    dishesCategoryListBean.setCategoryId(dc.getCategoryid()+"");
+                    dishesCategoryBeanList.add(dishesCategoryListBean);
 
                 }
-                dishesCategoryObj.setDishesCategoryList(dishesCategoryList);
+                dishesCategoryObj.setDishesCategoryList((ArrayList) dishesCategoryBeanList);
             } else {
                 dishesCategoryObj.setResultCode("0");
                 dishesCategoryObj.setDishesCategoryList(null);

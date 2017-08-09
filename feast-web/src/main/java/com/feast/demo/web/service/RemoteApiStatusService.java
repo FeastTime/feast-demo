@@ -38,7 +38,7 @@ public class RemoteApiStatusService {
     public Map<String,Object> getStatus(){
         Map<String,Object> map = Maps.newHashMap();
         map.put("order service status",orderRemoteService.status());
-        map.put("menu service status",menuRemoteService.getStatus());
+//        map.put("menu service status",menuRemoteService.getStatus());
         map.put("ad service status",adRemoteService.status());
         System.out.println(Thread.currentThread().getId());
         return map;
@@ -60,7 +60,7 @@ public class RemoteApiStatusService {
         List<Object> list = Lists.newArrayList();
         list.addAll(adverstismentService.findAll());
         list.addAll(orderRemoteService.findAll());
-        list.addAll(menuRemoteService.findAll());
+//        list.addAll(menuRemoteService.findAll());
         list.add(userRemoteService.findByMobileNo(13800138000l));
         return list;
     }
