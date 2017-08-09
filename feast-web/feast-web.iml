@@ -38,7 +38,7 @@
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-core:4.1.9.Final" level="project" />
     <orderEntry type="library" name="Maven: antlr:antlr:2.7.7" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.5.4" level="project" />
-    <orderEntry type="library" name="Maven: com.feast.demo:feast-menu:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="feast-menu" />
     <orderEntry type="module" module-name="feast-ad" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:4.2.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.2.4.RELEASE" level="project" />
