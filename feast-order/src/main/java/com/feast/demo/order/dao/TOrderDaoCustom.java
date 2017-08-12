@@ -1,7 +1,6 @@
 package com.feast.demo.order.dao;
 
 import com.feast.demo.order.entity.OrderInfo;
-import com.feast.demo.order.entity.TOrder;
 
 import java.util.List;
 
@@ -12,5 +11,7 @@ import java.util.List;
 public interface TOrderDaoCustom {
 
     public List<OrderInfo> findAll2();
+
+    List<?> findOrderDetailVoByOrderId(Long orderId);
 
 }

@@ -1,12 +1,16 @@
 package com.feast.demo.web.entity;
 
+import lombok.Data;
+
 /**
  * Created by aries on 2017/5/14.
  */
+@Data
 public class DishesCategoryList {
 
     private String categoryName;
     private String categoryId;
+    private String classType;
 
     public String getCategoryName() {
         return categoryName;
