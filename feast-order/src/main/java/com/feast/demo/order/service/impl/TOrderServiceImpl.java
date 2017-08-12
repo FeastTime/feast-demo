@@ -83,7 +83,7 @@ public class TOrderServiceImpl implements TOrderService {
         List<?> result = tOrderDao.findOrderDetailVoByOrderId(orderId);
         List<OrderDetailVo> list = Lists.newArrayList();
         for(Object o:result){
-            OrderDetailVo vo = convertOrderDetailVo((Object[]) o);
+            OrderDetailVo vo = convertOrderDetailVo((Object[]) o);//查询结果set到vo上
             list.add(vo);
         }
         return list;
