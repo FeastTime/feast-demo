@@ -19,7 +19,6 @@ public class OrderInfo {
      * 订单号
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderid;
     /**
      * 用户id
