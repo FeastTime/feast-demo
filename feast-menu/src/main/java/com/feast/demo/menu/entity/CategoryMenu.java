@@ -12,7 +12,12 @@ import java.io.Serializable;
 @Data
 @Table(name = "categorymenu")
 public class CategoryMenu implements Serializable {
+
+    @Id
     private String categoryid;
+
+    @Id
     private String dishid;
+
     private int sort;
 }

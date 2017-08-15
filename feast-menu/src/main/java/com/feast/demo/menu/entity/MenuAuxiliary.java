@@ -3,6 +3,7 @@ package com.feast.demo.menu.entity;
 import lombok.Data;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 @Table(name = "menuauxiliary")
 public class MenuAuxiliary implements Serializable {
 
+    @Id
     private String dishid;
     private String hotflag;
     private String eattimes;
