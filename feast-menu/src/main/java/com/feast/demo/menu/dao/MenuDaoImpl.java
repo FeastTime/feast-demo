@@ -17,7 +17,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
     public String getMenuCountByCategoryIdAndStoreId(String categoryId, String storeId){
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
-        sb.append("select count(1) from Menu m, CategoryMenu cm where cm.dishid=m.dishid ");
+        sb.append("select count(dishid) from Menu m, CategoryMenu cm where cm.dishid=m.dishid ");
         sb.append("and cm.categoryid=:categoryId and m.storeid=:storeId");
         params.put("categoryId",categoryId);
         params.put("storeId",storeId);
