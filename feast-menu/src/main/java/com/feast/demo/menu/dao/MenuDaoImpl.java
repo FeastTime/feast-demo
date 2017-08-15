@@ -1,6 +1,5 @@
-package com.feast.demo.menu.dao.impl;
+package com.feast.demo.menu.dao;
 
-import com.feast.demo.menu.dao.MenuDao;
 import com.google.common.collect.Maps;
 
 import javax.persistence.EntityManager;
@@ -11,7 +10,7 @@ import java.util.Map;
 /**
  * Created by aries on 2017/8/6.
  */
-public class MenuDaoImpl implements MenuDao {
+public class MenuDaoImpl implements MenuDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
