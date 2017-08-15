@@ -38,8 +38,8 @@ public class OrderService {
         String currentTime = String.valueOf(System.currentTimeMillis());
         String mobileNo = jsono.getString("mobileNO");
         String orderID = jsono.getString("imei")
-                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length())
-                + currentTime.substring(currentTime.length()-9 , currentTime.length());
+                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length());
+        //        + currentTime.substring(currentTime.length()-9 , currentTime.length());
         //jsono.put("orderID", orderID);
 
         OrderObj orderObj = new OrderObj();
