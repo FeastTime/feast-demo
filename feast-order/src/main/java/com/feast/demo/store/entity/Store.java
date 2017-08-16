@@ -1,13 +1,8 @@
 package com.feast.demo.store.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.feast.demo.device.entity.Device;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Set;
 
 /**
  * Created by ggke on 2017/8/2.
@@ -30,7 +25,8 @@ public class Store {
      */
     private String name;
 
-//    @OneToMany(mappedBy = "store",fetch = FetchType.EAGER)
-//    private Set<Device> devices;
+//    @OneToMany(mappedBy = "store",cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
+//    @Lazy(value = false)
+//    private List<Device> devices;
 
 }

@@ -1,5 +1,6 @@
 package com.feast.demo.menu;
 
+import com.feast.demo.menu.service.MenuService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -12,8 +13,7 @@ public class App {
 
     public static void main(String ...args){
         String configLocation = "classpath*:/META-INF/spring/spring-*.xml";
-        ApplicationContext context = new ClassPathXmlApplicationContext(
-                configLocation);
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
 //        MenuService menuService = (MenuService) context.getBean("menuServiceImpl");
 //        List<Menu> list = menuService.findAll();
 //        for(Menu menu: list){

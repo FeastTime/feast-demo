@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by gk on 17-5-9.
@@ -55,6 +52,18 @@ public class AdvertisementController {
         }else{
             result.put("success",false);
         }
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getSilentADs/",method = {RequestMethod.POST,RequestMethod.GET})
+    public Map<String,Object> getHtmlAdvertismentsArray(
+            @RequestParam("type")AdTargetType type,
+            @RequestParam("AdWith") Integer width,
+            @RequestParam("AdHeight") Integer height
+    ){
+        Map<String,Object> result = Maps.newHashMap();
+
         return result;
     }
 

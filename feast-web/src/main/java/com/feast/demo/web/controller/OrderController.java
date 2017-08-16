@@ -1,14 +1,19 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.order.vo.OrderDetailVo;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.memory.OrderMemory;
 import com.feast.demo.web.service.OrderService;
 import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -224,6 +229,23 @@ public class OrderController {
             jsonArray.add(jsonObject);
         }
         return jsonArray;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/detailvo",method = RequestMethod.POST)
+    public Map<String,Object> getOrderdetailvo(@RequestBody String jsonString){
+        Map<String,Object> result = Maps.newHashMap();
+
+        System.out.println("payOrder old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("payOrder new = " + jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
+        System.out.println("orderID is:"+jsono.getString("orderID"));
+        Long orderID = jsono.getLong("orderID");
+
+        List<OrderDetailVo> list = orderService.findOrderVoByOrderId(orderID);
+        result.put("list",list);
+        return result;
     }
 
 }

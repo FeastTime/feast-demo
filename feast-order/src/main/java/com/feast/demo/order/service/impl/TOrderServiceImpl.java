@@ -6,9 +6,12 @@ import com.feast.demo.order.dao.TOrderDetailDao;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.order.vo.OrderDetailVo;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -75,4 +78,25 @@ public class TOrderServiceImpl implements TOrderService {
         }
         return tOrderDao.findByOrderId(orderID);
     }
+
+    public List<OrderDetailVo> findVoByOrderId(Long orderId) {
+        List<?> result = tOrderDao.findOrderDetailVoByOrderId(orderId);
+        List<OrderDetailVo> list = Lists.newArrayList();
+        for(Object o:result){
+            OrderDetailVo vo = convertOrderDetailVo((Object[]) o);//查询结果set到vo上
+            list.add(vo);
+        }
+        return list;
+    }
+
+    private OrderDetailVo convertOrderDetailVo(Object[] o){
+        //s.name,detail.dishname,detail.originalprice,orderInfo.status
+        OrderDetailVo vo = new OrderDetailVo();
+        vo.setStoreName((String) o[0]);
+        vo.setDishName((String) o[1]);
+        vo.setOriginalprice((BigDecimal)o[2]);
+        vo.setStatus((Integer) o[3]);
+        return vo;
+    }
+
 }

@@ -2,7 +2,7 @@ package com.feast.demo.order.service;
 
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
-import com.feast.demo.order.entity.TOrder;
+import com.feast.demo.order.vo.OrderDetailVo;
 
 import java.util.List;
 
@@ -24,5 +24,7 @@ public interface TOrderService {
     public void delete(Long orderID, Long dishID);
 
     public List<OrderInfo> findByOrderId(Long orderID);
+
+    public List<OrderDetailVo> findVoByOrderId(Long orderId);
 
 }

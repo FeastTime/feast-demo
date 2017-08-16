@@ -1,12 +1,17 @@
 package com.feast.demo.menu.service;
 
-import com.feast.demo.menu.entity.DishesCategory;
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.menu.vo.MenuVo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by aries on 2017/8/6.
  */
 public interface MenuService {
-    public ArrayList<DishesCategory> findDishesCategoryByStoreid(String storeid);
+
+
+    public List<MenuVo> findMenuByCategoryIdAndStoreId(JSONObject jsonObj);
+
+    public String getMenuCountByCategoryIdAndStoreId(JSONObject jsonObj);
 }

@@ -3,6 +3,7 @@ package com.feast.demo.web.service;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
+import com.feast.demo.order.vo.OrderDetailVo;
 import com.feast.demo.web.entity.MyDishObj;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.entity.RecommendDishObj;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -36,8 +38,8 @@ public class OrderService {
         String currentTime = String.valueOf(System.currentTimeMillis());
         String mobileNo = jsono.getString("mobileNO");
         String orderID = jsono.getString("imei")
-                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length())
-                + currentTime.substring(currentTime.length()-9 , currentTime.length());
+                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length());
+        //        + currentTime.substring(currentTime.length()-9 , currentTime.length());
         //jsono.put("orderID", orderID);
 
         OrderObj orderObj = new OrderObj();
@@ -203,6 +205,10 @@ public class OrderService {
         System.out.println("remove Dish success...");
 
         return orderObj;
+    }
+
+    public List<OrderDetailVo> findOrderVoByOrderId(Long orderId){
+        return remoteTOrderService.findVoByOrderId(orderId);
     }
 
 }
