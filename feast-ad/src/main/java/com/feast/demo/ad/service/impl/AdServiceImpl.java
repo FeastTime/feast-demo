@@ -126,6 +126,17 @@ public class AdServiceImpl implements AdService {
     }
 
     /**
+     * 根据广告类型和尺寸查询广告列表
+     * @param type
+     * @param width
+     * @param height
+     * @return
+     */
+    public List<Advertisement> findByTypeAndSize(String type, int width, int height) {
+        return advertisementDao.findByTypeAndSize(type,width,height);
+    }
+
+    /**
      *
      * @param page 第几页
      * @param size 每页几条

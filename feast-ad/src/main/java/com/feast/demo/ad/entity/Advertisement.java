@@ -5,7 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 
 /**
  * Created by ggke on 2017/6/21.
@@ -31,6 +30,8 @@ public class Advertisement {
     private Integer width;
 
     private Integer height;
+
+    private String path;
 
     public Advertisement(){
         Timestamp t = new Timestamp(System.currentTimeMillis());

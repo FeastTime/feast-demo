@@ -30,4 +30,6 @@ public interface AdService {
     public List<String> getAdArray(Integer num,String width,String height);
 
     public Page<Advertisement> findByPage(Pageable pageable);
+
+    public List<Advertisement> findByTypeAndSize(String type,int width,int height);
 }
