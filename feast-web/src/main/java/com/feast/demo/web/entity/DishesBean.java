@@ -3,46 +3,43 @@ package com.feast.demo.web.entity;
 /**
  * Created by aries on 2017/5/20.
  */
-public class DishesList {
-
-
-    private String dishID;
-    private String dishNO;
+public class DishesBean {
+    private String dishId;
+    private String dishNo;
     private String dishImgUrl;
     private String tvUrl;
     private String hotFlag;
     private String materialFlag;
-    private String titleADImgUrl;
-    private String titleADUrl;
+    private String titleAdImgUrl;
+    private String titleAdUrl;
     private String eatTimes;
     private String dishName;
     private String detail;
-    private String time;
+    private String discountsTime;
     private String cost;
     private String price;
-    private String cstFlag;
     private String sales;
     private String waitTime;
     private String exponent;
-    private String starlevel;
+    private String starLevel;
     private String pungencyDegree;
     private String tmpId;
     private String pageId;
 
-    public String getDishID() {
-        return dishID;
+    public String getDishId() {
+        return dishId;
     }
 
-    public void setDishID(String dishID) {
-        this.dishID = dishID;
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
     }
 
-    public String getDishNO() {
-        return dishNO;
+    public String getDishNo() {
+        return dishNo;
     }
 
-    public void setDishNO(String dishNO) {
-        this.dishNO = dishNO;
+    public void setDishNo(String dishNo) {
+        this.dishNo = dishNo;
     }
 
     public String getDishImgUrl() {
@@ -77,20 +74,20 @@ public class DishesList {
         this.materialFlag = materialFlag;
     }
 
-    public String getTitleADImgUrl() {
-        return titleADImgUrl;
+    public String getTitleAdImgUrl() {
+        return titleAdImgUrl;
     }
 
-    public void setTitleADImgUrl(String titleADImgUrl) {
-        this.titleADImgUrl = titleADImgUrl;
+    public void setTitleAdImgUrl(String titleAdImgUrl) {
+        this.titleAdImgUrl = titleAdImgUrl;
     }
 
-    public String getTitleADUrl() {
-        return titleADUrl;
+    public String getTitleAdUrl() {
+        return titleAdUrl;
     }
 
-    public void setTitleADUrl(String titleADUrl) {
-        this.titleADUrl = titleADUrl;
+    public void setTitleAdUrl(String titleAdUrl) {
+        this.titleAdUrl = titleAdUrl;
     }
 
     public String getEatTimes() {
@@ -117,12 +114,12 @@ public class DishesList {
         this.detail = detail;
     }
 
-    public String getTime() {
-        return time;
+    public String getDiscountsTime() {
+        return discountsTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDiscountsTime(String discountsTime) {
+        this.discountsTime = discountsTime;
     }
 
     public String getCost() {
@@ -139,14 +136,6 @@ public class DishesList {
 
     public void setPrice(String price) {
         this.price = price;
-    }
-
-    public String getCstFlag() {
-        return cstFlag;
-    }
-
-    public void setCstFlag(String cstFlag) {
-        this.cstFlag = cstFlag;
     }
 
     public String getSales() {
@@ -173,6 +162,22 @@ public class DishesList {
         this.exponent = exponent;
     }
 
+    public String getStarLevel() {
+        return starLevel;
+    }
+
+    public void setStarLevel(String starLevel) {
+        this.starLevel = starLevel;
+    }
+
+    public String getPungencyDegree() {
+        return pungencyDegree;
+    }
+
+    public void setPungencyDegree(String pungencyDegree) {
+        this.pungencyDegree = pungencyDegree;
+    }
+
     public String getTmpId() {
         return tmpId;
     }
@@ -187,21 +192,5 @@ public class DishesList {
 
     public void setPageId(String pageId) {
         this.pageId = pageId;
-    }
-
-    public String getStarlevel() {
-        return starlevel;
-    }
-
-    public void setStarlevel(String starlevel) {
-        this.starlevel = starlevel;
-    }
-
-    public String getPungencyDegree() {
-        return pungencyDegree;
-    }
-
-    public void setPungencyDegree(String pungencyDegree) {
-        this.pungencyDegree = pungencyDegree;
     }
 }

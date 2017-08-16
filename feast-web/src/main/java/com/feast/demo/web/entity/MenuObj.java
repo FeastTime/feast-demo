@@ -8,17 +8,20 @@ import java.util.ArrayList;
 public class MenuObj {
 
     private String imei;
-    private String androidID;
+    private String androidId;
     private String ipv4;
     private String mac;
-    private String mobileNO;
+    private String mobileNo;
     private String token;
-    private String orderID;
-    private String classType;
-    private String page;
+    private String orderId;
+    private String categoryId;
+    private String storeId;
+    private String pageNo;
+    private String pageNum;
     private String resultCode;
     private String resultMsg;
     private String tmpId;
+    private String recordCount;
     private ArrayList dishesList;
 
     public String getImei() {
@@ -29,12 +32,12 @@ public class MenuObj {
         this.imei = imei;
     }
 
-    public String getAndroidID() {
-        return androidID;
+    public String getAndroidId() {
+        return androidId;
     }
 
-    public void setAndroidID(String androidID) {
-        this.androidID = androidID;
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
     public String getIpv4() {
@@ -53,12 +56,12 @@ public class MenuObj {
         this.mac = mac;
     }
 
-    public String getMobileNO() {
-        return mobileNO;
+    public String getMobileNo() {
+        return mobileNo;
     }
 
-    public void setMobileNO(String mobileNO) {
-        this.mobileNO = mobileNO;
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
     }
 
     public String getToken() {
@@ -69,28 +72,44 @@ public class MenuObj {
         this.token = token;
     }
 
-    public String getOrderID() {
-        return orderID;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public String getClassType() {
-        return classType;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setClassType(String classType) {
-        this.classType = classType;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getPage() {
-        return page;
+    public String getStoreId() {
+        return storeId;
     }
 
-    public void setPage(String page) {
-        this.page = page;
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public String getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(String pageNo) {
+        this.pageNo = pageNo;
+    }
+
+    public String getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(String pageNum) {
+        this.pageNum = pageNum;
     }
 
     public String getResultCode() {
@@ -115,6 +134,14 @@ public class MenuObj {
 
     public void setTmpId(String tmpId) {
         this.tmpId = tmpId;
+    }
+
+    public String getRecordCount() {
+        return recordCount;
+    }
+
+    public void setRecordCount(String recordCount) {
+        this.recordCount = recordCount;
     }
 
     public ArrayList getDishesList() {

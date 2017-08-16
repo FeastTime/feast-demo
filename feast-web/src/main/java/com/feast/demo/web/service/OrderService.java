@@ -22,7 +22,7 @@ import java.util.List;
 public class OrderService {
 
     @Autowired
-    private com.feast.demo.order.service.TOrderService remoteTOrderService;
+    private com.feast.demo.order.service.TOrderService tOrderRemoteService;
 
     public OrderObj getCreatedOrder(JSONObject jsono){
 
@@ -37,9 +37,9 @@ public class OrderService {
         //jsono.put("resultCode", "0");
         String currentTime = String.valueOf(System.currentTimeMillis());
         String mobileNo = jsono.getString("mobileNO");
-        String orderID = jsono.getString("imei")
-                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length());
-        //        + currentTime.substring(currentTime.length()-9 , currentTime.length());
+        String orderID = jsono.getString("imei").substring(10)
+                + mobileNo.substring(mobileNo.length()-4 , mobileNo.length())
+                + currentTime.substring(currentTime.length()-9 , currentTime.length());
         //jsono.put("orderID", orderID);
 
         OrderObj orderObj = new OrderObj();
@@ -58,9 +58,12 @@ public class OrderService {
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setOrderid(Long.valueOf(orderID));
 
+        System.out.println(orderID);
+        System.out.println(Long.valueOf(orderID));
+
 
         // 保存数据库
-        remoteTOrderService.create(orderInfo);
+        tOrderRemoteService.create(orderInfo);
 
 
         System.out.println("Create order success...");
@@ -119,8 +122,8 @@ public class OrderService {
             myDishMap.put(id, myDish);
         }
 
-        remoteTOrderService.update(orderInfo);
-        remoteTOrderService.update(orderDetail);
+        tOrderRemoteService.update(orderInfo);
+        tOrderRemoteService.update(orderDetail);
 
         HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
         RecommendDishObj recommendDish = new RecommendDishObj();
@@ -168,8 +171,8 @@ public class OrderService {
                 myDishMap.remove(id);
                 orderInfo.setOrderid(orderID);
                 // 订单表其他信息。。。。
-                remoteTOrderService.update(orderInfo);
-                remoteTOrderService.delete(orderID, dishID);
+                tOrderRemoteService.update(orderInfo);
+                tOrderRemoteService.delete(orderID, dishID);
             }else{
                 int amount = Integer.valueOf(myDishMap.get(id).getAmount());
                 myDishMap.get(id).setAmount(String.valueOf(amount-1));
@@ -179,8 +182,8 @@ public class OrderService {
                 orderDetail.setOrderid(orderID);
                 orderDetail.setAmount(amount-1);
 
-                remoteTOrderService.update(orderInfo);
-                remoteTOrderService.update(orderDetail);
+                tOrderRemoteService.update(orderInfo);
+                tOrderRemoteService.update(orderDetail);
 
             }
 
@@ -208,7 +211,7 @@ public class OrderService {
     }
 
     public List<OrderDetailVo> findOrderVoByOrderId(Long orderId){
-        return remoteTOrderService.findVoByOrderId(orderId);
+        return tOrderRemoteService.findVoByOrderId(orderId);
     }
 
 }
