@@ -1,9 +1,12 @@
 package com.feast.demo.menu.dao;
 
 import com.google.common.collect.Maps;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 import java.util.Map;
 
@@ -17,29 +20,39 @@ public class MenuDaoImpl implements MenuDaoCustom{
     public String getMenuCountByCategoryIdAndStoreId(String categoryId, String storeId){
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
-        sb.append("select count(dishid) from Menu m, CategoryMenu cm where cm.dishid=m.dishid ");
+        sb.append("select count(cm.dishid) from Menu m, CategoryMenu cm where cm.dishid=m.dishid ");
         sb.append("and cm.categoryid=:categoryId and m.storeid=:storeId");
         params.put("categoryId",categoryId);
         params.put("storeId",storeId);
-        javax.persistence.Query query = em.createQuery(sb.toString());
+        Query query = em.createQuery(sb.toString());
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return String.valueOf(query.getMaxResults());
+        return query.getSingleResult().toString();
     }
 
     public List<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
-        sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag,m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag,ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid from menu m, menuauxiliary ma, categorymenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
-        sb.append("and cm.categoryid=:categoryId");
-        sb.append("and m.storeid=:storeId");
-        sb.append("limit (:pageNo-1) * :pageNum,:pageNum");
+        sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag," +
+                "m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag," +
+                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid " +
+                "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
+        sb.append(" and cm.categoryid=:categoryId");
+        sb.append(" and m.storeid=:storeId");
+        sb.append(" order by m.id asc");
+        //sb.append(" limit "+(pageNo-1)*pageNum+","+pageNum);
         params.put("categoryId",categoryId);
         params.put("storeId",storeId);
-        params.put("pageNo",pageNo);
-        params.put("pageNum",pageNum);
+//        params.put("pageNo",pageNo);
+//        params.put("pageNum",pageNum);
+
         javax.persistence.Query query = em.createQuery(sb.toString());
+        Pageable pageable = new PageRequest(pageNo, pageNum);
+        if(pageable != null){
+            query.setFirstResult(pageable.getOffset());
+            query.setMaxResults(pageable.getPageSize());
+        }
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }

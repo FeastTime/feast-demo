@@ -70,7 +70,7 @@ public class MenuServiceImpl implements MenuService {
         vo.setSales((String) o[16]);
         vo.setStarLevel((String)o[17]);
         vo.setTmpId((String)o[18]);
-        vo.setPageId((String) o[219]);
+        vo.setPageId((String) o[19]);
         return vo;
     }
 }
