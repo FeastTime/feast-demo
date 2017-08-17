@@ -3,9 +3,11 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.ad.entity.AdTargetType;
+import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.web.service.AdverstismentService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +36,13 @@ public class AdvertisementController {
     @RequestMapping(value = "/getSilentAD/",method = {RequestMethod.POST,RequestMethod.GET})
     public Map<String,Object> getHtmlAdvertisments(
             @RequestParam("type")AdTargetType type,
-            @RequestParam("AdWith") Integer width,
-            @RequestParam("AdHeight") Integer height
+            @RequestParam("width") Integer width,
+            @RequestParam("height") Integer height
     ){
         Map<String,Object> result = Maps.newHashMap();
         String url = adverstismentService.getRemontAdUrl(type,width,height);
         Map<String,Object> adInfo = Maps.newHashMap();
-        adInfo.put("Adm",path+url);
+        adInfo.put("Adm",url);
         adInfo.put("AdmType",AdmTypeDynamic);
         adInfo.put("Height",height);
         adInfo.put("Width",width);
@@ -56,14 +58,37 @@ public class AdvertisementController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/getSilentADs/",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/silentads/",method = {RequestMethod.POST,RequestMethod.GET})
     public Map<String,Object> getHtmlAdvertismentsArray(
             @RequestParam("type")AdTargetType type,
-            @RequestParam("AdWith") Integer width,
-            @RequestParam("AdHeight") Integer height
+            @RequestParam("width") Integer width,
+            @RequestParam("height") Integer height,
+            @RequestParam(value = "num",required = false) Integer num
+
     ){
         Map<String,Object> result = Maps.newHashMap();
-
+        List<Advertisement> list = adverstismentService.findByTypeAndSize(type.name(),width,height);
+        if(CollectionUtils.isNotEmpty(list)){
+            if(num == null || num <1){
+                num = 3;
+            }
+            list = list.subList(0,num);
+            List<Object> ads = Lists.newArrayList();
+            for(Advertisement ad:list){
+                Map<String,Object> adInfo = Maps.newHashMap();
+                adInfo.put("Adm",ad.getPath());
+                adInfo.put("AdmType",AdmTypeDynamic);
+                adInfo.put("Height",height);
+                adInfo.put("Width",width);
+                adInfo.put("Price",100);
+                ads.add(adInfo);
+            }
+            result.put("Ads",ads);
+            result.put("ID","124567890");
+            result.put("success",true);
+        }else{
+            result.put("success",false);
+        }
         return result;
     }
 

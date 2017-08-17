@@ -9,8 +9,6 @@
 
     <dubbo:registry address="zookeeper://127.0.0.1:2181" check="false"/>
 
-    <dubbo:reference id="TOrderRemoteService" interface="com.feast.demo.order.service.TOrderService"/>
-
     <dubbo:reference id="menuRemoteService" interface="com.feast.demo.menu.service.MenuService"/>
 
     <dubbo:reference id="adRemoteService" interface="com.feast.demo.ad.service.AdService"/>
@@ -20,6 +18,8 @@
     <dubbo:reference id="deviceRemoteService" interface="com.feast.demo.device.service.DeviceService"/>
 
     <dubbo:reference id="storeRemoteService" interface="com.feast.demo.store.service.StoreService"/>
+
+    <dubbo:reference id="orderRemoteService" interface="com.feast.demo.order.service.OrderService"/>
 
 
 </beans>

@@ -16,8 +16,8 @@ public interface TOrderDetailDao extends PagingAndSortingRepository<OrderDetail,
     @Query("select o from OrderDetail o where o.orderid=?1")
     List<OrderDetail> findDetailByOrderId(Long orderID);
 
-    @Query("delete from OrderDetail o where o.orderid=?1 and o.dishid =?2")
-    List<OrderInfo> deleteDetailByDishID(Long orderID, Long dishID);
+    @Query("select o from OrderDetail o where o.orderid=?1 and o.dishid =?2")
+    OrderDetail findByOrderIdAndDishID(Long orderID, Long dishID);
 
 
 }

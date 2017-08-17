@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by ggke on 2017/6/25.
  * Update by wangpp on 2017/8/3.
  */
-public class TOrderDaoImpl implements TOrderDaoCustom{
+public class OrderDaoImpl implements OrderDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 

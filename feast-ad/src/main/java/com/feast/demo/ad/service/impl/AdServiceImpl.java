@@ -132,7 +132,7 @@ public class AdServiceImpl implements AdService {
      * @param height
      * @return
      */
-    public List<Advertisement> findByTypeAndSize(String type, int width, int height) {
+    public List<Advertisement> findByTypeAndSize(String type, Integer width, Integer height) {
         return advertisementDao.findByTypeAndSize(type,width,height);
     }
 

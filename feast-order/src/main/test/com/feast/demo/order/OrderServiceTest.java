@@ -1,6 +1,6 @@
 package com.feast.demo.order;
 
-import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.order.service.OrderService;
 import com.feast.demo.order.vo.OrderDetailVo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,11 +18,11 @@ import java.util.List;
 public class OrderServiceTest {
 
     @Resource(name = "TOrderServiceImpl")
-    private TOrderService tOrderServiceImpl;
+    private OrderService orderServiceImpl;
 
     @Test
     public void test1(){
-        List<OrderDetailVo> list = tOrderServiceImpl.findVoByOrderId(111112222200001l);
+        List<OrderDetailVo> list = orderServiceImpl.findVoByOrderId(111112222200001l);
         for(OrderDetailVo vo:list){
             System.out.println(vo);
         }

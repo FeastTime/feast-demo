@@ -22,7 +22,7 @@ import java.util.List;
 public class OrderService {
 
     @Autowired
-    private com.feast.demo.order.service.TOrderService tOrderRemoteService;
+    private com.feast.demo.order.service.OrderService orderRemoteService;
 
     public OrderObj getCreatedOrder(JSONObject jsono){
 
@@ -63,7 +63,7 @@ public class OrderService {
 
 
         // 保存数据库
-        tOrderRemoteService.create(orderInfo);
+        orderRemoteService.create(orderInfo);
 
 
         System.out.println("Create order success...");
@@ -122,8 +122,8 @@ public class OrderService {
             myDishMap.put(id, myDish);
         }
 
-        tOrderRemoteService.update(orderInfo);
-        tOrderRemoteService.update(orderDetail);
+        orderRemoteService.update(orderInfo);
+        orderRemoteService.update(orderDetail);
 
         HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
         RecommendDishObj recommendDish = new RecommendDishObj();
@@ -171,8 +171,8 @@ public class OrderService {
                 myDishMap.remove(id);
                 orderInfo.setOrderid(orderID);
                 // 订单表其他信息。。。。
-                tOrderRemoteService.update(orderInfo);
-                tOrderRemoteService.delete(orderID, dishID);
+                orderRemoteService.update(orderInfo);
+                orderRemoteService.delete(orderID, dishID);
             }else{
                 int amount = Integer.valueOf(myDishMap.get(id).getAmount());
                 myDishMap.get(id).setAmount(String.valueOf(amount-1));
@@ -182,8 +182,8 @@ public class OrderService {
                 orderDetail.setOrderid(orderID);
                 orderDetail.setAmount(amount-1);
 
-                tOrderRemoteService.update(orderInfo);
-                tOrderRemoteService.update(orderDetail);
+                orderRemoteService.update(orderInfo);
+                orderRemoteService.update(orderDetail);
 
             }
 
@@ -211,7 +211,7 @@ public class OrderService {
     }
 
     public List<OrderDetailVo> findOrderVoByOrderId(Long orderId){
-        return tOrderRemoteService.findVoByOrderId(orderId);
+        return orderRemoteService.findVoByOrderId(orderId);
     }
 
 }

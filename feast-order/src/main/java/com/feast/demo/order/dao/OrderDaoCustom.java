@@ -8,9 +8,9 @@ import java.util.List;
  * Created by ggke on 2017/6/25.
  * Update by wangpp on 2017/8/3.
  */
-public interface TOrderDaoCustom {
+public interface OrderDaoCustom {
 
-    public List<OrderInfo> findAll2();
+    List<OrderInfo> findAll2();
 
     List<?> findOrderDetailVoByOrderId(Long orderId);
 

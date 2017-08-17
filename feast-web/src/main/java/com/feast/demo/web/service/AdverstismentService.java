@@ -29,8 +29,8 @@ public class AdverstismentService {
         if(list == null){
             return path;
         }
-        Advertisement randomAd = list.get((int) ((new Date()).getTime()%list.size()));
-        return path+randomAd.getPath();
+        Advertisement randomAd = list.get((int) ((new Date()).getTime()%list.size()));//按时间随即取
+        return randomAd.getPath();
     }
 
     public List<String> getAdArray(Integer num,String width,String height){

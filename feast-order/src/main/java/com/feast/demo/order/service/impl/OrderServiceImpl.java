@@ -1,11 +1,11 @@
 package com.feast.demo.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.feast.demo.order.dao.TOrderDao;
+import com.feast.demo.order.dao.OrderDao;
 import com.feast.demo.order.dao.TOrderDetailDao;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
-import com.feast.demo.order.service.TOrderService;
+import com.feast.demo.order.service.OrderService;
 import com.feast.demo.order.vo.OrderDetailVo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,16 @@ import java.util.List;
  * Update by wangpp on 2017/8/3.
  */
 @Service()
-public class TOrderServiceImpl implements TOrderService {
+public class OrderServiceImpl implements OrderService {
 
     @Autowired
-    private TOrderDao tOrderDao;
+    private OrderDao orderDao;
 
     @Autowired
     private TOrderDetailDao tOrderDetailDao;
 
     public List<OrderInfo> findAll() {
-        return (List<OrderInfo>) tOrderDao.findAll();
+        return (List<OrderInfo>) orderDao.findAll();
     }
 
 
@@ -38,7 +38,7 @@ public class TOrderServiceImpl implements TOrderService {
      */
     @Transactional(readOnly = false)
     public void create(OrderInfo order) {
-        tOrderDao.save(order);
+        orderDao.save(order);
     }
 
     /**
@@ -47,7 +47,7 @@ public class TOrderServiceImpl implements TOrderService {
      */
     @Transactional(readOnly = false)
     public void update(OrderInfo order) {
-        tOrderDao.save(order);
+        orderDao.save(order);
     }
 
     /**
@@ -65,7 +65,8 @@ public class TOrderServiceImpl implements TOrderService {
      */
     @Transactional(readOnly = false)
     public void delete(Long orderID, Long dishID) {
-        tOrderDetailDao.deleteDetailByDishID(orderID, dishID);
+        OrderDetail detail = tOrderDetailDao.findByOrderIdAndDishID(orderID, dishID);
+        tOrderDetailDao.delete(detail);
     }
 
     public String status() {
@@ -76,11 +77,11 @@ public class TOrderServiceImpl implements TOrderService {
         if(orderID == null){
             return null;
         }
-        return tOrderDao.findByOrderId(orderID);
+        return orderDao.findByOrderId(orderID);
     }
 
     public List<OrderDetailVo> findVoByOrderId(Long orderId) {
-        List<?> result = tOrderDao.findOrderDetailVoByOrderId(orderId);
+        List<?> result = orderDao.findOrderDetailVoByOrderId(orderId);
         List<OrderDetailVo> list = Lists.newArrayList();
         for(Object o:result){
             OrderDetailVo vo = convertOrderDetailVo((Object[]) o);//查询结果set到vo上

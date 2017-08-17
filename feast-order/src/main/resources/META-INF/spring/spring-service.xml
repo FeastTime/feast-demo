@@ -17,7 +17,7 @@
     <!--uncomment this if you want to test dubbo's monitor-->
     <!--<dubbo:monitor protocol="registry"/>-->
 
-    <dubbo:service interface="com.feast.demo.order.service.TOrderService" protocol="dubbo" ref="TOrderServiceImpl"/>
+    <dubbo:service interface="com.feast.demo.order.service.OrderService" protocol="dubbo" ref="orderServiceImpl"/>
 
     <dubbo:service interface="com.feast.demo.user.service.UserService" protocol="dubbo" ref="userServiceImpl"/>
 

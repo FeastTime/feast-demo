@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by ggke on 2017/3/31.
  */
-public interface TOrderService {
+public interface OrderService {
 
     public String status();
 

@@ -3,8 +3,6 @@ package com.feast.demo.web.service;
 import com.feast.demo.ad.entity.TAd;
 import com.feast.demo.ad.service.AdService;
 import com.feast.demo.menu.service.MenuService;
-import com.feast.demo.order.service.TOrderService;
-import com.feast.demo.user.entity.User;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ import java.util.Map;
 public class RemoteApiStatusService {
 
     @Autowired
-    private TOrderService orderRemoteService;
+    private com.feast.demo.order.service.OrderService orderRemoteService;
 
     @Autowired
     private MenuService menuRemoteService;

@@ -12,6 +12,6 @@ import java.util.List;
 public interface AdvertisementDao extends PagingAndSortingRepository<Advertisement,Long>,AdvertisementDaoCustom {
 
     @Query("Select ad from Advertisement ad where ad.type=?1 and ad.width=?2 and ad.height=?3")
-    List<Advertisement> findByTypeAndSize(String type, int width, int height);
+    List<Advertisement> findByTypeAndSize(String type, Integer width, Integer height);
 
 }
