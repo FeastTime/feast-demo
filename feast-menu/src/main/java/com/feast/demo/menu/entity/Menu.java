@@ -17,7 +17,6 @@ public class Menu implements Serializable {
     @Id
     private String dishid;
 
-    @Id
     private String dishno;
 
     private String dishname;
