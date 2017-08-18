@@ -40,7 +40,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
                 "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
         sb.append(" and cm.categoryid=:categoryId");
         sb.append(" and m.storeid=:storeId");
-        sb.append(" order by m.id asc");
+        //sb.append(" order by m.id asc");
         //sb.append(" limit "+(pageNo-1)*pageNum+","+pageNum);
         params.put("categoryId",categoryId);
         params.put("storeId",storeId);
