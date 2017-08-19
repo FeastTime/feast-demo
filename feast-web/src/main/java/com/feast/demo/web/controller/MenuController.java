@@ -25,13 +25,12 @@ public class MenuController {
     private MenuService menuService;
 
     @ResponseBody
-    @RequestMapping(value = "/menu",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String qryMenu(@RequestBody String text){
+    @RequestMapping(value = "/getMenuList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String getMenuList(@RequestBody String text) {
         text = StringUtils.decode(text);
-        JSONObject jsono  = JSON.parseObject(text);
+        JSONObject jsono = JSON.parseObject(text);
         MenuObj resultObj = menuService.findMenuByCategoryIdAndStoreId(jsono);
 
         return JSON.toJSONString(resultObj);
     }
-
 }

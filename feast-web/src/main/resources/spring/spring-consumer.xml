@@ -11,6 +11,8 @@
 
     <dubbo:reference id="menuRemoteService" interface="com.feast.demo.menu.service.MenuService"/>
 
+    <dubbo:reference id="dishesCategoryRemoteService" interface="com.feast.demo.menu.service.DishesCategoryService"/>
+
     <dubbo:reference id="adRemoteService" interface="com.feast.demo.ad.service.AdService"/>
 
     <dubbo:reference id="userRemoteService" interface="com.feast.demo.user.service.UserService"/>

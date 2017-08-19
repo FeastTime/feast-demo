@@ -26,13 +26,10 @@ public class DishesCategoryController {
 
     @ResponseBody
     @RequestMapping(value = "/getDishesCategoryList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String regUser(@RequestBody String text){
+    public String getDishesCategoryList(@RequestBody String text){
         text = StringUtils.decode(text);
         JSONObject jsono  = JSON.parseObject(text);
-        DishesCategoryObj resultObj = dishesCategoryService.findDishesCategoryByStoreid(jsono);
-//        DishesCategory dishesCategory  = JSONObject.parseObject(text,DishesCategory.class);
-//        DishesCategoryObj resultObj = dishesCategoryService.findDishesCategoryByStoreid(String.valueOf(dishesCategory.getStore().getId()));
-
+        DishesCategoryObj resultObj = dishesCategoryService.findDishesCategoryByStoreId(jsono);
         return JSON.toJSONString(resultObj);
     }
 
