@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * Created by aries on 2017/8/6.
+ * Created by matao on 2017/8/6.
  */
 @Entity
 @Data

@@ -9,8 +9,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * Created by aries on 2017/8/15.
- */@Entity
+ * Created by matao on 2017/8/15.
+ */
+@Entity
 @Data
 @Table(name = "menuauxiliary")
 public class MenuAuxiliary implements Serializable {

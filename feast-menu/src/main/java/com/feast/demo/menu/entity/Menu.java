@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * Created by aries on 2017/8/6.
+ * Created by matao on 2017/8/6.
  */
 @Entity
 @Data
