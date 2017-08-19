@@ -29,7 +29,7 @@ public class DishesCategoryController {
     public String getDishesCategoryList(@RequestBody String text){
         text = StringUtils.decode(text);
         JSONObject jsono  = JSON.parseObject(text);
-        DishesCategoryObj resultObj = dishesCategoryService.findDishesCategoryByStoreId(jsono);
+        DishesCategoryObj resultObj = dishesCategoryService.findDishesCategoryByStoreid(jsono);
         return JSON.toJSONString(resultObj);
     }
 
