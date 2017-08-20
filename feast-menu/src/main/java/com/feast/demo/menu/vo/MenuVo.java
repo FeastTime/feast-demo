@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * Created by aries on 2017/8/12.
+ * Created by matao on 2017/8/12.
  */
 @Data
 public class MenuVo {

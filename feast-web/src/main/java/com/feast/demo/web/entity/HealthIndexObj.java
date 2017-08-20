@@ -5,11 +5,11 @@ package com.feast.demo.web.entity;
  */
 public class HealthIndexObj {
 
-    private String androidID;
+    private String androidId;
     private String imei;
     private String ipv4;
     private String mac;
-    private String orderID;
+    private String orderId;
     private String resultCode;
     private String resultMsg;
     private String heatQuantity;
@@ -19,12 +19,12 @@ public class HealthIndexObj {
     private String protein;
     private String suitableNumber;
 
-    public String getAndroidID() {
-        return androidID;
+    public String getAndroidId() {
+        return androidId;
     }
 
-    public void setAndroidID(String androidID) {
-        this.androidID = androidID;
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
     public String getImei() {
@@ -51,12 +51,12 @@ public class HealthIndexObj {
         this.mac = mac;
     }
 
-    public String getOrderID() {
-        return orderID;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public String getResultCode() {

@@ -17,4 +17,5 @@
     <!--uncomment this if you want to test dubbo's monitor-->
     <!--<dubbo:monitor protocol="registry"/>-->
     <dubbo:service interface="com.feast.demo.menu.service.MenuService" protocol="dubbo" ref="menuServiceImpl"/>
+    <dubbo:service interface="com.feast.demo.menu.service.DishesCategoryService" protocol="dubbo" ref="dishesCategoryServiceImpl"/>
 </beans>

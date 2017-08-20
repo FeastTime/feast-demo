@@ -8,14 +8,13 @@ import java.util.ArrayList;
 public class IngredientsObj {
 
     private String imei;
-    private String androidID;
+    private String androidId;
     private String ipv4;
     private String mac;
-    private String dishID;
+    private String dishId;
     private String resultCode;
     private String resultMsg;
     private ArrayList ingredientsList;
-
 
     public String getImei() {
         return imei;
@@ -25,12 +24,12 @@ public class IngredientsObj {
         this.imei = imei;
     }
 
-    public String getAndroidID() {
-        return androidID;
+    public String getAndroidId() {
+        return androidId;
     }
 
-    public void setAndroidID(String androidID) {
-        this.androidID = androidID;
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
     }
 
     public String getIpv4() {
@@ -49,12 +48,12 @@ public class IngredientsObj {
         this.mac = mac;
     }
 
-    public String getDishID() {
-        return dishID;
+    public String getDishId() {
+        return dishId;
     }
 
-    public void setDishID(String dishID) {
-        this.dishID = dishID;
+    public void setDishId(String dishId) {
+        this.dishId = dishId;
     }
 
     public String getResultCode() {
@@ -65,19 +64,19 @@ public class IngredientsObj {
         this.resultCode = resultCode;
     }
 
-    public ArrayList getIngredientsList() {
-        return ingredientsList;
-    }
-
-    public void setIngredientsList(ArrayList ingredientsList) {
-        this.ingredientsList = ingredientsList;
-    }
-
     public String getResultMsg() {
         return resultMsg;
     }
 
     public void setResultMsg(String resultMsg) {
         this.resultMsg = resultMsg;
+    }
+
+    public ArrayList getIngredientsList() {
+        return ingredientsList;
+    }
+
+    public void setIngredientsList(ArrayList ingredientsList) {
+        this.ingredientsList = ingredientsList;
     }
 }

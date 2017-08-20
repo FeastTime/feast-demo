@@ -4,7 +4,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
- * Created by aries on 2017/5/29.
+ * Created by matao on 2017/5/29.
  *继承apache common的StringUtils类，在能够使用已有的String操作的方法基础上添加一些自己的方法
  */
 public class StringUtils extends org.apache.commons.lang.StringUtils{

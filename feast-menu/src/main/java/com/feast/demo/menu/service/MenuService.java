@@ -6,7 +6,7 @@ import com.feast.demo.menu.vo.MenuVo;
 import java.util.List;
 
 /**
- * Created by aries on 2017/8/6.
+ * Created by matao on 2017/8/6.
  */
 public interface MenuService {
 

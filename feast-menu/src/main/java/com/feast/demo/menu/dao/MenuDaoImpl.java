@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by aries on 2017/8/6.
+ * Created by matao on 2017/8/6.
  */
 public class MenuDaoImpl implements MenuDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
@@ -40,14 +40,10 @@ public class MenuDaoImpl implements MenuDaoCustom{
                 "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
         sb.append(" and cm.categoryid=:categoryId");
         sb.append(" and m.storeid=:storeId");
-        sb.append(" order by m.id asc");
-        //sb.append(" limit "+(pageNo-1)*pageNum+","+pageNum);
         params.put("categoryId",categoryId);
         params.put("storeId",storeId);
-//        params.put("pageNo",pageNo);
-//        params.put("pageNum",pageNum);
 
-        javax.persistence.Query query = em.createQuery(sb.toString());
+        Query query = em.createQuery(sb.toString());
         Pageable pageable = new PageRequest(pageNo, pageNum);
         if(pageable != null){
             query.setFirstResult(pageable.getOffset());
