@@ -2,6 +2,7 @@ package com.feast.demo.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.order.dao.OrderDao;
+import com.feast.demo.order.dao.OrderDetailDao;
 import com.feast.demo.order.dao.TOrderDetailDao;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
@@ -25,7 +26,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderDao orderDao;
 
     @Autowired
-    private TOrderDetailDao tOrderDetailDao;
+    private OrderDetailDao orderDetailDao;
 
     public List<OrderInfo> findAll() {
         return (List<OrderInfo>) orderDao.findAll();
@@ -51,12 +52,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 添加明细表
+     * @param orderDetail
+     */
+    @Transactional(readOnly = false)
+    public void create(OrderDetail orderDetail) {
+        System.out.println("ssssssssssssssssssssssssss=="+orderDetailDao);
+        orderDetailDao.save(orderDetail);
+    }
+
+    /**
      * 更新明细表
      * @param orderDetail
      */
     @Transactional(readOnly = false)
     public void update(OrderDetail orderDetail) {
-        tOrderDetailDao.save(orderDetail);
+        orderDetailDao.save(orderDetail);
     }
 
     /**
@@ -65,8 +76,8 @@ public class OrderServiceImpl implements OrderService {
      */
     @Transactional(readOnly = false)
     public void delete(Long orderID, Long dishID) {
-        OrderDetail detail = tOrderDetailDao.findByOrderIdAndDishID(orderID, dishID);
-        tOrderDetailDao.delete(detail);
+        OrderDetail detail = orderDetailDao.findByOrderIdAndDishID(orderID, dishID);
+        orderDetailDao.delete(detail);
     }
 
     public String status() {

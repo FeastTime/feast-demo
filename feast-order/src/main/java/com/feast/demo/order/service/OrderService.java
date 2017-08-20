@@ -19,6 +19,8 @@ public interface OrderService {
 
     public void update(OrderInfo orderInfo);
 
+    public void create(OrderDetail orderDetail);
+
     public void update(OrderDetail orderDetail);
 
     public void delete(Long orderID, Long dishID);

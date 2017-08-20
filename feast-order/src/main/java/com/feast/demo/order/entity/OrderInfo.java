@@ -1,5 +1,6 @@
 package com.feast.demo.order.entity;
 
+import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
 @Entity
 @Table(name="orderinfo")
 @Data
-public class OrderInfo {
+public class OrderInfo extends TimedEntity {
     /**
      * 订单号
      */
@@ -32,18 +33,18 @@ public class OrderInfo {
      * 桌号
      */
     private long tableid;
-    /**
-     * 订单日期
-     */
-    private Date orderdate;
-    /**
-     * 订单时间
-     */
-    private Time ordertime;
-    /**
-     * 最后修改时间
-     */
-    private Timestamp modifytime;
+//    /**
+//     * 订单日期
+//     */
+//    private Date orderdate;
+//    /**
+//     * 订单时间
+//     */
+//    private Time ordertime;
+//    /**
+//     * 最后修改时间
+//     */
+//    private Timestamp modifytime;
     /**
      * 订单金额
      */

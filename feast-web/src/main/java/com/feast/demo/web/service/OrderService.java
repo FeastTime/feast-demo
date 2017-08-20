@@ -88,21 +88,27 @@ public class OrderService {
         // 加入购物车：更新订单表
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setOrderid(Long.valueOf(jsono.getString("orderID")));
-        // 其他信息。。。。
 
         OrderDetail orderDetail = new OrderDetail();
 
         HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
         if(myDishMap.containsKey(id)){
-            int tempAmout = Integer.valueOf(myDishMap.get(id).getAmount());
+            long tempAmout = Long.valueOf(myDishMap.get(id).getAmount());
             myDishMap.get(id).setAmount(String.valueOf(tempAmout+1));
+            orderDetail.setDishid(Long.valueOf(id));
+            orderDetail.setOrderid(Long.valueOf(jsono.getString("orderID")));
+            orderDetail.setUserid(Long.valueOf(jsono.getString("userID")));
             orderDetail.setAmount(tempAmout+1);
             // 暂时不做批量修改购物车数量，默认每次只添加一个菜
+            orderRemoteService.update(orderInfo);
+            orderRemoteService.update(orderDetail);
         }else{
             // 根据菜品ID查询菜品信息《调用菜品查询实现》
-            orderDetail.setDishid(Long.valueOf(jsono.getString("ID")));
+            orderDetail.setDishid(Long.valueOf(id));
             orderDetail.setOrderid(Long.valueOf(jsono.getString("orderID")));
-            orderDetail.setAmount(1);
+            orderDetail.setAmount(1L);
+            orderDetail.setUserid(Long.valueOf(jsono.getString("userID")));
+            System.out.println("dish id = " + orderDetail.getDishid());
 
             MyDishObj myDish = new MyDishObj();
             myDish.setDishID(id);
@@ -120,10 +126,12 @@ public class OrderService {
             myDish.setDishID(jsono.getString("ID"));
 
             myDishMap.put(id, myDish);
+
+            orderRemoteService.update(orderInfo);
+            orderRemoteService.create(orderDetail);
         }
 
-        orderRemoteService.update(orderInfo);
-        orderRemoteService.update(orderDetail);
+
 
         HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
         RecommendDishObj recommendDish = new RecommendDishObj();
@@ -174,7 +182,7 @@ public class OrderService {
                 orderRemoteService.update(orderInfo);
                 orderRemoteService.delete(orderID, dishID);
             }else{
-                int amount = Integer.valueOf(myDishMap.get(id).getAmount());
+                long amount = Long.valueOf(myDishMap.get(id).getAmount());
                 myDishMap.get(id).setAmount(String.valueOf(amount-1));
                 orderInfo.setOrderid(orderID);
                 // 订单表其他信息。。。。
