@@ -25,6 +25,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.feast.demo:feast-menu:1.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="feast-order" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-commons:1.13.4.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context-support:4.2.4.RELEASE" level="project" />

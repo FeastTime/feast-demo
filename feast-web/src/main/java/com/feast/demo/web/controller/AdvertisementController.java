@@ -33,12 +33,15 @@ public class AdvertisementController {
     public static final String AdmTypeDynamic = "dynamicCreative";
 
     @ResponseBody
-    @RequestMapping(value = "/getSilentAD/",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/getSilentAD/",method = RequestMethod.POST)
     public Map<String,Object> getHtmlAdvertisments(
-            @RequestParam("type")AdTargetType type,
-            @RequestParam("width") Integer width,
-            @RequestParam("height") Integer height
+            @RequestBody String text
     ){
+        text = com.feast.demo.web.util.StringUtils.decode(text);
+        JSONObject jsono  = JSON.parseObject(text);
+        AdTargetType type = Enum.valueOf(AdTargetType.class, jsono.getString("type"));
+        Integer width = jsono.getInteger("width");
+        Integer height = jsono.getInteger("height");
         Map<String,Object> result = Maps.newHashMap();
         String url = adverstismentService.getRemontAdUrl(type,width,height);
         Map<String,Object> adInfo = Maps.newHashMap();
@@ -58,21 +61,25 @@ public class AdvertisementController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/silentads/",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/silentads/",method = RequestMethod.POST)
     public Map<String,Object> getHtmlAdvertismentsArray(
-            @RequestParam("type")AdTargetType type,
-            @RequestParam("width") Integer width,
-            @RequestParam("height") Integer height,
-            @RequestParam(value = "num",required = false) Integer num
-
+            @RequestBody String text
     ){
+        text = com.feast.demo.web.util.StringUtils.decode(text);
+        JSONObject jsono  = JSON.parseObject(text);
+        AdTargetType type = Enum.valueOf(AdTargetType.class, jsono.getString("type"));
+        Integer width = jsono.getInteger("width");
+        Integer height = jsono.getInteger("height");
+        Integer num = jsono.getInteger("num");
         Map<String,Object> result = Maps.newHashMap();
         List<Advertisement> list = adverstismentService.findByTypeAndSize(type.name(),width,height);
         if(CollectionUtils.isNotEmpty(list)){
             if(num == null || num <1){
                 num = 3;
             }
-            list = list.subList(0,num);
+            if(num < list.size()) {
+                list = list.subList(0, num);
+            }
             List<Object> ads = Lists.newArrayList();
             for(Advertisement ad:list){
                 Map<String,Object> adInfo = Maps.newHashMap();
