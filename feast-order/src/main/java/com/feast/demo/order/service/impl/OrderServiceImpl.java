@@ -111,4 +111,11 @@ public class OrderServiceImpl implements OrderService {
         return vo;
     }
 
+    public OrderDetail findByOrderIdAndDishID(Long orderid, Long dishid) {
+        if(orderid == null || dishid == null){
+            return null;
+        }
+        return orderDetailDao.findByOrderIdAndDishID(orderid, dishid);
+    }
+
 }

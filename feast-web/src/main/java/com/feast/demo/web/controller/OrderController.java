@@ -61,12 +61,6 @@ public class OrderController {
         jsonString = StringUtils.decode(jsonString);
         System.out.println("addShoppingCart new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("ID is:"+jsono.getString("ID"));
-        System.out.println("orderID is:"+jsono.getString("orderID"));
 
         JSONObject rtnJson = new JSONObject();
 

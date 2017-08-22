@@ -1,5 +1,6 @@
 package com.feast.demo.order.dao;
 
+import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -14,5 +15,6 @@ public interface OrderDao extends PagingAndSortingRepository<OrderInfo,Long>,Ord
 
     @Query("select o from OrderInfo o where o.orderid=?1")
     List<OrderInfo> findByOrderId(Long orderID);
+
 
 }

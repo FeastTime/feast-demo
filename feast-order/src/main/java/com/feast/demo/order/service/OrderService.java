@@ -27,6 +27,8 @@ public interface OrderService {
 
     public List<OrderInfo> findByOrderId(Long orderID);
 
+    public OrderDetail findByOrderIdAndDishID(Long orderid, Long dishid);
+
     public List<OrderDetailVo> findVoByOrderId(Long orderId);
 
 }
