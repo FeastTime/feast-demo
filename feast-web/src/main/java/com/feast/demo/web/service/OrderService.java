@@ -166,9 +166,10 @@ public class OrderService {
         Long dishID = Long.valueOf(jsono.getString("ID"));
         Long orderID = Long.valueOf(jsono.getString("orderID"));
 
-
-        // 删除菜品：更新订单表/订单明细表
+        // 加入购物车：更新订单表
         OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(jsono.getString("orderID")));
+
         OrderDetail orderDetail = new OrderDetail();
 
 
@@ -192,7 +193,6 @@ public class OrderService {
 
                 orderRemoteService.update(orderInfo);
                 orderRemoteService.update(orderDetail);
-
             }
 
         }else{
