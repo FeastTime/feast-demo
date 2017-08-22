@@ -105,18 +105,18 @@ public class AdvertisementController {
         Map<String,Object> result = Maps.newHashMap();
         JSONObject paramsJson = JSON.parseObject( com.feast.demo.web.util.StringUtils.decode(params));
         int num = paramsJson.getInteger("num");
-        int width = paramsJson.getInteger("width");
-        int height= paramsJson.getInteger("height");
+        Integer width = paramsJson.getInteger("width");
+        Integer height= paramsJson.getInteger("height");
         String token = paramsJson.getString("token");
         result.put("num",num);
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
         num = 24;//暂时固定为24
-        List<String> urls = adverstismentService.getAdArray(num,width+"",height+"");
+        List<Advertisement> ads = adverstismentService.findByTypeAndSize("html",width,height);
         List<String> _urls = Lists.newArrayList();
-        for(String url:urls){
-            _urls.add(path+url);
+        for(Advertisement ad:ads){
+            _urls.add(ad.getPath());
         }
         result.put("data",_urls);
         return result;
