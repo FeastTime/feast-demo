@@ -73,7 +73,7 @@ public class UserController {
 //        Long mobileNo = jsono.getLong("mobileNO");
 
         String resultMsg = "";
-        int success = 0;
+        Integer success = 1;//0:成功，1:失败
         Device device = deviceService.findDeviceInfoByImei(user.getImei());
         if(device != null && device.getStore() != null){
             result.put("storeId",device.getStore().getId());
@@ -84,7 +84,7 @@ public class UserController {
         if(user.getMobileNo() == null){
             resultMsg = "访客登录成功";
             result.put("token","fangketoken:asieurqknro239480984234lkasj");
-            success = 1;
+            success = 0;
         }else{
             //用户登录
             User _user = userService.fingByMobileNo(user.getMobileNo());
@@ -95,7 +95,7 @@ public class UserController {
             LoginMemory.set(user.getMobileNo()+"",user);
             resultMsg = "欢迎您登录成功!";
             result.put("token","token:asieurqknro239480984234lkasj");
-            success = 1;
+            success = 0;
         }
         result.put("resultCode",success);
         result.put("resultMsg",resultMsg);

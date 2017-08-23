@@ -1,11 +1,14 @@
 package com.feast.demo.web.entity;
 
-import java.util.ArrayList;
+import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 /**
  * Created by wpp on 2017/5/9.
  */
+@Data
 public class OrderObj {
     private String imei;
     private String androidID;
@@ -23,6 +26,8 @@ public class OrderObj {
     private byte state;
     private HashMap<String, MyDishObj> myDishMap;
     private HashMap<String, RecommendDishObj> recommendDishMap;
+
+    private BigDecimal price;
 
     public String getImei() {
         return imei;
