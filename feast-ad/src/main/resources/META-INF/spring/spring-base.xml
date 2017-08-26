@@ -62,6 +62,7 @@
         <property name="packagesToScan">
             <list>
                 <value>com.feast.demo.ad</value>
+                <value>com.feast.demo.coupon</value>
             </list>
         </property>
     </bean>
@@ -95,6 +96,9 @@
 
     <jpa:repositories base-package="com.feast.demo.ad.dao"
       entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
+    <jpa:repositories base-package="com.feast.demo.coupon.dao"
+      entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
 
     <context:component-scan base-package="com.feast.demo.ad" />
+    <context:component-scan base-package="com.feast.demo.coupon" />
 </beans>

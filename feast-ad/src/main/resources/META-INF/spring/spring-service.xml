@@ -18,5 +18,6 @@
     <!--<dubbo:monitor protocol="registry"/>-->
 
     <dubbo:service interface="com.feast.demo.ad.service.AdService" protocol="dubbo" ref="adServiceImpl"/>
+    <dubbo:service interface="com.feast.demo.coupon.service.CouponService" protocol="dubbo" ref="couponServiceImpl"/>
 
 </beans>

@@ -23,5 +23,6 @@
 
     <dubbo:reference id="orderRemoteService" interface="com.feast.demo.order.service.OrderService"/>
 
+    <dubbo:reference id="couponRemoteService" interface="com.feast.demo.coupon.service.CouponService"/>
 
 </beans>
