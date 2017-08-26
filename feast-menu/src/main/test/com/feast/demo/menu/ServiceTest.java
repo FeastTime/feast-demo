@@ -1,4 +1,4 @@
-package com.feast.demo.order;
+package com.feast.demo.menu;
 
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.menu.service.MenuService;
