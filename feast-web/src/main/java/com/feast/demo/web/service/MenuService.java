@@ -2,7 +2,7 @@ package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.menu.vo.MenuVo;
-import com.feast.demo.web.entity.DishesBean;
+import com.feast.demo.web.entity.MenuBean;
 import com.feast.demo.web.entity.MenuObj;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -37,44 +37,44 @@ public class MenuService {
                     menuObj.setResultCode("0");
                     menuObj.setRecordCount(count);
                     menuObj.setTmpId("A");
-                    DishesBean dishesBean = null;
-                    ArrayList<DishesBean> dishesList = Lists.newArrayList();
+                    MenuBean menuBean = null;
+                    ArrayList<MenuBean> dishesList = Lists.newArrayList();
                     for (int i = 0; i < list.size(); i++) {
                         MenuVo menuVo = (MenuVo) list.get(i);
-                        dishesBean = new DishesBean();
-                        dishesBean.setDishId(menuVo.getDishId());
-                        dishesBean.setDishNo(menuVo.getDishNo());
-                        dishesBean.setDishImgUrl(menuVo.getDishImgUrl());
-                        dishesBean.setTvUrl(menuVo.getTvUrl());
-                        dishesBean.setHotFlag(menuVo.getHotFlag());
-                        dishesBean.setMaterialFlag(menuVo.getMaterialFlag());
-                        dishesBean.setTitleAdImgUrl(menuVo.getTitleAdImgUrl());
-                        dishesBean.setTitleAdUrl(menuVo.getTitleAdUrl());
-                        dishesBean.setEatTimes(menuVo.getEatTimes());
-                        dishesBean.setDishName(StringUtils.encode(menuVo.getDishName()));
-                        dishesBean.setDetail(StringUtils.encode(menuVo.getDetail()));
-                        dishesBean.setDiscountsTime(menuVo.getDiscountsTime());
-                        dishesBean.setCost(String.valueOf(menuVo.getCost()));
-                        dishesBean.setPrice(String.valueOf(menuVo.getPrice()));
-                        dishesBean.setSales(menuVo.getSales());
-                        dishesBean.setWaitTime(menuVo.getWaitTime());
-                        dishesBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
-                        dishesBean.setStarLevel(menuVo.getStarLevel());
-                        dishesBean.setPungencyDegree(menuVo.getPungencyDegree());
-                        dishesBean.setTmpId(menuVo.getTmpId());
-                        dishesBean.setPageId(menuVo.getPageId());
-                        dishesList.add(dishesBean);
+                        menuBean = new MenuBean();
+                        menuBean.setDishId(menuVo.getDishId());
+                        menuBean.setDishNo(menuVo.getDishNo());
+                        menuBean.setDishImgUrl(menuVo.getDishImgUrl());
+                        menuBean.setTvUrl(menuVo.getTvUrl());
+                        menuBean.setHotFlag(menuVo.getHotFlag());
+                        menuBean.setMaterialFlag(menuVo.getMaterialFlag());
+                        menuBean.setTitleAdImgUrl(menuVo.getTitleAdImgUrl());
+                        menuBean.setTitleAdUrl(menuVo.getTitleAdUrl());
+                        menuBean.setEatTimes(menuVo.getEatTimes());
+                        menuBean.setDishName(StringUtils.encode(menuVo.getDishName()));
+                        menuBean.setDetail(StringUtils.encode(menuVo.getDetail()));
+                        menuBean.setDiscountsTime(menuVo.getDiscountsTime());
+                        menuBean.setCost(String.valueOf(menuVo.getCost()));
+                        menuBean.setPrice(String.valueOf(menuVo.getPrice()));
+                        menuBean.setSales(menuVo.getSales());
+                        menuBean.setWaitTime(menuVo.getWaitTime());
+                        menuBean.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                        menuBean.setStarLevel(menuVo.getStarLevel());
+                        menuBean.setPungencyDegree(menuVo.getPungencyDegree());
+                        menuBean.setTmpId(menuVo.getTmpId());
+                        menuBean.setPageId(menuVo.getPageId());
+                        dishesList.add(menuBean);
                     }
-                    menuObj.setDishesList(dishesList);
+                    menuObj.setMenuList(dishesList);
                 }else{
                     menuObj.setResultCode("0");
                     menuObj.setRecordCount("0");
-                    menuObj.setDishesList(null);
+                    menuObj.setMenuList(null);
                 }
             }else{
                 menuObj.setResultCode("0");
                 menuObj.setRecordCount("0");
-                menuObj.setDishesList(null);
+                menuObj.setMenuList(null);
             }
         }catch (Exception e){
             menuObj.setResultCode("1");

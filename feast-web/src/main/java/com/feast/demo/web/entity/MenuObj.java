@@ -24,5 +24,5 @@ public class MenuObj {
     private String resultMsg;
     private String tmpId;
     private String recordCount;
-    private ArrayList dishesList;
+    private ArrayList menuList;
 }

@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by matao on 2017/5/20.
  */
 @Data
-public class DishesBean {
+public class MenuBean {
     private String dishId;
     private String dishNo;
     private String dishImgUrl;

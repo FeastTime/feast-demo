@@ -9,5 +9,4 @@ import lombok.Data;
 public class DishesCategoryVo {
     private String categoryId;
     private String categoryName;
-    private String storeId;
 }
