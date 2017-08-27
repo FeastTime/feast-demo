@@ -14,11 +14,6 @@ public class App {
     public static void main(String ...args){
         String configLocation = "classpath*:/META-INF/spring/spring-*.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
-//        MenuService menuService = (MenuService) context.getBean("menuServiceImpl");
-//        List<Menu> list = menuService.findAll();
-//        for(Menu menu: list){
-//            System.out.println(menu);
-//        }
         System.out.println("start serivce.");
         while(true){
             try {
