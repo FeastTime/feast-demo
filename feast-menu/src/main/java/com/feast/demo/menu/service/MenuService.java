@@ -9,9 +9,9 @@ import java.util.List;
  * Created by matao on 2017/8/6.
  */
 public interface MenuService {
-
-
     public List<MenuVo> findMenuByCategoryIdAndStoreId(JSONObject jsonObj);
 
     public String getMenuCountByCategoryIdAndStoreId(JSONObject jsonObj);
+
+    public List<MenuVo> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj);
 }

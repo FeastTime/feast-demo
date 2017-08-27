@@ -10,4 +10,6 @@ public interface MenuDaoCustom {
     public String getMenuCountByCategoryIdAndStoreId(String categoryId, String storeId);
 
     public List<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum);
+
+    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage);
 }

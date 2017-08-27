@@ -54,4 +54,26 @@ public class MenuDaoImpl implements MenuDaoCustom{
         }
         return query.getResultList();
     }
+
+    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage) {
+        StringBuilder sb = new StringBuilder();
+        Map<String,Object> params = Maps.newHashMap();
+        sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag," +
+                "m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag," +
+                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid " +
+                "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
+        if("1".equals(isHomePage)) {
+            sb.append(" and cm.categoryid=:categoryId");
+        }else{
+            sb.append(" and cm.categoryid!=:categoryId");
+        }
+        sb.append(" and m.storeid=:storeId");
+        params.put("categoryId", "9999");
+        params.put("storeId",storeId);
+        Query query = em.createQuery(sb.toString());
+        for(String key:params.keySet()){
+            query.setParameter(key,params.get(key));
+        }
+        return query.getResultList();
+    }
 }

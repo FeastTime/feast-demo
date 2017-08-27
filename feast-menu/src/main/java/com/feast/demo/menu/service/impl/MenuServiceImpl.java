@@ -6,10 +6,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.menu.dao.MenuDao;
 import com.feast.demo.menu.service.MenuService;
 import com.feast.demo.menu.vo.MenuVo;
+import com.feast.demo.util.utilTools;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,6 +47,28 @@ public class MenuServiceImpl implements MenuService {
                 list.add(vo);
             }
             return list;
+        }else {
+            return null;
+        }
+    }
+
+    public List<MenuVo> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj) {
+        String isHomePage = jsonObj.getString("isHomePage");
+        String storeId = jsonObj.getString("storeId");
+        String mobileNo = jsonObj.getString("mobileNo");
+        if (StringUtils.isNotEmpty(isHomePage) && StringUtils.isNotEmpty(storeId)) {
+            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage);
+            List<MenuVo> list = Lists.newArrayList();
+
+            for(Object o:result){
+                MenuVo vo = convertMenuVo((Object[]) o);//查询结果set到vo上
+                list.add(vo);
+            }
+            if (list!=null && list.size()>0) {
+                return utilTools.randomList((ArrayList) list).subList(0, 4);
+            }else {
+                return null;
+            }
         }else {
             return null;
         }

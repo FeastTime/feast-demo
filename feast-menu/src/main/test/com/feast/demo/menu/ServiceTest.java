@@ -24,16 +24,26 @@ public class ServiceTest {
     @Test
     public void test1(){
         JSONObject json = new JSONObject();
-        json.put("categoryId","1001");
+        //json.put("categoryId","1001");
         json.put("storeId","1000000000");
-        json.put("pageNo",0);
-        json.put("pageNum",3);
-        String str = menuService.getMenuCountByCategoryIdAndStoreId(json);
-
-        System.out.println(str);
-        List<MenuVo> list = menuService.findMenuByCategoryIdAndStoreId(json);
-        for(MenuVo vo:list){
-            System.out.println(vo);
+//        json.put("pageNo",0);
+//        json.put("pageNum",3);
+        json.put("isHomePage",1);
+//        String str = menuService.getMenuCountByCategoryIdAndStoreId(json);
+//        System.out.println(str);
+//        List<MenuVo> list = menuService.findMenuByCategoryIdAndStoreId(json);
+//        for(MenuVo vo:list){
+//            System.out.println(vo);
+//        }
+        List<MenuVo> list = menuService.findRecommendPrdByStoreIdAndHomeFlag(json);
+        if (list!=null && list.size()>0) {
+            for(MenuVo vo:list){
+                System.out.println(vo);
+            }
+        }else{
+            System.out.println("空");
         }
+
+
     }
 }
