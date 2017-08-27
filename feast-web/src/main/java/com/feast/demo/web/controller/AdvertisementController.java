@@ -8,9 +8,13 @@ import com.feast.demo.web.service.AdverstismentService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -104,18 +108,21 @@ public class AdvertisementController {
     public Map<String,Object> getAdArray(@RequestBody String params){
         Map<String,Object> result = Maps.newHashMap();
         JSONObject paramsJson = JSON.parseObject( com.feast.demo.web.util.StringUtils.decode(params));
-        int num = paramsJson.getInteger("num");
+        Integer num = paramsJson.getInteger("num");
         Integer width = paramsJson.getInteger("width");
         Integer height= paramsJson.getInteger("height");
         String token = paramsJson.getString("token");
+        if(num == null) {
+            num = 24;//暂时固定为24
+        }
         result.put("num",num);
         result.put("width",width);
         result.put("height",height);
         result.put("token",token);
-        num = 24;//暂时固定为24
-        List<Advertisement> ads = adverstismentService.findByTypeAndSize("html",width,height);
+        //List<Advertisement> ads = adverstismentService.findByTypeAndSize("html",width,height);
+        Page<Advertisement> page = adverstismentService.findPageByTypeAndSize("html",width,height,1,num);
         List<String> _urls = Lists.newArrayList();
-        for(Advertisement ad:ads){
+        for(Advertisement ad:page.getContent()){
             _urls.add(ad.getPath());
         }
         result.put("data",_urls);

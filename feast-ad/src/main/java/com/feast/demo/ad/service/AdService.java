@@ -32,4 +32,6 @@ public interface AdService {
     public Page<Advertisement> findByPage(Pageable pageable);
 
     public List<Advertisement> findByTypeAndSize(String type,Integer width,Integer height);
+
+    public Page<Advertisement> findPageByTypeAndSize(String type, Integer width, Integer height,Integer pageNo,Integer pageNum);
 }
