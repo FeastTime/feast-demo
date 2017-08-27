@@ -1,11 +1,16 @@
 package com.feast.demo.web.ad2.ad;
 
+import com.feast.demo.ad.entity.Advertisement;
+import com.feast.demo.ad.service.AdService;
 import com.feast.demo.coupon.entity.Coupon;
 import com.feast.demo.coupon.service.CouponService;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.List;
 
 /**
  * Unit test for simple App.
@@ -18,10 +23,20 @@ public class AppTest {
     @Autowired
     private CouponService couponServiceImpl;
 
-    @org.junit.Test
+    @Autowired
+    private AdService adService;
+
+    //@Test
     public void testApp()
     {
         for(Coupon c: couponServiceImpl.findAll())
         System.out.println(c);
+    }
+    @Test
+    public void test2(){
+        List<Advertisement> list = adService.findBySizeUseNativeSql(243,146,5,true);
+        for(Advertisement ad:list){
+            System.out.println(ad);
+        }
     }
 }

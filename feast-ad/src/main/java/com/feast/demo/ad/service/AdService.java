@@ -34,4 +34,6 @@ public interface AdService {
     public List<Advertisement> findByTypeAndSize(String type,Integer width,Integer height);
 
     public Page<Advertisement> findPageByTypeAndSize(String type, Integer width, Integer height,Integer pageNo,Integer pageNum);
+
+    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand);
 }
