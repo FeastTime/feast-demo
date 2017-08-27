@@ -4,6 +4,7 @@ import com.feast.demo.ad.entity.AdTargetType;
 import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -53,5 +54,18 @@ public class AdverstismentService {
             return null;
         }
         return adRemoteService.findByTypeAndSize(type,width,height);
+    }
+
+    /**
+     * 分页查询（返回指定条数）
+     * @param type
+     * @param width
+     * @param height
+     * @param pageNo
+     * @param pageNum
+     * @return
+     */
+    public Page<Advertisement> findPageByTypeAndSize(String type, Integer width, Integer height, Integer pageNo, Integer pageNum){
+        return adRemoteService.findPageByTypeAndSize(type,width,height,pageNo,pageNum);
     }
 }

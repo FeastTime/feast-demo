@@ -3,7 +3,7 @@
 </head>
 url:<input type="text" id="url" name="" value="menu/menu"/><br/>
     协议:<input type="text" id="prot" name="" value="post"/><br/>
-参数:<textarea id="params"></textarea>
+参数:<textarea id="params" style="width:400px;height:200px;"></textarea>
 <button onclick="javascript:submitRequest();">提交</button>
 <div id="content">
 </div>
@@ -18,7 +18,8 @@ url:<input type="text" id="url" name="" value="menu/menu"/><br/>
             type:prot,
             data:params,
             success:function(data){
-                $("#content").html(data);
+                $("#content").html(JSON.stringify(data));
+                console.info(data);
             },
             error : function(responseStr) {
                 $("#content").html(responseStr.responseText);

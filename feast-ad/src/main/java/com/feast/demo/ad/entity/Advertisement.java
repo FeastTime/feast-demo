@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Data
-public class Advertisement {
+public class Advertisement implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
