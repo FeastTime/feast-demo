@@ -147,6 +147,10 @@ public class AdServiceImpl implements AdService {
         return advertisementDao.findPageByTypeAndSize(type,width,height,pageable);
     }
 
+    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand) {
+        return advertisementDao.findBySizeUseNativeSql(width,height,num,isRand);
+    }
+
     /**
      *
      * @param page 第几页

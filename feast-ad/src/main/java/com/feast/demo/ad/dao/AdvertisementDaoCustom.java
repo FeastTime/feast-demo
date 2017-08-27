@@ -14,4 +14,6 @@ public interface AdvertisementDaoCustom {
     public List<Advertisement> findAll2();
 
     public Page<Advertisement> findByPage(Pageable pageable);
+
+    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand);
 }
