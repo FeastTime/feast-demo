@@ -28,4 +28,5 @@ public class MenuBean {
     private String pungencyDegree;
     private String tmpId;
     private String pageId;
+    private String categoryId;
 }

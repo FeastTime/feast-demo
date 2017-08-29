@@ -95,6 +95,7 @@ public class MenuServiceImpl implements MenuService {
         vo.setStarLevel((String)o[17]);
         vo.setTmpId((String)o[18]);
         vo.setPageId((String) o[19]);
+        vo.setCategoryId((String) o[20]);
         return vo;
     }
 }

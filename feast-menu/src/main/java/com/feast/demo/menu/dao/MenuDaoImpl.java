@@ -36,7 +36,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag," +
                 "m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag," +
-                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid " +
+                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid ,cm.categoryid " +
                 "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
         sb.append(" and cm.categoryid=:categoryId");
         sb.append(" and m.storeid=:storeId");
@@ -60,7 +60,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag," +
                 "m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag," +
-                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid " +
+                "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid,cm.categoryid " +
                 "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
         if("1".equals(isHomePage)) {
             sb.append(" and cm.categoryid=:categoryId");
