@@ -1,17 +1,19 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.menu.vo.MenuVo;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.order.vo.OrderDetailVo;
-import com.feast.demo.web.entity.MyDishObj;
-import com.feast.demo.web.entity.OrderObj;
-import com.feast.demo.web.entity.RecommendDishObj;
+import com.feast.demo.web.entity.*;
+import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,8 @@ public class OrderService {
 
     @Autowired
     private com.feast.demo.order.service.OrderService orderRemoteService;
+    @Autowired
+    private com.feast.demo.menu.service.MenuService menuRemoteService;
 
     public OrderObj getCreatedOrder(JSONObject jsono){
 
@@ -71,7 +75,59 @@ public class OrderService {
         return orderObj;
     }
 
+    public OrderObj removeMyDish(JSONObject jsono, OrderObj orderObj){
 
+        String storeid = jsono.getString("storeid") == null ? "0" : jsono.getString("storeid");
+        String tableid = jsono.getString("tableid") == null ? "0" : jsono.getString("tableid");;
+        String userid = jsono.getString("userid") == null ? "0" : jsono.getString("userid");;
+        String id = jsono.getString("ID");
+        Long dishID = Long.valueOf(jsono.getString("ID"));
+        Long orderID = Long.valueOf(jsono.getString("orderID"));
+        String price = jsono.getString("price") == null ? "0" : jsono.getString("price");
+        BigDecimal totalPrice = orderObj.getPrice().subtract(BigDecimal.valueOf(Long.valueOf(price)));
+        orderObj.setPrice(totalPrice);
+
+        // 加入购物车：更新订单表
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(jsono.getString("orderID")));
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail = orderRemoteService.findByOrderIdAndDishID(Long.valueOf(orderID), Long.valueOf(id));
+
+
+        HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
+
+        if(myDishMap.containsKey(id)){
+            if("1".equals(myDishMap.get(id).getAmount())){
+                myDishMap.remove(id);
+                orderInfo.setOrderid(orderID);
+                // 订单表其他信息。。。。
+                orderRemoteService.update(orderInfo);
+                orderRemoteService.delete(orderID, dishID);
+            }else{
+                long amount = Long.valueOf(myDishMap.get(id).getAmount());
+                myDishMap.get(id).setAmount(String.valueOf(amount-1));
+                orderInfo.setOrderid(orderID);
+                // 订单表其他信息。。。。
+                orderDetail.setDishid(dishID);
+                orderDetail.setOrderid(orderID);
+                orderDetail.setAmount(amount-1);
+
+                orderRemoteService.update(orderInfo);
+                orderRemoteService.update(orderDetail);
+            }
+
+        }else{
+            // 购物车没有此菜品暂时不做处理
+        }
+
+        HashMap<String, RecommendDishObj> recommendDishMap = findRecommendPrdByStoreIdAndHomeFlag(jsono);
+        orderObj.setRecommendDishMap(recommendDishMap);
+
+        System.out.println("remove Dish success...");
+
+        return orderObj;
+    }
 
     public OrderObj addMyDish(JSONObject jsono, OrderObj orderObj){
 
@@ -146,94 +202,85 @@ public class OrderService {
             orderRemoteService.create(orderDetail);
         }
 
-
-
-        HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
-        RecommendDishObj recommendDish = new RecommendDishObj();
-        // 以下数据为大数据平台所得，并关联数据库查询
-        recommendDish.setAmount("1");
-        recommendDish.setBeforeOrderTimes("3");
-        recommendDish.setDishID("1002");
-        recommendDish.setDishImgUrl("http://www.baidu.com/");
-        recommendDish.setDishName("京酱肉丝");
-        recommendDish.setDishNO("00001002");
-        recommendDish.setExtraFlag("1");
-        recommendDish.setTodayPrice("10");
-
-        recommendDishMap.put(id, recommendDish);
+        HashMap<String, RecommendDishObj> recommendDishMap = findRecommendPrdByStoreIdAndHomeFlag(jsono);
+        orderObj.setRecommendDishMap(recommendDishMap);
 
         System.out.println("Add Dish success...");
 
         return orderObj;
     }
 
-    public OrderObj removeMyDish(JSONObject jsono, OrderObj orderObj){
-
-        String storeid = jsono.getString("storeid") == null ? "0" : jsono.getString("storeid");
-        String tableid = jsono.getString("tableid") == null ? "0" : jsono.getString("tableid");;
-        String userid = jsono.getString("userid") == null ? "0" : jsono.getString("userid");;
-        String id = jsono.getString("ID");
-        Long dishID = Long.valueOf(jsono.getString("ID"));
-        Long orderID = Long.valueOf(jsono.getString("orderID"));
-        String price = jsono.getString("price") == null ? "0" : jsono.getString("price");
-        BigDecimal totalPrice = orderObj.getPrice().subtract(BigDecimal.valueOf(Long.valueOf(price)));
-        orderObj.setPrice(totalPrice);
-
-        // 加入购物车：更新订单表
+    public String placeOrder(JSONObject jsono){
+        System.out.println("placeOrder start...");
+        String result = "0";
+        String orderID = jsono.getString("orderID");
         OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setOrderid(Long.valueOf(jsono.getString("orderID")));
+        orderInfo.setOrderid(Long.valueOf(orderID));
+        orderInfo.setStatus(1);
+        orderRemoteService.update(orderInfo);
+        System.out.println("placeOrder success...");
+        return result;
+    }
 
-        OrderDetail orderDetail = new OrderDetail();
-        orderDetail = orderRemoteService.findByOrderIdAndDishID(Long.valueOf(orderID), Long.valueOf(id));
-
-
-        HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
-
-        if(myDishMap.containsKey(id)){
-            if("1".equals(myDishMap.get(id).getAmount())){
-                myDishMap.remove(id);
-                orderInfo.setOrderid(orderID);
-                // 订单表其他信息。。。。
-                orderRemoteService.update(orderInfo);
-                orderRemoteService.delete(orderID, dishID);
-            }else{
-                long amount = Long.valueOf(myDishMap.get(id).getAmount());
-                myDishMap.get(id).setAmount(String.valueOf(amount-1));
-                orderInfo.setOrderid(orderID);
-                // 订单表其他信息。。。。
-                orderDetail.setDishid(dishID);
-                orderDetail.setOrderid(orderID);
-                orderDetail.setAmount(amount-1);
-
-                orderRemoteService.update(orderInfo);
-                orderRemoteService.update(orderDetail);
-            }
-
-        }else{
-            // 购物车没有此菜品暂时不做处理
-        }
-
-        HashMap<String, RecommendDishObj> recommendDishMap = orderObj.getRecommendDishMap();
-        RecommendDishObj recommendDish = new RecommendDishObj();
-        // 以下数据为大数据平台所得，并关联数据库查询
-        recommendDish.setAmount("1");
-        recommendDish.setBeforeOrderTimes("3");
-        recommendDish.setDishID("1002");
-        recommendDish.setDishImgUrl("http://www.baidu.com/");
-        recommendDish.setDishName("京酱肉丝");
-        recommendDish.setDishNO("00001002");
-        recommendDish.setExtraFlag("1");
-        recommendDish.setTodayPrice("10");
-
-        recommendDishMap.put(id, recommendDish);
-
-        System.out.println("remove Dish success...");
-
-        return orderObj;
+    public String payOrder(JSONObject jsono){
+        System.out.println("payOrder start...");
+        String result = "0";
+        String orderID = jsono.getString("orderID");
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(orderID));
+        orderInfo.setStatus(2);
+        orderRemoteService.update(orderInfo);
+        System.out.println("payOrder success...");
+        return result;
     }
 
     public List<OrderDetailVo> findOrderVoByOrderId(Long orderId){
         return orderRemoteService.findVoByOrderId(orderId);
+    }
+
+
+    public HashMap<String, RecommendDishObj> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj) {
+        System.out.println("storeId is:" + jsonObj.getString("storeId"));
+        System.out.println("isHomePage is:" + jsonObj.getString("isHomePage"));
+//        String isHomePage = jsonObj.getString("isHomePage");
+//        String storeId = jsonObj.getString("storeId");
+
+        HashMap<String, RecommendDishObj> recommendDishMap = new HashMap<String, RecommendDishObj>();
+        try {
+            List<MenuVo> list = menuRemoteService.findRecommendPrdByStoreIdAndHomeFlag(jsonObj);
+
+            if (list != null && list.size()>0){
+                for (int i = 0; i < list.size(); i++) {
+                    RecommendDishObj recommendDish = new RecommendDishObj();
+                    MenuVo menuVo = (MenuVo) list.get(i);
+                    recommendDish.setDishId(menuVo.getDishId());
+                    recommendDish.setDishNo(menuVo.getDishNo());
+                    recommendDish.setDishImgUrl(menuVo.getDishImgUrl());
+                    recommendDish.setTvUrl(menuVo.getTvUrl());
+                    recommendDish.setHotFlag(menuVo.getHotFlag());
+                    recommendDish.setMaterialFlag(menuVo.getMaterialFlag());
+                    recommendDish.setTitleAdImgUrl(menuVo.getTitleAdImgUrl());
+                    recommendDish.setTitleAdUrl(menuVo.getTitleAdUrl());
+                    recommendDish.setEatTimes(menuVo.getEatTimes());
+                    recommendDish.setDishName(StringUtils.encode(menuVo.getDishName()));
+                    recommendDish.setDetail(StringUtils.encode(menuVo.getDetail()));
+                    recommendDish.setDiscountsTime(menuVo.getDiscountsTime());
+                    recommendDish.setCost(String.valueOf(menuVo.getCost()));
+                    recommendDish.setPrice(String.valueOf(menuVo.getPrice()));
+                    recommendDish.setSales(menuVo.getSales());
+                    recommendDish.setWaitTime(menuVo.getWaitTime());
+                    recommendDish.setExponent(StringUtils.encode("钠含量30克，热量50卡"));
+                    recommendDish.setStarLevel(menuVo.getStarLevel());
+                    recommendDish.setPungencyDegree(menuVo.getPungencyDegree());
+                    recommendDish.setTmpId(menuVo.getTmpId());
+                    recommendDish.setPageId(menuVo.getPageId());
+                    recommendDishMap.put(menuVo.getDishId(), recommendDish);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return recommendDishMap;
     }
 
 }

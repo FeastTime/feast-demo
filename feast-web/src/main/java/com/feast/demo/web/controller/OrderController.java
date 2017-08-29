@@ -3,9 +3,11 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.menu.vo.MenuVo;
 import com.feast.demo.order.vo.OrderDetailVo;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.memory.OrderMemory;
+import com.feast.demo.web.service.MenuService;
 import com.feast.demo.web.service.OrderService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -27,6 +29,9 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private MenuService menuService;
 
     @ResponseBody
     @RequestMapping(value = "/createOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
@@ -75,8 +80,8 @@ public class OrderController {
         rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
         rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
         // 是否需要实现价格计算
-        rtnJson.put("totalPrice", "236.00");
-        rtnJson.put("discountSale", "11.00");
+        rtnJson.put("totalPrice", orderObj.getPrice());
+        rtnJson.put("discountSale", "0.00");
         Random random = new Random();
         int randomM = random.nextInt(20)+1;
 
@@ -117,8 +122,8 @@ public class OrderController {
         rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
         rtnJson.put("myOrderList", parseMapToJSONArray(orderObj.getMyDishMap()));
         // 是否需要实现价格计算
-        rtnJson.put("totalPrice", "233.00");
-        rtnJson.put("discountSale", "11.00");
+        rtnJson.put("totalPrice", orderObj.getPrice());
+        rtnJson.put("discountSale", "0.00");
 
         return JSON.toJSONString(rtnJson);
     }
@@ -148,8 +153,8 @@ public class OrderController {
         rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
         rtnJson.put("myOrderList",  parseMapToJSONArray(orderObj.getMyDishMap()));
         // 是否需要实现价格计算
-        rtnJson.put("totalPrice", "233.00");
-        rtnJson.put("discountSale", "11.00");
+        rtnJson.put("totalPrice", orderObj.getPrice());
+        rtnJson.put("discountSale", "0.00");
 
         rtnJson.put("orderTime", new Date().getTime());
         rtnJson.put("needTime", "150");
@@ -174,15 +179,12 @@ public class OrderController {
         System.out.println("orderID is:"+jsono.getString("orderID"));
 
         JSONObject rtnJson = new JSONObject();
-
         String orderID = jsono.getString("orderID");
         OrderObj orderObj = OrderMemory.get(orderID);
 
-        orderObj.setOrderTime(new Date().getTime());
-        orderObj.setNeedTime(150);
-        orderObj.setState((byte)'1');
+        String result = orderService.placeOrder(jsono);
 
-        rtnJson.put("resultCode", "0"); // orderObj.getResultCode()
+        rtnJson.put("resultCode", result); // orderObj.getResultCode()
         rtnJson.put("orderID", orderObj.getOrderID());
 
         return JSON.toJSONString(rtnJson);
@@ -206,9 +208,11 @@ public class OrderController {
         String orderID = jsono.getString("orderID");
         OrderObj orderObj = OrderMemory.get(orderID);
 
-        rtnJson.put("amount", "233.00");
-        rtnJson.put("discount", "11.00");
-        rtnJson.put("resultCode", "0"); // orderObj.getResultCode()
+        String result = orderService.payOrder(jsono);
+
+        rtnJson.put("amount", orderObj.getPrice());
+        rtnJson.put("discount", "0.00");
+        rtnJson.put("resultCode", result); // orderObj.getResultCode()
         rtnJson.put("orderID", orderObj.getOrderID());
 
         return JSON.toJSONString(rtnJson);
