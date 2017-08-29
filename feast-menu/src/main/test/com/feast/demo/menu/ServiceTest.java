@@ -28,7 +28,7 @@ public class ServiceTest {
         json.put("storeId","1000000000");
 //        json.put("pageNo",0);
 //        json.put("pageNum",3);
-        json.put("isHomePage",1);
+        json.put("isHomePage",0);
 //        String str = menuService.getMenuCountByCategoryIdAndStoreId(json);
 //        System.out.println(str);
 //        List<MenuVo> list = menuService.findMenuByCategoryIdAndStoreId(json);
