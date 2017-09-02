@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,12 +60,11 @@ public class MenuServiceImpl implements MenuService {
         if (StringUtils.isNotEmpty(storeId)) {
 
             String categoryIdStr = (String) menuDao.getCategoryIdStrByStoreId(storeId);
+            List<String> categoryIds = Lists.newArrayList();
             if (StringUtils.isNotEmpty(categoryIdStr)) {
-                categoryIdStr = "'"+categoryIdStr.replaceAll(",","','")+"'";
-            }else{
-                categoryIdStr="";
+                categoryIds.addAll(Arrays.asList(categoryIdStr.split(",")));
             }
-            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIdStr);
+            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIds);
             List<MenuVo> list = Lists.newArrayList();
 
             for(Object o:result){
