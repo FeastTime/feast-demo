@@ -56,19 +56,22 @@ public class MenuServiceImpl implements MenuService {
         String isHomePage = jsonObj.getString("isHomePage");
         String storeId = jsonObj.getString("storeId");
         String mobileNo = jsonObj.getString("mobileNo");
-        if (StringUtils.isNotEmpty(isHomePage) && StringUtils.isNotEmpty(storeId)) {
-            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage);
+        if (StringUtils.isNotEmpty(storeId)) {
+
+            String categoryIdStr = (String) menuDao.getCategoryIdStrByStoreId(storeId);
+            if (StringUtils.isNotEmpty(categoryIdStr)) {
+                categoryIdStr = "'"+categoryIdStr.replaceAll(",","','")+"'";
+            }else{
+                categoryIdStr="";
+            }
+            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIdStr);
             List<MenuVo> list = Lists.newArrayList();
 
             for(Object o:result){
                 MenuVo vo = convertMenuVo((Object[]) o);//查询结果set到vo上
                 list.add(vo);
             }
-            if (list!=null && list.size()>0) {
-                return utilTools.randomList((ArrayList) list).subList(0, 4);
-            }else {
-                return null;
-            }
+            return utilTools.randomList((ArrayList) list).subList(0, 4);
         }else {
             return null;
         }
