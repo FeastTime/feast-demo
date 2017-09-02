@@ -1,6 +1,5 @@
 package com.feast.demo.menu.dao;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,8 +11,8 @@ public interface MenuDaoCustom {
 
     public List<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum);
 
-    public String getCategoryIdStrByStoreId(String storeId);
+    public String getCategoryIdStrByStoreId(String storeId) throws Exception;
 
-    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, Collection<String> categoryIds);
+    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, String categoryIdStr);
 
 }

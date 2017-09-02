@@ -1,6 +1,6 @@
 package com.feast.demo.menu.dao;
 
-import com.alibaba.dubbo.common.utils.CollectionUtils;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +57,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         return query.getResultList();
     }
 
-    public String getCategoryIdStrByStoreId(String storeId){
+    public String getCategoryIdStrByStoreId(String storeId) throws Exception{
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select categoryid from Recommend where storeid = :storeId");
@@ -70,25 +69,22 @@ public class MenuDaoImpl implements MenuDaoCustom{
         return query.getSingleResult().toString();
     }
 
-    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage,Collection<String> categoryIds) {
+    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, String categoryIdStr) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag," +
                 "m.titleadimgurl,m.titleadurl,m.detail,m.cost,m.waittime,m.pungencydegree,ma.hotflag," +
                 "ma.eattimes,ma.discountstime,ma.price,ma.sales,ma.starlevel,ma.tmpid,ma.pageid,cm.categoryid " +
                 "from Menu m, MenuAuxiliary ma, CategoryMenu cm where cm.dishid=m.dishid and m.dishid=ma.dishid ");
-        if (CollectionUtils.isNotEmpty(categoryIds)){
+        if (StringUtils.isNotEmpty(categoryIdStr)){
             if("1".equals(isHomePage)) {
-                sb.append(" and cm.categoryid in (:categoryIds)");
+                sb.append(" and cm.categoryid in ("+categoryIdStr+")");
             }else if("0".equals(isHomePage)) {
-                sb.append(" and cm.categoryid not in(:categoryIds)");
+                sb.append(" and cm.categoryid not in("+categoryIdStr+")");
             }
         }
         sb.append(" and m.storeid=:storeId");
         sb.append(" order by m.dishid");
-        if (CollectionUtils.isNotEmpty(categoryIds)) {
-            params.put("categoryIds", categoryIds);
-        }
         params.put("storeId",storeId);
         Query query = em.createQuery(sb.toString());
         for(String key:params.keySet()){

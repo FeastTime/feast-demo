@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -58,13 +57,16 @@ public class MenuServiceImpl implements MenuService {
         String storeId = jsonObj.getString("storeId");
         String mobileNo = jsonObj.getString("mobileNo");
         if (StringUtils.isNotEmpty(storeId)) {
-
-            String categoryIdStr = (String) menuDao.getCategoryIdStrByStoreId(storeId);
-            List<String> categoryIds = Lists.newArrayList();
-            if (StringUtils.isNotEmpty(categoryIdStr)) {
-                categoryIds.addAll(Arrays.asList(categoryIdStr.split(",")));
+            String categoryIdStr = "";
+            try {
+                categoryIdStr = (String) menuDao.getCategoryIdStrByStoreId(storeId);
+            }catch (Exception e){
+                categoryIdStr="";
             }
-            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIds);
+            if (StringUtils.isNotEmpty(categoryIdStr)) {
+                categoryIdStr = "'"+categoryIdStr.replaceAll(",","','")+"'";
+            }
+            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIdStr);
             List<MenuVo> list = Lists.newArrayList();
 
             for(Object o:result){
