@@ -33,18 +33,6 @@ public class OrderInfo extends TimedEntity {
      * 桌号
      */
     private long tableid;
-//    /**
-//     * 订单日期
-//     */
-//    private Date orderdate;
-//    /**
-//     * 订单时间
-//     */
-//    private Time ordertime;
-//    /**
-//     * 最后修改时间
-//     */
-//    private Timestamp modifytime;
     /**
      * 订单金额
      */
