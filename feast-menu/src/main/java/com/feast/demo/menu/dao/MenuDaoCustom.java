@@ -11,5 +11,8 @@ public interface MenuDaoCustom {
 
     public List<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum);
 
-    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage);
+    public String getCategoryIdStrByStoreId(String storeId) throws Exception;
+
+    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, String categoryIdStr);
+
 }
