@@ -29,4 +29,5 @@ public class MenuBean {
     private String tmpId;
     private String pageId;
     private String categoryId;
+    private String categoryName;
 }

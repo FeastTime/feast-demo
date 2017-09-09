@@ -63,7 +63,6 @@ public class MenuService {
                         menuBean.setPungencyDegree(menuVo.getPungencyDegree());
                         menuBean.setTmpId(menuVo.getTmpId());
                         menuBean.setPageId(menuVo.getPageId());
-                        menuBean.setCategoryId(menuVo.getCategoryId());
                         dishesList.add(menuBean);
                     }
                     menuObj.setMenuList(dishesList);
