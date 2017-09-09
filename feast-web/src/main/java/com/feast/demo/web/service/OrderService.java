@@ -34,9 +34,9 @@ public class OrderService {
 
         System.out.println("Create order start...");
 
-        String storeid = jsono.getString("storeid") == null ? "0" : jsono.getString("storeid");
-        String tableid = jsono.getString("tableid") == null ? "0" : jsono.getString("tableid");;
-        String userid = jsono.getString("userid") == null ? "0" : jsono.getString("userid");;
+        String storeid = jsono.getString("storeId") == null ? "0" : jsono.getString("storeId");
+        String tableid = jsono.getString("tableId") == null ? "0" : jsono.getString("tableId");
+        String userid = jsono.getString("userId") == null ? "0" : jsono.getString("userId");
         String currentTime = String.valueOf(System.currentTimeMillis());
         String mobileNo = jsono.getString("mobileNO");
         String orderID = jsono.getString("imei").substring(10)
@@ -53,9 +53,9 @@ public class OrderService {
         orderObj.setToken(jsono.getString("token"));
         orderObj.setResultCode("0");
         orderObj.setMyDishMap(new HashMap<String, MyDishObj>());
-        orderObj.setRecommendDishMap(new HashMap<String, RecommendDishObj>());
         orderObj.setPrice(new BigDecimal(0));
-
+        HashMap<String, RecommendDishObj> recommendDishMap = findRecommendPrdByStoreIdAndHomeFlag(jsono);
+        orderObj.setRecommendDishMap(recommendDishMap);
 
         OrderInfo orderInfo = new OrderInfo();
         orderInfo.setOrderid(Long.valueOf(orderID));
@@ -69,7 +69,6 @@ public class OrderService {
         // 保存数据库
         orderRemoteService.create(orderInfo);
 
-
         System.out.println("Create order success...");
 
         return orderObj;
@@ -77,11 +76,11 @@ public class OrderService {
 
     public OrderObj removeMyDish(JSONObject jsono, OrderObj orderObj){
 
-        String storeid = jsono.getString("storeid") == null ? "0" : jsono.getString("storeid");
-        String tableid = jsono.getString("tableid") == null ? "0" : jsono.getString("tableid");;
-        String userid = jsono.getString("userid") == null ? "0" : jsono.getString("userid");;
+        String storeid = jsono.getString("storeId") == null ? "0" : jsono.getString("storeId");
+        String tableid = jsono.getString("tableId") == null ? "0" : jsono.getString("tableId");;
+        String userid = jsono.getString("userId") == null ? "0" : jsono.getString("userId");;
         String id = jsono.getString("ID");
-        Long dishID = Long.valueOf(jsono.getString("ID"));
+        Long dishID = Long.valueOf(jsono.getString("dishId"));
         Long orderID = Long.valueOf(jsono.getString("orderID"));
         String price = jsono.getString("price") == null ? "0" : jsono.getString("price");
         BigDecimal totalPrice = orderObj.getPrice().subtract(BigDecimal.valueOf(Long.valueOf(price)));
@@ -93,7 +92,6 @@ public class OrderService {
 
         OrderDetail orderDetail = new OrderDetail();
         orderDetail = orderRemoteService.findByOrderIdAndDishID(Long.valueOf(orderID), Long.valueOf(id));
-
 
         HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
 
@@ -131,14 +129,18 @@ public class OrderService {
 
     public OrderObj addMyDish(JSONObject jsono, OrderObj orderObj){
 
+
+        // 老马提供根据菜品ID查询菜品信息的接口
+
+
         System.out.println("Add Dish start...");
-        String storeID = jsono.getString("storeID") == null ? "0" : jsono.getString("storeID");
-        String tableID = jsono.getString("tableID") == null ? "0" : jsono.getString("tableID");;
-        String userID = jsono.getString("userID") == null ? "0" : jsono.getString("userID");;;
+        String storeID = jsono.getString("storeId") == null ? "0" : jsono.getString("storeId");
+        String tableID = jsono.getString("tableId") == null ? "0" : jsono.getString("tableId");;
+        String userID = jsono.getString("userId") == null ? "0" : jsono.getString("userId");;;
         String orderID = jsono.getString("orderID");
         String actualprice = jsono.getString("actualprice") == null ? "0" : jsono.getString("actualprice");
 
-        String id = jsono.getString("ID");
+        String id = jsono.getString("dishId");
         BigDecimal totalPrice = orderObj.getPrice().add(new BigDecimal(actualprice));
         orderObj.setPrice(totalPrice);
         // 加入购物车：更新订单表
@@ -156,11 +158,9 @@ public class OrderService {
         HashMap<String, MyDishObj> myDishMap = orderObj.getMyDishMap();
         if(myDishMap.containsKey(id)){
             orderDetail = orderRemoteService.findByOrderIdAndDishID(Long.valueOf(orderID), Long.valueOf(id));
-
             orderDetail.setAmount(orderDetail.getAmount()+1);
             orderDetail.setTotalprice(orderDetail.getTotalprice().add(new BigDecimal(actualprice)));
 
-            // 暂时不做批量修改购物车数量，默认每次只添加一个菜
             orderRemoteService.update(orderInfo);
             orderRemoteService.update(orderDetail);
 
@@ -181,7 +181,7 @@ public class OrderService {
             orderDetail.setDishid(Long.valueOf(id));
             orderDetail.setOrderid(Long.valueOf(orderID));
             orderDetail.setAmount(1L);
-            orderDetail.setUserid(Long.valueOf(jsono.getString("userID")));
+            orderDetail.setUserid(Long.valueOf(jsono.getString("userId")));
             System.out.println("dish id = " + orderDetail.getDishid());
             orderDetail.setTotalprice(new BigDecimal(actualprice));
 
@@ -242,8 +242,6 @@ public class OrderService {
     public HashMap<String, RecommendDishObj> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj) {
         System.out.println("storeId is:" + jsonObj.getString("storeId"));
         System.out.println("isHomePage is:" + jsonObj.getString("isHomePage"));
-//        String isHomePage = jsonObj.getString("isHomePage");
-//        String storeId = jsonObj.getString("storeId");
 
         HashMap<String, RecommendDishObj> recommendDishMap = new HashMap<String, RecommendDishObj>();
         try {
@@ -281,6 +279,35 @@ public class OrderService {
             e.printStackTrace();
         }
         return recommendDishMap;
+    }
+
+    public String restrictDetail(JSONObject jsono){
+        System.out.println("Add restrictDetail start...");
+        String result = "0";
+        String storeID = jsono.getString("storeId") == null ? "0" : jsono.getString("storeId");
+        String tableID = jsono.getString("tableId") == null ? "0" : jsono.getString("tableId");;
+        String userID = jsono.getString("userId") == null ? "0" : jsono.getString("userId");;;
+        String orderID = jsono.getString("orderID");
+        String restrictDetail = jsono.getString("restrictDetail") == null ? "" : jsono.getString("restrictDetail");;;
+
+        String id = jsono.getString("dishId");
+        // 加入购物车：更新订单表
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setOrderid(Long.valueOf(orderID));
+        orderInfo.setStoreid(Long.valueOf(storeID));
+        orderInfo.setTableid(Long.valueOf(tableID));
+        orderInfo.setUserid(Long.valueOf(userID));
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail = orderRemoteService.findByOrderIdAndDishID(Long.valueOf(orderID), Long.valueOf(id));
+        orderDetail.setRestrictdetail(restrictDetail);
+
+        orderRemoteService.update(orderInfo);
+        orderRemoteService.update(orderDetail);
+
+        System.out.println("Add restrictDetail success...");
+
+        return result;
     }
 
 }

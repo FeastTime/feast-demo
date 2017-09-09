@@ -40,11 +40,6 @@ public class OrderController {
         jsonString = StringUtils.decode(jsonString);
         System.out.println("createOrder new = " + jsonString);
         JSONObject jsono = JSONObject.parseObject(jsonString);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
 
         JSONObject rtnJson = new JSONObject();
         OrderObj orderObj = new OrderObj();
@@ -54,6 +49,7 @@ public class OrderController {
 
         rtnJson.put("resultCode", orderObj.getResultCode());
         rtnJson.put("orderID", orderObj.getOrderID());
+        rtnJson.put("recommendOrderList", parseMapToJSONArray(orderObj.getRecommendDishMap()));
 
         return JSON.toJSONString(rtnJson);
     }
@@ -244,6 +240,23 @@ public class OrderController {
         List<OrderDetailVo> list = orderService.findOrderVoByOrderId(orderID);
         result.put("list",list);
         return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/addRestrict",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String restrictDetail(@RequestBody String jsonString){
+        System.out.println("addRestrict old = " + jsonString);
+        jsonString = StringUtils.decode(jsonString);
+        System.out.println("addRestrict new = " + jsonString);
+        JSONObject jsono = JSONObject.parseObject(jsonString);
+
+        JSONObject rtnJson = new JSONObject();
+
+        String result = orderService.restrictDetail(jsono);
+
+        rtnJson.put("resultCode", result); // orderObj.getResultCode()
+
+        return JSON.toJSONString(rtnJson);
     }
 
 }

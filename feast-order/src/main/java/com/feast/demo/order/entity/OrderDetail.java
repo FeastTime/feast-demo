@@ -32,7 +32,7 @@ public class OrderDetail extends TimedEntity implements Serializable{
     private BigDecimal totalprice;// decimal(10,2) DEFAULT NULL COMMENT '总价',
 //    private Time starttime;// time DEFAULT NULL COMMENT '开始时间',
     private Long needtime;// int(11) DEFAULT NULL COMMENT '需要时间',
-    private Long restrictid;// int(11) DEFAULT NULL COMMENT '忌口id',
+    private String restrictdetail;// int(11) DEFAULT NULL COMMENT '忌口描述',
     private Long status;// tinyint(1) DEFAULT NULL COMMENT '状态 0:未开始 1:下锅 2完成 3异常',
     private String reservedfst;// varchar(20) DEFAULT NULL COMMENT '预留字段1',
     private String reservedsnd;// varchar(20) DEFAULT NULL COMMENT '预留字段2',
