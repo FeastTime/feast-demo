@@ -26,6 +26,7 @@ public class RecommendDishObj {
     private String pungencyDegree;
     private String tmpId;
     private String pageId;
+    private String categoryName;
 
     public String getDishId() {
         return dishId;
@@ -193,5 +194,13 @@ public class RecommendDishObj {
 
     public void setPageId(String pageId) {
         this.pageId = pageId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

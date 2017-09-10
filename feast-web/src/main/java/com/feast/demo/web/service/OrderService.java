@@ -129,18 +129,18 @@ public class OrderService {
 
     public OrderObj addMyDish(JSONObject jsono, OrderObj orderObj){
 
-
-        // 老马提供根据菜品ID查询菜品信息的接口
-
-
         System.out.println("Add Dish start...");
         String storeID = jsono.getString("storeId") == null ? "0" : jsono.getString("storeId");
         String tableID = jsono.getString("tableId") == null ? "0" : jsono.getString("tableId");;
         String userID = jsono.getString("userId") == null ? "0" : jsono.getString("userId");;;
         String orderID = jsono.getString("orderID");
-        String actualprice = jsono.getString("actualprice") == null ? "0" : jsono.getString("actualprice");
 
         String id = jsono.getString("dishId");
+
+        // 老马提供根据菜品ID查询菜品信息的接口
+        RecommendDishObj dishDetail = findDishDetailByDishId(jsono);
+        String actualprice = dishDetail.getPrice() == null ? "0" : dishDetail.getPrice();
+
         BigDecimal totalPrice = orderObj.getPrice().add(new BigDecimal(actualprice));
         orderObj.setPrice(totalPrice);
         // 加入购物车：更新订单表
@@ -166,14 +166,16 @@ public class OrderService {
 
             MyDishObj myDish = new MyDishObj();
             myDish.setDishID(String.valueOf(orderDetail.getDishid()));
-            // 以下数据为查询数据库所得，DEMO中可在配置文件中写死，读取配置文件获取
             myDish.setAmount(String.valueOf(orderDetail.getAmount()));
-            myDish.setDishImgUrl(String.valueOf(orderDetail.getDishimgurl()));
-            myDish.setDishName(String.valueOf(orderDetail.getDishname()));
-            myDish.setDishNO(String.valueOf(orderDetail.getDishno()));
             myDish.setPrice(String.valueOf(orderDetail.getTotalprice()));
+            // 以下数据为查询数据库所得
+            myDish.setDishImgUrl(String.valueOf(dishDetail.getDishImgUrl()));
+            myDish.setDishName(String.valueOf(dishDetail.getDishName()));
+            myDish.setDishNO(String.valueOf(dishDetail.getDishNo()));
+            myDish.setTvUrl(String.valueOf(dishDetail.getTvUrl()));
+            myDish.setCategoryName(String.valueOf(dishDetail.getCategoryName()));
 
-            myDish.setNeedTime(15);
+            myDish.setNeedTime(Long.valueOf(dishDetail.getWaitTime()));
 
             myDishMap.put(id, myDish);
         }else{
@@ -187,14 +189,16 @@ public class OrderService {
 
             MyDishObj myDish = new MyDishObj();
             myDish.setDishID(String.valueOf(orderDetail.getDishid()));
-            // 以下数据为查询数据库所得，DEMO中可在配置文件中写死，读取配置文件获取
             myDish.setAmount(String.valueOf(orderDetail.getAmount()));
-            myDish.setDishImgUrl(String.valueOf(orderDetail.getDishimgurl()));
-            myDish.setDishName(String.valueOf(orderDetail.getDishname()));
-            myDish.setDishNO(String.valueOf(orderDetail.getDishno()));
             myDish.setPrice(String.valueOf(orderDetail.getTotalprice()));
+            // 以下数据为查询数据库所得
+            myDish.setDishImgUrl(String.valueOf(dishDetail.getDishImgUrl()));
+            myDish.setDishName(String.valueOf(dishDetail.getDishName()));
+            myDish.setDishNO(String.valueOf(dishDetail.getDishNo()));
+            myDish.setTvUrl(String.valueOf(dishDetail.getTvUrl()));
+            myDish.setCategoryName(String.valueOf(dishDetail.getCategoryName()));
 
-            myDish.setNeedTime(15);
+            myDish.setNeedTime(Long.valueOf(dishDetail.getWaitTime()));
 
             myDishMap.put(id, myDish);
 
@@ -272,6 +276,7 @@ public class OrderService {
                     recommendDish.setPungencyDegree(menuVo.getPungencyDegree());
                     recommendDish.setTmpId(menuVo.getTmpId());
                     recommendDish.setPageId(menuVo.getPageId());
+                    recommendDish.setCategoryName(menuVo.getCategoryName());
                     recommendDishMap.put(menuVo.getDishId(), recommendDish);
                 }
             }
@@ -308,6 +313,43 @@ public class OrderService {
         System.out.println("Add restrictDetail success...");
 
         return result;
+    }
+
+    // 根据菜品ID查询菜品详情
+    public RecommendDishObj findDishDetailByDishId(JSONObject jsonObj) {
+        System.out.println("dishId is:" + jsonObj.getString("dishId"));
+
+        RecommendDishObj dishObj = new RecommendDishObj();
+        try {
+            MenuVo menuVo = menuRemoteService.findMenuDetailByDishId(jsonObj);
+
+            dishObj.setDishId(menuVo.getDishId());
+            dishObj.setDishNo(menuVo.getDishNo());
+            dishObj.setDishImgUrl(menuVo.getDishImgUrl());
+            dishObj.setTvUrl(menuVo.getTvUrl());
+            dishObj.setHotFlag(menuVo.getHotFlag());
+            dishObj.setMaterialFlag(menuVo.getMaterialFlag());
+            dishObj.setTitleAdImgUrl(menuVo.getTitleAdImgUrl());
+            dishObj.setTitleAdUrl(menuVo.getTitleAdUrl());
+            dishObj.setEatTimes(menuVo.getEatTimes());
+            dishObj.setDishName(StringUtils.encode(menuVo.getDishName()));
+            dishObj.setDetail(StringUtils.encode(menuVo.getDetail()));
+            dishObj.setDiscountsTime(menuVo.getDiscountsTime());
+            dishObj.setCost(String.valueOf(menuVo.getCost()));
+            dishObj.setPrice(String.valueOf(menuVo.getPrice()));
+            dishObj.setSales(menuVo.getSales());
+            dishObj.setWaitTime(menuVo.getWaitTime());
+            dishObj.setExponent(StringUtils.encode("钠含量xx克，热量xx卡"));
+            dishObj.setStarLevel(menuVo.getStarLevel());
+            dishObj.setPungencyDegree(menuVo.getPungencyDegree());
+            dishObj.setTmpId(menuVo.getTmpId());
+            dishObj.setPageId(menuVo.getPageId());
+            dishObj.setCategoryName(menuVo.getCategoryName());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return dishObj;
     }
 
 }
