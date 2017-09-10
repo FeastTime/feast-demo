@@ -22,7 +22,7 @@ public class DishesCategoryDaoImpl implements DishesCategoryDaoCustom {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select categoryid,categoryname from DishesCategory ");
-        sb.append(" where storeid=:storeId");
+        sb.append(" where categoryid != '9999' and storeid=:storeId");
         params.put("storeId",storeId);
         Query query = em.createQuery(sb.toString());
         for(String key:params.keySet()){

@@ -1,11 +1,15 @@
 package com.feast.demo.menu.dao;
 
+import com.feast.demo.menu.vo.MenuVo;
+
 import java.util.List;
 
 /**
  * Created by matao on 2017/8/15.
  */
 public interface MenuDaoCustom {
+
+    public List<?> findMenuDetailByDishId(String dishId);
 
     public String getMenuCountByCategoryIdAndStoreId(String categoryId, String storeId);
 

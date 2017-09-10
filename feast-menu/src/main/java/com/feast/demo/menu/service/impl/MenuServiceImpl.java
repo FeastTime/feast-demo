@@ -22,6 +22,17 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     private MenuDao menuDao;
 
+    public MenuVo findMenuDetailByDishId(JSONObject jsonObj) {
+        String dishId = jsonObj.getString("dishId");
+        if (StringUtils.isNotEmpty(dishId)) {
+            List<?> result = menuDao.findMenuDetailByDishId(dishId);
+            Object o = result.get(0);
+            return convertMenuVo((Object[]) o);//查询结果set到vo上
+        }else {
+            return null;
+        }
+    }
+
     public String getMenuCountByCategoryIdAndStoreId(JSONObject jsonObj) {
         String categoryId = jsonObj.getString("categoryId");
         String storeId = jsonObj.getString("storeId");
@@ -101,6 +112,7 @@ public class MenuServiceImpl implements MenuService {
         vo.setTmpId((String)o[18]);
         vo.setPageId((String) o[19]);
         vo.setCategoryId((String) o[20]);
+        vo.setCategoryName((String) o[21]);
         return vo;
     }
 }
