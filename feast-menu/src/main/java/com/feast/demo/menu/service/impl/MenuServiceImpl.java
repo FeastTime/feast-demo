@@ -54,7 +54,7 @@ public class MenuServiceImpl implements MenuService {
             List<?> result = menuDao.findMenuByCategoryIdAndStoreId(categoryId, storeId, pageNoInt, pageNumInt);
             List<MenuVo> list = Lists.newArrayList();
             for(Object o:result){
-                MenuVo vo = convertMenuVo((Object[]) o);//查询结果set到vo上
+                MenuVo vo = convertMenuVo1((Object[]) o);//查询结果set到vo上
                 list.add(vo);
             }
             return list;
@@ -81,7 +81,7 @@ public class MenuServiceImpl implements MenuService {
             List<MenuVo> list = Lists.newArrayList();
 
             for(Object o:result){
-                MenuVo vo = convertMenuVo((Object[]) o);//查询结果set到vo上
+                MenuVo vo = convertMenuVo1((Object[]) o);//查询结果set到vo上
                 list.add(vo);
             }
             return utilTools.randomList((ArrayList) list).subList(0, 4);
@@ -113,6 +113,32 @@ public class MenuServiceImpl implements MenuService {
         vo.setPageId((String) o[19]);
         vo.setCategoryId((String) o[20]);
         vo.setCategoryName((String) o[21]);
+        return vo;
+    }
+    private MenuVo convertMenuVo1(Object[] o){
+        MenuVo vo = new MenuVo();
+        vo.setDishId((String) o[0]);
+        vo.setDishNo((String) o[1]);
+        vo.setDishName((String) o[2]);
+        vo.setDishImgUrl((String) o[3]);
+        vo.setTvUrl((String) o[4]);
+        vo.setMaterialFlag((String) o[5]);
+        vo.setTitleAdImgUrl((String) o[6]);
+        vo.setTitleAdUrl((String) o[7]);
+        vo.setDetail((String) o[8]);
+        vo.setCost((BigDecimal) o[9]);
+        vo.setWaitTime((String) o[10]);
+        vo.setPungencyDegree((String) o[11]);
+        vo.setHotFlag((String) o[12]);
+        vo.setEatTimes((String) o[13]);
+        vo.setDiscountsTime((String) o[14]);
+        vo.setPrice((BigDecimal) o[15]);
+        vo.setSales((String) o[16]);
+        vo.setStarLevel((String)o[17]);
+        vo.setTmpId((String)o[18]);
+        vo.setPageId((String) o[19]);
+        //vo.setCategoryId((String) o[20]);
+        //vo.setCategoryName((String) o[21]);
         return vo;
     }
 }
