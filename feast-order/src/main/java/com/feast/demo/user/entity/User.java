@@ -21,6 +21,11 @@ public class User extends TimedEntity{
     private Long id;
 
     /**
+     * 密码
+     */
+    private String pwd;
+
+    /**
      * 乐观锁
      */
     private Long version=-1l;
