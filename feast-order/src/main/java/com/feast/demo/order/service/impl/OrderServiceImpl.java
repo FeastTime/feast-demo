@@ -3,7 +3,6 @@ package com.feast.demo.order.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.order.dao.OrderDao;
 import com.feast.demo.order.dao.OrderDetailDao;
-import com.feast.demo.order.dao.TOrderDetailDao;
 import com.feast.demo.order.entity.OrderDetail;
 import com.feast.demo.order.entity.OrderInfo;
 import com.feast.demo.order.service.OrderService;

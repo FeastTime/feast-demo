@@ -1,6 +1,7 @@
 package com.feast.demo.menu.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.menu.entity.Menu;
 import com.feast.demo.menu.vo.MenuVo;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface MenuService {
     public List<MenuVo> findMenuByCategoryIdAndStoreId(JSONObject jsonObj);
 
     public List<MenuVo> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj);
+
+    public List<Menu> findByIds(Iterable<String> ids);
 }

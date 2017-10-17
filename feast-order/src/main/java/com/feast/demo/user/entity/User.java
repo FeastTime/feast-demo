@@ -1,11 +1,9 @@
 package com.feast.demo.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 /**
  * Created by ggke on 2017/7/23.
@@ -55,4 +53,9 @@ public class User extends TimedEntity{
      *手机号
      */
     private Long mobileNo;
+
+    /**
+     * 用户名
+     */
+    private String name;
 }

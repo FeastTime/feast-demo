@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.menu.dao.MenuDao;
+import com.feast.demo.menu.entity.Menu;
 import com.feast.demo.menu.service.MenuService;
 import com.feast.demo.menu.vo.MenuVo;
 import com.feast.demo.util.utilTools;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -89,6 +91,11 @@ public class MenuServiceImpl implements MenuService {
             return null;
         }
     }
+
+    public List<Menu> findByIds(Iterable<String> ids) {
+        return (List<Menu>) menuDao.findAll(ids);
+    }
+
     private MenuVo convertMenuVo(Object[] o){
         MenuVo vo = new MenuVo();
         vo.setDishId((String) o[0]);

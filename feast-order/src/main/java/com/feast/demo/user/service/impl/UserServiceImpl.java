@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Created by ggke on 2017/7/23.
  */
@@ -53,5 +55,18 @@ public class UserServiceImpl implements UserService{
     public Page<User> findByPage(int page,int size){
         PageRequest pageRequest = new PageRequest(page,size);
         return userDao.findByPage2(pageRequest);
+    }
+
+    /**
+     * 根据名称查询用户
+     * @param name
+     * @return
+     */
+    public List<User> findByName(String name){
+        return userDao.findByName(name);
+    }
+
+    public User findByMobileAndPwd(Long mobileNo, String pwd) {
+        return userDao.findByMobileAndPwd(mobileNo,pwd);
     }
 }

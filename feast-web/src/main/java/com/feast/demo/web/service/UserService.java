@@ -1,14 +1,15 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.device.service.DeviceService;
-import com.feast.demo.store.service.StoreService;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.feast.demo.web.entity.UserObj;
+
+import java.util.List;
+
 /**
  * Created by pinyou on 17-4-11.
  */
@@ -89,6 +90,16 @@ public class UserService {
         return userRemoteService.findByMobileNo(mobileNo);
     }
 
+    /**
+     * 手机号和密码登陆
+     * @param mobileNo
+     * @param pwd
+     * @return
+     */
+    public User findByMobileAndPwd(Long mobileNo,String pwd){
+        return userRemoteService.findByMobileAndPwd(mobileNo,pwd);
+    }
+
     public String createUser(User user){
         String msg = null;
         if(user.getMobileNo()==null){
@@ -100,6 +111,15 @@ public class UserService {
             userRemoteService.create(user);
         }
         return msg;
+    }
+
+    /**
+     * 根据名称查询用户
+     * @param name
+     * @return
+     */
+    public List<User> findByName(String name){
+        return userRemoteService.findByName(name);
     }
 }
 

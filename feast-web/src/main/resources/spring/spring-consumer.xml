@@ -27,4 +27,6 @@
 
     <dubbo:reference id="couponRemoteService" interface="com.feast.demo.coupon.service.CouponService"/>
 
+    <dubbo:reference id="categoryMenuRemoteService" interface="com.feast.demo.menu.service.CategoryMenuService"/>
+
 </beans>
