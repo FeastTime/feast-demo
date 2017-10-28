@@ -40,7 +40,7 @@ public class UserController {
         text = StringUtils.decode(text);
         System.out.println("转之后"+text);
         User user = JSONObject.parseObject(text,User.class);
-        JSONObject jsono  = JSON.parseObject(text);
+
         String msg = userService.createUser(user);
         if(StringUtils.isEmpty(msg)){
             result.put("resultCode",true);
@@ -79,7 +79,6 @@ public class UserController {
             //用户登录
             User _user = userService.findByMobileAndPwd(user.getMobileNo(),user.getPwd());
             if(_user == null){
-
                 if(userService.fingByMobileNo(user.getMobileNo()) != null){
                     resultMsg = "手机号或密码错误";
                 }else{
