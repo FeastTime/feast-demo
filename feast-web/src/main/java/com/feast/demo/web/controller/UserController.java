@@ -35,23 +35,7 @@ public class UserController {
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String register(@RequestBody String text) {
-        Map<Object,Object> result = Maps.newHashMap();
-        System.out.println("转之前"+text);
-        text = StringUtils.decode(text);
-        System.out.println("转之后"+text);
-        User user = JSONObject.parseObject(text,User.class);
-
-        String msg = userService.createUser(user);
-        if(StringUtils.isEmpty(msg)){
-            result.put("resultCode",true);
-            result.put("resultMsg",null);
-            result.put("token","token:asieurqknro239480984234lkasj");
-        }else{
-            result.put("resultCode",false);
-            result.put("resultMsg",msg);
-        }
-
-        return JSON.toJSONString(result);
+       return registe(text);
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
