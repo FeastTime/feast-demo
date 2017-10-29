@@ -1,6 +1,6 @@
 package com.feast.demo.web.controller;
 
-import com.feast.demo.web.service.CacheService;
+import com.feast.demo.web.service.CacheManagerService;
 import com.feast.demo.web.service.TableBidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,19 +21,19 @@ import java.util.UUID;
 public class TestController {
 
     @Autowired
-    private CacheService cacheService;
+    private CacheManagerService cacheManagerService;
 
     @Autowired
     private TableBidService tableBidService;
 
     @RequestMapping(value = "/cache/put", method = RequestMethod.GET)
     public String cachePut(@RequestParam("key") String key, @RequestParam("value") String value) {
-        return (String) cacheService.put(key, value);
+        return (String) cacheManagerService.put(key, value);
     }
 
     @RequestMapping(value = "/cache/get", method = RequestMethod.GET)
     public String cacheGet(@RequestParam("key") String key) {
-        return (String) cacheService.get(key);
+        return (String) cacheManagerService.get(key);
     }
 
     @RequestMapping(value = "/bid/open/", method = RequestMethod.GET)

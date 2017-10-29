@@ -87,9 +87,10 @@ public class UserController {
                 }
                 success = 2;
             }else {
-                LoginMemory.set(user.getMobileNo() + "", user);
+                LoginMemory.set(_user.getMobileNo() + "", _user);
                 resultMsg = "欢迎您登录成功!";
                 result.put("token", "token:asieurqknro239480984234lkasj");
+                result.put("userType",_user.getUserType());
                 success = 0;
             }
         }

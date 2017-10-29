@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 
 @Service
-public class CacheService {
+public class CacheManagerService {
 
     public Serializable put(String key, String value){
         return CacheManager.putToCache(key,value);

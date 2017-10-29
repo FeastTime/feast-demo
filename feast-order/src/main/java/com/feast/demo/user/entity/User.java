@@ -58,4 +58,15 @@ public class User extends TimedEntity{
      * 用户名
      */
     private String name;
+
+    /**
+     * 用户类型，默认是客户
+     */
+    @Enumerated(EnumType.STRING)
+    private UserType userType= UserType.customer;
+
+    public enum UserType{
+        customer,//客户
+        store//店铺
+    }
 }
