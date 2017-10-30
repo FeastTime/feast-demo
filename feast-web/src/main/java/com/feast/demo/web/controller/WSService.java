@@ -1,16 +1,14 @@
 package com.feast.demo.web.controller;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.web.util.StringUtils;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -55,10 +53,12 @@ public class WSService {
 
         if(storeId == null || "".equals(storeId)){
             //跳出去
+            onClose();
         }
 
         if(tokenId == null || "".equals(tokenId)){
             //跳出去
+            onClose();
         }
         if(hm.containsKey(storeId)){
             webSocketSet = hm.get(storeId);
@@ -93,6 +93,18 @@ public class WSService {
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
+//        for (WSService item : webSocketSet) {
+//            try {
+//                item.sendMessage(message);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                continue;
+//            }
+//        }
+        JSONObject jsono = JSON.parseObject(message);
+        String storeId = jsono.getString("storeId");
+        webSocketSet = hm.get(storeId);
+
         for (WSService item : webSocketSet) {
             try {
                 item.sendMessage(message);
