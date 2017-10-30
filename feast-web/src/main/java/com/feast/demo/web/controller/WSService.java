@@ -1,34 +1,75 @@
 package com.feast.demo.web.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.util.StringUtils;
+
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket")
+//@ServerEndpoint("/websocket")
+//@ServerEndpoint(value = "/websocket/{tokenId}")
+@ServerEndpoint("/websocket/{tokenId}/{storeId}")
 public class WSService {
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
-    private static CopyOnWriteArraySet<WSService> webSocketSet = new CopyOnWriteArraySet<WSService>();
+//    private static CopyOnWriteArraySet<WSService> webSocketSet = new CopyOnWriteArraySet<WSService>();
+
+
+    CopyOnWriteArraySet<WSService> webSocketSet;
+    private static HashMap<String,CopyOnWriteArraySet> hm =new HashMap<String,CopyOnWriteArraySet>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
+
+    private String tokenId;
+    private String storeId;
+
+    public WSService() {
+        webSocketSet = new CopyOnWriteArraySet<WSService>();
+        //hm =new HashMap<String,CopyOnWriteArraySet>();
+    }
 
     /**
      * 接建立成功调用的方法
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session,@PathParam("tokenId") String tokenId,@PathParam("storeId") String storeId) {
         this.session = session;
-        webSocketSet.add(this);     //加入set中
+        this.tokenId = tokenId;
+        this.storeId = storeId;
+
+        if(storeId == null || "".equals(storeId)){
+            //跳出去
+        }
+
+        if(tokenId == null || "".equals(tokenId)){
+            //跳出去
+        }
+        if(hm.containsKey(storeId)){
+            webSocketSet = hm.get(storeId);
+            webSocketSet.add(this);
+        } else {
+            webSocketSet = new CopyOnWriteArraySet<WSService>();
+            webSocketSet.add(this);
+            hm.put(storeId, webSocketSet);
+        }
+
+//        webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
     }
