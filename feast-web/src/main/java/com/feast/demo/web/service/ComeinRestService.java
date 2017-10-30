@@ -45,10 +45,10 @@ public class ComeinRestService {
                 retMessage = addDeskList(jsono);
                 break;
             case 3:
-                retMessage = addDeskList(jsono);
+                retMessage = newDeskNotify(jsono);
                 break;
             case 4:
-                retMessage = addDeskList(jsono);
+                retMessage = userOfferPrice(jsono);
                 break;
 
         }
@@ -161,7 +161,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static ComeinRestBean userOfferPrice(JSONObject jsonObj){
+    public static String userOfferPrice(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -172,6 +172,7 @@ public class ComeinRestService {
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
         System.out.println("type is:"+jsonObj.getString("type"));
+        Map<Object,Object> result = Maps.newHashMap();
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
@@ -197,7 +198,8 @@ public class ComeinRestService {
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
-        return crBean;
+        result.put("resultCode", crBean.getResultCode());
+        return JSON.toJSONString(result);
     }
 
     /**
