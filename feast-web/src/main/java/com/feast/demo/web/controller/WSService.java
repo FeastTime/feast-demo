@@ -94,16 +94,19 @@ public class WSService {
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
-//        for (WSService item : webSocketSet) {
-//            try {
-//                item.sendMessage(message);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                continue;
-//            }
-//        }
-        JSONObject jsono = JSON.parseObject(message);
-        String storeId = jsono.getString("storeId");
+        String storeId = null;
+
+        try{
+            JSONObject jsono = JSON.parseObject(message);
+            storeId = jsono.getString("storeId");
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        if (null == storeId){
+            return;
+        }
         webSocketSet = hm.get(storeId);
 
         for (WSService item : webSocketSet) {
