@@ -1,8 +1,11 @@
 package com.feast.demo.web.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.UserBean;
+import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Maps;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,11 +25,33 @@ public class ComeinRestService {
     private static HashMap<String, UserBean> desk_userMap = new HashMap<String, UserBean>();
 
     /**
+     * 对接老马接口入口
+     * @param message
+     * @return
+     */
+    public String WSInterfaceProc(String message){
+        System.out.println("转之前"+message);
+        message = StringUtils.decode(message);
+        System.out.println("转之后"+message);
+
+        JSONObject jsono  = JSON.parseObject(message);
+        int type = Integer.parseInt(jsono.getString("type"));
+        String retMessage = "";
+        switch(type){
+            case 1:
+                retMessage = userComeinProc(jsono);
+                break;
+
+        }
+        return retMessage;
+    }
+
+    /**
      * 用户进店
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean userComeinProc(JSONObject jsonObj){
+    public String userComeinProc(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -37,6 +62,7 @@ public class ComeinRestService {
         System.out.println("userID is:"+jsonObj.getString("userID"));
 
         ComeinRestBean crBean = new ComeinRestBean();
+        Map<Object,Object> result = Maps.newHashMap();
         // 用户相关信息
         UserBean userBean = new UserBean();
         userBean.setUserID(jsonObj.getString("userID"));
@@ -53,7 +79,8 @@ public class ComeinRestService {
         }
 
         crBean.setResultCode("0");
-        return crBean;
+        result.put("resultCode", crBean.getResultCode());
+        return JSON.toJSONString(result);
     }
 
     /**
@@ -226,4 +253,5 @@ public class ComeinRestService {
         //
         return new ComeinRestBean();
     }
+
 }

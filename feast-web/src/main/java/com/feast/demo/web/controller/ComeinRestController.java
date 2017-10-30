@@ -32,8 +32,8 @@ public class ComeinRestController {
         System.out.println("转之后"+text);
         User user = JSONObject.parseObject(text,User.class);
         JSONObject jsono  = JSON.parseObject(text);
-        ComeinRestBean comeinRestBean = comeinRestService.userComeinProc(jsono);
-        result.put("resultCode",comeinRestBean.getResultCode());
+//        ComeinRestBean comeinRestBean = comeinRestService.userComeinProc(jsono);
+//        result.put("resultCode",comeinRestBean.getResultCode());
 
         return JSON.toJSONString(result);
     }
