@@ -3,6 +3,7 @@ package com.feast.demo.web.controller;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.service.ComeinRestService;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -107,7 +108,7 @@ public class WSService {
 
         for (WSService item : webSocketSet) {
             try {
-                item.sendMessage(message);
+                item.sendMessage(ComeinRestService.WSInterfaceProc(message));
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
