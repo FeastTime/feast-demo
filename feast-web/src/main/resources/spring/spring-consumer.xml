@@ -29,4 +29,8 @@
 
     <dubbo:reference id="categoryMenuRemoteService" interface="com.feast.demo.menu.service.CategoryMenuService"/>
 
+    <dubbo:reference id="bidService" interface="com.feast.demo.bid.service.BidService"/>
+
+    <dubbo:reference id="cacheService" interface="com.feast.demo.cache.service.CacheService"/>
+
 </beans>

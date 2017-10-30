@@ -35,23 +35,7 @@ public class UserController {
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String register(@RequestBody String text) {
-        Map<Object,Object> result = Maps.newHashMap();
-        System.out.println("转之前"+text);
-        text = StringUtils.decode(text);
-        System.out.println("转之后"+text);
-        User user = JSONObject.parseObject(text,User.class);
-        JSONObject jsono  = JSON.parseObject(text);
-        String msg = userService.createUser(user);
-        if(StringUtils.isEmpty(msg)){
-            result.put("resultCode",true);
-            result.put("resultMsg",null);
-            result.put("token","token:asieurqknro239480984234lkasj");
-        }else{
-            result.put("resultCode",false);
-            result.put("resultMsg",msg);
-        }
-
-        return JSON.toJSONString(result);
+       return registe(text);
     }
 
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
@@ -79,7 +63,6 @@ public class UserController {
             //用户登录
             User _user = userService.findByMobileAndPwd(user.getMobileNo(),user.getPwd());
             if(_user == null){
-
                 if(userService.fingByMobileNo(user.getMobileNo()) != null){
                     resultMsg = "手机号或密码错误";
                 }else{
@@ -88,9 +71,10 @@ public class UserController {
                 }
                 success = 2;
             }else {
-                LoginMemory.set(user.getMobileNo() + "", user);
+                LoginMemory.set(_user.getMobileNo() + "", _user);
                 resultMsg = "欢迎您登录成功!";
                 result.put("token", "token:asieurqknro239480984234lkasj");
+                result.put("userType",_user.getUserType());
                 success = 0;
             }
         }
