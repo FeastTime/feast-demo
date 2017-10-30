@@ -29,7 +29,7 @@ public class ComeinRestService {
      * @param message
      * @return
      */
-    public String WSInterfaceProc(String message){
+    public static String WSInterfaceProc(String message){
         System.out.println("转之前"+message);
         message = StringUtils.decode(message);
         System.out.println("转之后"+message);
@@ -41,6 +41,15 @@ public class ComeinRestService {
             case 1:
                 retMessage = userComeinProc(jsono);
                 break;
+            case 2:
+                retMessage = addDeskList(jsono);
+                break;
+            case 3:
+                retMessage = addDeskList(jsono);
+                break;
+            case 4:
+                retMessage = addDeskList(jsono);
+                break;
 
         }
         return retMessage;
@@ -51,7 +60,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public String userComeinProc(JSONObject jsonObj){
+    public static String userComeinProc(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -88,7 +97,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean addDeskList(JSONObject jsonObj){
+    public static String addDeskList(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -97,6 +106,7 @@ public class ComeinRestService {
         System.out.println("type is:"+jsonObj.getString("type"));
 
         ComeinRestBean crBean = new ComeinRestBean();
+        Map<Object,Object> result = Maps.newHashMap();
         String deskID = "";
         String storeID = jsonObj.getString("storeID");
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
@@ -117,7 +127,8 @@ public class ComeinRestService {
         crBean.setResultCode("0");
         crBean.setDeskID(deskID);
 
-        return crBean;
+        result.put("resultCode", crBean.getResultCode());
+        return JSON.toJSONString(result);
     }
 
     /**
@@ -125,7 +136,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean newDeskNotify(JSONObject jsonObj){
+    public static String newDeskNotify(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -135,12 +146,14 @@ public class ComeinRestService {
         System.out.println("minPerson is:"+jsonObj.getString("minPerson"));
         System.out.println("desc is:"+jsonObj.getString("desc"));
         System.out.println("type is:"+jsonObj.getString("type"));
+        Map<Object,Object> result = Maps.newHashMap();
 
         ComeinRestBean crBean = new ComeinRestBean();
 
         crBean.setResultCode("0");
 
-        return crBean;
+        result.put("resultCode", crBean.getResultCode());
+        return JSON.toJSONString(result);
     }
 
     /**
@@ -148,7 +161,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean userOfferPrice(JSONObject jsonObj){
+    public static ComeinRestBean userOfferPrice(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -192,7 +205,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean grabDesk(JSONObject jsonObj){
+    public static ComeinRestBean grabDesk(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -218,7 +231,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean grabDeskNotify(JSONObject jsonObj){
+    public static ComeinRestBean grabDeskNotify(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
