@@ -3,6 +3,7 @@ package com.feast.demo.web.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.web.entity.ComeinRestBean;
+import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -104,11 +105,14 @@ public class ComeinRestService {
         System.out.println("mac is:"+jsonObj.getString("mac"));
         System.out.println("storeID is:"+jsonObj.getString("storeID"));
         System.out.println("type is:"+jsonObj.getString("type"));
+        String maxPerson = jsonObj.getString("maxPerson");
+        String minPerson = jsonObj.getString("minPerson");
+        String storeID = jsonObj.getString("storeID");
+        String desc = jsonObj.getString("desc");
 
-        ComeinRestBean crBean = new ComeinRestBean();
+        DeskInfoBean deskInfoBean = new DeskInfoBean();
         Map<Object,Object> result = Maps.newHashMap();
         String deskID = "";
-        String storeID = jsonObj.getString("storeID");
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             String currentTime = String.valueOf(System.currentTimeMillis());
             deskID = currentTime + storeID;
@@ -122,10 +126,19 @@ public class ComeinRestService {
             deskList.add(deskID);
             storeMap.put(storeID, deskList);
         }
-        crBean.setResultCode("0");
-        crBean.setDeskID(deskID);
+        deskInfoBean.setResultCode("0");
+        deskInfoBean.setDeskID(deskID);
+        deskInfoBean.setMaxPerson(maxPerson);
+        deskInfoBean.setMinPerson(minPerson);
+        deskInfoBean.setDesc(desc);
+        deskInfoBean.setStoreID(storeID);
 
-        result.put("resultCode", crBean.getResultCode());
+        result.put("resultCode", deskInfoBean.getResultCode());
+        result.put("maxPerson", deskInfoBean.getMaxPerson());
+        result.put("minPerson", deskInfoBean.getMinPerson());
+        result.put("storeID", deskInfoBean.getStoreID());
+        result.put("desc", deskInfoBean.getDesc());
+        result.put("deskID", deskInfoBean.getDeskID());
         return JSON.toJSONString(result);
     }
 
