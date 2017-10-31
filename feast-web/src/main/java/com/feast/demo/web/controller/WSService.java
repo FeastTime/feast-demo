@@ -94,6 +94,15 @@ public class WSService {
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
+//        for (WSService item : webSocketSet) {
+//            try {
+//                item.sendMessage(message);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                continue;
+//            }
+//        }
+
         String storeId = null;
 
         try{
@@ -107,11 +116,14 @@ public class WSService {
         if (null == storeId){
             return;
         }
+
+        String resultMessage = ComeinRestService.WSInterfaceProc(message);
+
         webSocketSet = hm.get(storeId);
 
         for (WSService item : webSocketSet) {
             try {
-                item.sendMessage(ComeinRestService.WSInterfaceProc(message));
+                item.sendMessage(resultMessage);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
