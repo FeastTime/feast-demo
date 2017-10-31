@@ -110,16 +110,14 @@ public class ComeinRestService {
         String deskID = "";
         String storeID = jsonObj.getString("storeID");
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
-            Date currentTime = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            deskID = formatter.format(currentTime) + storeID;
+            String currentTime = String.valueOf(System.currentTimeMillis());
+            deskID = currentTime + storeID;
             ArrayList<String> deskList = storeMap.get(storeID);
             deskList.add(deskID);
             storeMap.put(storeID, deskList);
         }else{
-            Date currentTime = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            deskID = formatter.format(currentTime) + storeID;
+            String currentTime = String.valueOf(System.currentTimeMillis());
+            deskID = currentTime + storeID;
             ArrayList<String> deskList = new ArrayList<String>();
             deskList.add(deskID);
             storeMap.put(storeID, deskList);
