@@ -51,7 +51,6 @@ public class WSService {
         this.tokenId = tokenId;
         this.storeId = storeId;
 
-        System.out.println(storeId + "------storeId   tokenId---- -" + tokenId);
         if(storeId == null || "".equals(storeId)){
             //跳出去
             onClose();
@@ -61,13 +60,6 @@ public class WSService {
             //跳出去
             onClose();
         }
-        // 回消息
-        try {
-            this.sendMessage("success666success");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if(hm.containsKey(storeId)){
             webSocketSet = hm.get(storeId);
             webSocketSet.add(this);
