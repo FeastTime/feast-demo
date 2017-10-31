@@ -24,6 +24,8 @@ public class ComeinRestService {
     private static HashMap<String, ArrayList> store_userMap= new HashMap<String, ArrayList>();
     // 桌位-用户缓存
     private static HashMap<String, UserBean> desk_userMap = new HashMap<String, UserBean>();
+    // 桌位-用户缓存
+    private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
     /**
      * 对接老马接口入口
@@ -132,6 +134,7 @@ public class ComeinRestService {
         deskInfoBean.setMinPerson(minPerson);
         deskInfoBean.setDesc(desc);
         deskInfoBean.setStoreID(storeID);
+        desk_infoMap.put(deskID, deskInfoBean);
 
         result.put("resultCode", deskInfoBean.getResultCode());
         result.put("maxPerson", deskInfoBean.getMaxPerson());
