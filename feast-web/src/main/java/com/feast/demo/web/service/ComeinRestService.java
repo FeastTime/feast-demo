@@ -142,6 +142,7 @@ public class ComeinRestService {
         result.put("storeID", deskInfoBean.getStoreID());
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
+        result.put("type", "3");
         return JSON.toJSONString(result);
     }
 
