@@ -114,7 +114,7 @@ public class WSService {
 
         try{
             JSONObject jsono = JSON.parseObject(message);
-            storeId = jsono.getString("storeId");
+            storeId = jsono.getString("storeID");
 
         } catch (Exception e){
             e.printStackTrace();
@@ -126,9 +126,12 @@ public class WSService {
 
         String resultMessage = ComeinRestService.WSInterfaceProc(message);
 
+
         webSocketSet = hm.get(storeId);
 
         for (WSService item : webSocketSet) {
+
+            System.out.println(storeId + "  send  :     " + resultMessage);
             try {
                 item.sendMessage(resultMessage);
             } catch (IOException e) {
