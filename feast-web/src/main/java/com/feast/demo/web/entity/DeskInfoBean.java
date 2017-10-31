@@ -15,6 +15,7 @@ public class DeskInfoBean {
     private String desc;
     private String resultCode;
     private String deskID;
+    private String bid;
 
     public String getMaxPerson() {
         return maxPerson;
@@ -78,5 +79,13 @@ public class DeskInfoBean {
 
     public void setDeskID(String deskID) {
         this.deskID = deskID;
+    }
+
+    public String getBid() {
+        return bid;
+    }
+
+    public void setBid(String bid) {
+        this.bid = bid;
     }
 }

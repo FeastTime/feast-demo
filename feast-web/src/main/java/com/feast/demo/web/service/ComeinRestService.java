@@ -37,7 +37,14 @@ public class ComeinRestService {
         message = StringUtils.decode(message);
         System.out.println("转之后"+message);
 
-        JSONObject jsono  = JSON.parseObject(message);
+        JSONObject jsono  = new JSONObject();
+
+        try{
+            jsono = JSON.parseObject(message);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         int type = Integer.parseInt(jsono.getString("type"));
         String retMessage = "";
         switch(type){
@@ -48,7 +55,7 @@ public class ComeinRestService {
                 retMessage = addDeskList(jsono);
                 break;
             case 3:
-                retMessage = newDeskNotify(jsono);
+//                retMessage = newDeskNotify(jsono);
                 break;
             case 4:
                 retMessage = userOfferPrice(jsono);
@@ -134,6 +141,13 @@ public class ComeinRestService {
         deskInfoBean.setMinPerson(minPerson);
         deskInfoBean.setDesc(desc);
         deskInfoBean.setStoreID(storeID);
+
+
+        // 开启竞价
+        TableBidService tbService = new TableBidService();
+        String bid = tbService.openBid(120000L);
+
+        deskInfoBean.setBid(bid);
         desk_infoMap.put(deskID, deskInfoBean);
 
         result.put("resultCode", deskInfoBean.getResultCode());
@@ -142,6 +156,7 @@ public class ComeinRestService {
         result.put("storeID", deskInfoBean.getStoreID());
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
+        result.put("bid", deskInfoBean.getBid());
         result.put("type", "3");
         return JSON.toJSONString(result);
     }
