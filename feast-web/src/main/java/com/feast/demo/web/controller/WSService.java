@@ -1,8 +1,8 @@
 package com.feast.demo.web.controller;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
 
 import javax.websocket.*;
@@ -16,9 +16,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-//@ServerEndpoint("/websocket")
-//@ServerEndpoint(value = "/websocket/{tokenId}")
-@ServerEndpoint("/websocket/{tokenId}/{storeId}")
+@ServerEndpoint("/websocket/{mobileNo}/{storeId}")
 public class WSService {
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -26,19 +24,17 @@ public class WSService {
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
 //    private static CopyOnWriteArraySet<WSService> webSocketSet = new CopyOnWriteArraySet<WSService>();
-
-
-    CopyOnWriteArraySet<WSService> webSocketSet;
+    CopyOnWriteArraySet<WsBean> webSocketSet;
     private static HashMap<String,CopyOnWriteArraySet> hm =new HashMap<String,CopyOnWriteArraySet>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
-    private String tokenId;
+    private String mobileNo;
     private String storeId;
 
     public WSService() {
-        webSocketSet = new CopyOnWriteArraySet<WSService>();
+        webSocketSet = new CopyOnWriteArraySet<WsBean>();
         //hm =new HashMap<String,CopyOnWriteArraySet>();
     }
 
@@ -47,33 +43,28 @@ public class WSService {
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("tokenId") String tokenId,@PathParam("storeId") String storeId) {
+    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId) {
         this.session = session;
-        this.tokenId = tokenId;
+        this.mobileNo = mobileNo;
         this.storeId = storeId;
 
         if(storeId == null || "".equals(storeId)){
-            //跳出去
             onClose();
         }
-
-        if(tokenId == null || "".equals(tokenId)){
-            //跳出去
+        if(mobileNo == null || "".equals(mobileNo)){
             onClose();
         }
-        // 回消息
-        try {
-            this.sendMessage("success666success");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        WsBean wsb = new WsBean();
+        wsb.setSession(this);
+        wsb.setMobileNo(mobileNo);
+        wsb.setStoreId(storeId);
 
         if(hm.containsKey(storeId)){
             webSocketSet = hm.get(storeId);
-            webSocketSet.add(this);
+            webSocketSet.add(wsb);
         } else {
-            webSocketSet = new CopyOnWriteArraySet<WSService>();
-            webSocketSet.add(this);
+            webSocketSet = new CopyOnWriteArraySet<WsBean>();
+            webSocketSet.add(wsb);
             hm.put(storeId, webSocketSet);
         }
 
@@ -101,20 +92,11 @@ public class WSService {
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息:" + message);
         //群发消息
-//        for (WSService item : webSocketSet) {
-//            try {
-//                item.sendMessage(message);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                continue;
-//            }
-//        }
-
         String storeId = null;
 
         try{
             JSONObject jsono = JSON.parseObject(message);
-            storeId = jsono.getString("storeID");
+            storeId = jsono.getString("storeId");
 
         } catch (Exception e){
             e.printStackTrace();
@@ -126,14 +108,12 @@ public class WSService {
 
         String resultMessage = ComeinRestService.WSInterfaceProc(message);
 
-
         webSocketSet = hm.get(storeId);
 
-        for (WSService item : webSocketSet) {
-
-            System.out.println(storeId + "  send  :     " + resultMessage);
+        for (WsBean item : webSocketSet) {
             try {
-                item.sendMessage(resultMessage);
+                item.getSession().sendMessage(resultMessage);
+                //item.sendMessage(resultMessage);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
