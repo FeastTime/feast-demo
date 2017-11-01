@@ -2,6 +2,7 @@ package com.feast.demo.web.controller;
 
 import com.feast.demo.web.service.CacheManagerService;
 import com.feast.demo.web.service.TableBidService;
+import com.feast.demo.web.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,9 @@ public class TestController {
 
     @Autowired
     private TableBidService tableBidService;
+
+    @Autowired
+    private TestService testService;
 
     @RequestMapping(value = "/cache/put", method = RequestMethod.GET)
     public String cachePut(@RequestParam("key") String key, @RequestParam("value") String value) {
@@ -54,4 +58,11 @@ public class TestController {
 
         return userId + "参与竞价"+ tableBidService.toBid(bidActivityId,userId,new BigDecimal(random.nextInt(100)));
     }
+
+    @RequestMapping(value = "/ss/", method = RequestMethod.GET)
+    public String cachePut() {
+        return testService.m1();
+    }
+
+
 }

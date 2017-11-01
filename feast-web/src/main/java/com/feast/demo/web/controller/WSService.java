@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+
 /**
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
@@ -44,32 +45,41 @@ public class WSService {
      */
     @OnOpen
     public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId) {
+
         this.session = session;
         this.mobileNo = mobileNo;
         this.storeId = storeId;
 
-        if(storeId == null || "".equals(storeId)){
+        // 如果店铺id 或者手机号为空 关闭连接
+        if(storeId == null || "".equals(storeId) || mobileNo == null || "".equals(mobileNo)){
             onClose();
         }
-        if(mobileNo == null || "".equals(mobileNo)){
-            onClose();
+
+        // 回消息
+        try {
+            this.sendMessage("success666success");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
         WsBean wsb = new WsBean();
-        wsb.setSession(this);
+
+        wsb.setWsService(this);
         wsb.setMobileNo(mobileNo);
         wsb.setStoreId(storeId);
 
         if(hm.containsKey(storeId)){
             webSocketSet = hm.get(storeId);
             webSocketSet.add(wsb);
+
         } else {
             webSocketSet = new CopyOnWriteArraySet<WsBean>();
             webSocketSet.add(wsb);
             hm.put(storeId, webSocketSet);
         }
 
-//        webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
+
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
     }
 
@@ -78,6 +88,18 @@ public class WSService {
      */
     @OnClose
     public void onClose() {
+
+        System.out.println(storeId + "--------------------storeId");
+        System.out.println(mobileNo + "--------------------mobileNo");
+
+        webSocketSet = hm.get(storeId);
+
+        for (WsBean wsBean: webSocketSet) {
+            if (null != mobileNo && mobileNo.equals(wsBean.getMobileNo())){
+                webSocketSet.remove(wsBean);
+                break;
+            }
+        }
         webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
@@ -96,7 +118,7 @@ public class WSService {
 
         try{
             JSONObject jsono = JSON.parseObject(message);
-            storeId = jsono.getString("storeId");
+            storeId = jsono.getString("storeID");
 
         } catch (Exception e){
             e.printStackTrace();
@@ -112,8 +134,8 @@ public class WSService {
 
         for (WsBean item : webSocketSet) {
             try {
-                item.getSession().sendMessage(resultMessage);
-                //item.sendMessage(resultMessage);
+                item.getWsService().sendMessage(resultMessage);
+                //item.sedMessage(resultMessage);
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;

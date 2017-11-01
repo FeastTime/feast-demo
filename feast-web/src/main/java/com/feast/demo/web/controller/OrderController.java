@@ -7,7 +7,7 @@ import com.feast.demo.menu.vo.MenuVo;
 import com.feast.demo.order.vo.OrderDetailVo;
 import com.feast.demo.web.entity.OrderObj;
 import com.feast.demo.web.memory.OrderMemory;
-import com.feast.demo.web.service.MenuService;
+
 import com.feast.demo.web.service.OrderService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -30,8 +30,7 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
-    @Resource
-    private MenuService menuService;
+
 
     @ResponseBody
     @RequestMapping(value = "/createOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
