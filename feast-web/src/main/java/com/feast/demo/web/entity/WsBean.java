@@ -10,7 +10,7 @@ import javax.websocket.Session;
  */
 @Data
 public class WsBean {
-    private WSService session;
+    private WSService wsService;
     private String mobileNo;
     private String storeId;
 
