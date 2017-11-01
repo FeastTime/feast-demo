@@ -25,12 +25,11 @@ public class WSService {
     private ComeinRestService comeinRestService;
 
 
-    ComeinRestService getComeinRestService() {
+    void setComeinRestService() {
         String configLocation = "classpath*:/spring*/*.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
-        return comeinRestService;
     }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -126,7 +125,7 @@ public class WSService {
     @OnMessage
     public void onMessage(String message, Session session) {
         if(comeinRestService == null) {
-            getComeinRestService();
+            setComeinRestService();
         }
 
         System.out.println(comeinRestService.open());
