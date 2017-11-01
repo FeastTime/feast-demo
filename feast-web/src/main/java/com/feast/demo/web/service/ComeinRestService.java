@@ -2,11 +2,13 @@ package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.bid.service.BidService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,6 +28,9 @@ public class ComeinRestService {
     private static HashMap<String, UserBean> desk_userMap = new HashMap<String, UserBean>();
     // 桌位-用户缓存
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
+
+    @Autowired
+    private static TableBidService tbService;
 
     /**
      * 对接老马接口入口
@@ -144,7 +149,6 @@ public class ComeinRestService {
 
 
         // 开启竞价
-        TableBidService tbService = new TableBidService();
         String bid = tbService.openBid(120000L);
 
         deskInfoBean.setBid(bid);
