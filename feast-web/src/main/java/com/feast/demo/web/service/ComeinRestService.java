@@ -2,7 +2,6 @@ package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.bid.service.BidService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
@@ -12,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/10/22.
@@ -30,14 +30,14 @@ public class ComeinRestService {
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
     @Autowired
-    private static TableBidService tbService;
+    private  TableBidService tableBidService;
 
     /**
      * 对接老马接口入口
      * @param message
      * @return
      */
-    public static String WSInterfaceProc(String message){
+    public String WSInterfaceProc(String message){
         System.out.println("转之前"+message);
         message = StringUtils.decode(message);
         System.out.println("转之后"+message);
@@ -112,7 +112,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static String addDeskList(JSONObject jsonObj){
+    public String addDeskList(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -149,7 +149,7 @@ public class ComeinRestService {
 
 
         // 开启竞价
-        String bid = tbService.openBid(120000L);
+        String bid = tableBidService.openBid(120000L);
 
         deskInfoBean.setBid(bid);
         desk_infoMap.put(deskID, deskInfoBean);
@@ -301,6 +301,10 @@ public class ComeinRestService {
     public ComeinRestBean deskHistory(JSONObject jsonObj){
         //
         return new ComeinRestBean();
+    }
+
+    public String open(){
+        return tableBidService.openBid();
     }
 
 }

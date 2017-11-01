@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -19,6 +21,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 @ServerEndpoint("/websocket/{mobileNo}/{storeId}")
 public class WSService {
+
+    private ComeinRestService comeinRestService;
+
+
+    ComeinRestService getComeinRestService() {
+        String configLocation = "classpath*:/spring*/*.xml";
+        ApplicationContext context = new ClassPathXmlApplicationContext(
+                configLocation);
+        comeinRestService = context.getBean(ComeinRestService.class);
+        return comeinRestService;
+    }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
     private static int onlineCount = 0;
@@ -112,6 +125,11 @@ public class WSService {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
+        if(comeinRestService == null) {
+            getComeinRestService();
+        }
+
+        System.out.println(comeinRestService.open());
         System.out.println("来自客户端的消息:" + message);
         //群发消息
         String storeId = null;
@@ -128,7 +146,7 @@ public class WSService {
             return;
         }
 
-        String resultMessage = ComeinRestService.WSInterfaceProc(message);
+        String resultMessage = comeinRestService.WSInterfaceProc(message);
 
         webSocketSet = hm.get(storeId);
 
