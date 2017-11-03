@@ -1,8 +1,11 @@
 package com.feast.demo.bid.service;
 
 import com.feast.demo.bid.core.BidRequest;
+import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.core.BidResult;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,9 +17,13 @@ public interface BidService {
 
     public String openBid(Long timeLimit);
 
-    public boolean pushBidRequest(BidRequest bidRequest);
+    public BidResponse pushBidRequest(BidRequest bidRequest);
 
     public List<BidResult> getAllBidResult();
 
     public Integer getBidResultSize();
+
+    public Collection<BidRequest> getBidRequests(String bidActivityId);
+
+    public BigDecimal getMaxPrice(String bidActivityId);
 }

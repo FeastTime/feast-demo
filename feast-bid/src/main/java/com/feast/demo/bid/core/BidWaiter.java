@@ -6,6 +6,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class BidWaiter {
     private Boolean run;
 
     private BidHandle bidHandle;
+
+    private List<BidRequest> winners = Lists.newArrayList();
+
+    private BigDecimal maxPrice = new BigDecimal(-1);
 
     public BidWaiter(BidHandle bidHandle){
         this.bidHandle = bidHandle;
@@ -103,28 +108,31 @@ public class BidWaiter {
      * @param request
      * @return
      */
-    public boolean joinBid(BidRequest request){
+    public synchronized BidResponse joinBid(BidRequest request){
         if(!run){
-            return false;
+            return null;
         }
         requestMap.put(request.getUserId(),request);
-        return true;
+        BidResponse bidResponse = new BidResponse(request);
+        for(BidRequest bid:requestMap.values()){
+            if(bid.getBidPrice().compareTo(maxPrice) > 0){
+                maxPrice = bid.getBidPrice();
+                winners.clear();
+                winners.add(bid);
+                bidResponse.setWinner(true);
+            }else if(bid.getBidPrice().compareTo(maxPrice) == 0){
+                winners.add(bid);
+                bidResponse.setWinner(true);
+            }else{
+                bidResponse.setWinner(false);
+            }
+        }
+        return bidResponse;
     }
 
     private BidResult getBidResult(){
         BidResult bidResult = new BidResult();
         if(!requestMap.isEmpty()){
-            List<BidRequest> winners = Lists.newArrayList();
-            BigDecimal winnerPrice = new BigDecimal(-9999);
-            for(BidRequest bid:requestMap.values()){
-                if(bid.getBidPrice().compareTo(winnerPrice) > 0){
-                    winnerPrice = bid.getBidPrice();
-                    winners.clear();
-                    winners.add(bid);
-                }else if(bid.getBidPrice().compareTo(winnerPrice) == 0){
-                    winners.add(bid);
-                }
-            }
             bidResult.setWinners(winners);
             bidResult.setStats(true);
             bidResult.setRequests(requestMap.values());
@@ -134,5 +142,21 @@ public class BidWaiter {
         }
         bidResult.setActivityInfo(new BidInfo(this));
         return bidResult;
+    }
+
+    /**
+     * 获取当前最高出价
+     * @return
+     */
+    public BigDecimal getMaxPrice(){
+        return maxPrice;
+    }
+
+    /**
+     * 获取当前参与竞价的请求列表
+     * @return
+     */
+    public Collection<BidRequest> getRequests(){
+        return requestMap.values();
     }
 }

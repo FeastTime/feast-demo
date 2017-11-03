@@ -1,15 +1,17 @@
 package com.feast.demo.web.service;
 
 import com.feast.demo.bid.core.BidRequest;
+import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.core.BidResult;
 import com.feast.demo.bid.service.BidService;
 import com.feast.demo.cache.service.CacheService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -20,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class TableBidService implements InitializingBean {
 
-    @Autowired
+    @Resource
     private CacheService cacheService;
 
-    @Autowired
+    @Resource
     private BidService bidService;
 
     @Override
@@ -78,7 +80,7 @@ public class TableBidService implements InitializingBean {
      * @param bidPrice
      * @return
      */
-    public boolean toBid(String bidActivityId, String userId, BigDecimal bidPrice){
+    public BidResponse toBid(String bidActivityId, String userId, BigDecimal bidPrice){
         BidRequest bidRequest = new BidRequest();
         bidRequest.setBidActivityId(bidActivityId);
         bidRequest.setBidPrice(bidPrice);
@@ -95,6 +97,24 @@ public class TableBidService implements InitializingBean {
          * 3、向竞价失败的用户发送竞价失败的信息
          * 4、保存竞价结果
          */
+    }
+
+    /**
+     * 返回指定竞拍下当前的所有竞价请求
+     * @param bidActivityId
+     * @return
+     */
+    public Collection<BidRequest> getBidRequests(String bidActivityId){
+        return bidService.getBidRequests(bidActivityId);
+    }
+
+    /**
+     * 返回指定竞拍活动当前最高出价
+     * @param bidActivityId
+     * @return
+     */
+    public BigDecimal getMaxPrice(String bidActivityId){
+        return bidService.getMaxPrice(bidActivityId);
     }
 
 }

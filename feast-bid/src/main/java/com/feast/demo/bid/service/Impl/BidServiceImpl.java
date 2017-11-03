@@ -6,6 +6,8 @@ import com.feast.demo.bid.service.BidService;
 import com.feast.demo.cache.CacheManager;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -83,7 +85,7 @@ public class BidServiceImpl implements BidService, InitializingBean,BidHandle {
      * @param bidRequest
      * @return
      */
-    public boolean pushBidRequest(BidRequest bidRequest) {
+    public BidResponse pushBidRequest(BidRequest bidRequest) {
         bidRequest.setBidTime(System.currentTimeMillis());
         return BidDispatcher.joinBid(bidRequest.getBidActivityId(),bidRequest);
     }
@@ -102,5 +104,13 @@ public class BidServiceImpl implements BidService, InitializingBean,BidHandle {
      */
     public void afterPorcess(BidResult bidResult) {
         CacheManager.addBidResult(bidResult);
+    }
+
+    public Collection<BidRequest> getBidRequests(String bidAcivityId){
+        return BidDispatcher.getBidRequests(bidAcivityId);
+    }
+
+    public BigDecimal getMaxPrice(String bidActivityId){
+        return BidDispatcher.getMaxPrice(bidActivityId);
     }
 }

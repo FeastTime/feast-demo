@@ -3,6 +3,8 @@ package com.feast.demo.bid.core;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Map;
 
 public class BidDispatcher {
@@ -61,13 +63,28 @@ public class BidDispatcher {
      * @param request
      * @return
      */
-    public static boolean joinBid(String bidId,BidRequest request){
+    public static BidResponse joinBid(String bidId,BidRequest request){
         BidWaiter waiter = (BidWaiter) waiterMap.get(bidId);
         if(waiter == null || !waiter.getRun()){
-            return false;
+            return null;
         }
 
-        waiter.joinBid(request);
-        return true;
+        return waiter.joinBid(request);
+    }
+
+    public static Collection<BidRequest> getBidRequests(String bidActivityId){
+        BidWaiter waiter = (BidWaiter) waiterMap.get(bidActivityId);
+        if(waiter == null || !waiter.getRun()){
+            return null;
+        }
+        return waiter.getRequests();
+    }
+
+    public static BigDecimal getMaxPrice(String bidActivityId){
+        BidWaiter waiter = (BidWaiter) waiterMap.get(bidActivityId);
+        if(waiter == null || !waiter.getRun()){
+            return null;
+        }
+        return waiter.getMaxPrice();
     }
 }
