@@ -3,6 +3,8 @@ package com.feast.demo.web.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.bid.core.BidRequest;
+import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.service.BidService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
@@ -61,7 +63,7 @@ public class ComeinRestService {
                 retMessage = addDeskList(jsono);
                 break;
             case 3:
-//                retMessage = newDeskNotify(jsono);
+//              retMessage = newDeskNotify(jsono);
                 break;
             case 4:
                 retMessage = userOfferPrice(jsono);
@@ -127,33 +129,26 @@ public class ComeinRestService {
 
         DeskInfoBean deskInfoBean = new DeskInfoBean();
         Map<Object,Object> result = Maps.newHashMap();
-        String deskID = "";
+        // 开启竞价
+        String bid = tbService.openBid(120000L);
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
-            String currentTime = String.valueOf(System.currentTimeMillis());
-            deskID = currentTime + storeID;
             ArrayList<String> deskList = storeMap.get(storeID);
-            deskList.add(deskID);
+            deskList.add(bid);
             storeMap.put(storeID, deskList);
         }else{
-            String currentTime = String.valueOf(System.currentTimeMillis());
-            deskID = currentTime + storeID;
             ArrayList<String> deskList = new ArrayList<String>();
-            deskList.add(deskID);
+            deskList.add(bid);
             storeMap.put(storeID, deskList);
         }
         deskInfoBean.setResultCode("0");
-        deskInfoBean.setDeskID(deskID);
+        deskInfoBean.setDeskID(bid);
         deskInfoBean.setMaxPerson(maxPerson);
         deskInfoBean.setMinPerson(minPerson);
         deskInfoBean.setDesc(desc);
         deskInfoBean.setStoreID(storeID);
 
-
-        // 开启竞价
-        String bid = tbService.openBid(120000L);
-
         deskInfoBean.setBid(bid);
-        desk_infoMap.put(deskID, deskInfoBean);
+        desk_infoMap.put(bid, deskInfoBean);
 
         result.put("resultCode", deskInfoBean.getResultCode());
         result.put("maxPerson", deskInfoBean.getMaxPerson());
@@ -226,18 +221,26 @@ public class ComeinRestService {
         if(userBean == null){
             userBean = new UserBean();
         }
-        BigDecimal price = new BigDecimal(jsonObj.getString("price"));
+        Long price = Long.parseLong(jsonObj.getString("price"));
         userBean.setUserID(userID);
         userBean.setName(userID); // 暂时用手机号代替姓名
         userBean.setPrice(price);
-        BigDecimal highPrice = new BigDecimal("0.00");
-        if(desk_userMap.get(bid)!=null){
-            highPrice = desk_userMap.get(bid).get(userID).getHighPrice();
-        }
-        if(highPrice.compareTo(price)<0){
-            highPrice = price;
-        }
-        userBean.setHighPrice(highPrice);
+//        long highPrice = 0;
+//        if(desk_userMap.get(bid)!=null){
+//            highPrice = desk_userMap.get(bid).get(userID).getHighPrice();
+//        }
+//        if(highPrice<price){
+//            highPrice = price;
+//        }
+//        userBean.setHighPrice(highPrice);
+
+//        BidRequest br = new BidRequest();
+//        br.setBidActivityId(bid);
+//        br.setBidPrice(price);
+//        br.setBidTime(System.currentTimeMillis());
+//        br.setUserId(userID);
+        BidResponse bres = tbService.toBid(bid, userID, new BigDecimal(price));
+        Boolean isWinner = bres.getWinner();
 
         HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
         tempUserMap.put(userID, userBean);
@@ -245,8 +248,13 @@ public class ComeinRestService {
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
-        result.put("resultCode", crBean.getResultCode());
-        result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
+        if(isWinner){
+            result.put("resultCode" , crBean.getResultCode());
+            result.put("isWinner" , isWinner);
+            result.put("highPrice" , price);
+            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
+        }
+
         return JSON.toJSONString(result);
     }
 
