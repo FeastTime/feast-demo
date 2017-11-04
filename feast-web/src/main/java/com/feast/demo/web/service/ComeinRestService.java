@@ -2,6 +2,7 @@ package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.bid.service.BidService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
@@ -11,9 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/10/22.
@@ -30,7 +30,7 @@ public class ComeinRestService {
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
     @Autowired
-    private  TableBidService tableBidService;
+    private TableBidService tbService;
 
     /**
      * 对接老马接口入口
@@ -75,7 +75,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static String userComeinProc(JSONObject jsonObj){
+    public String userComeinProc(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -149,7 +149,7 @@ public class ComeinRestService {
 
 
         // 开启竞价
-        String bid = tableBidService.openBid(120000L);
+        String bid = tbService.openBid(120000L);
 
         deskInfoBean.setBid(bid);
         desk_infoMap.put(deskID, deskInfoBean);
@@ -161,6 +161,13 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
+
+        String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
+                ? deskInfoBean.getMaxPerson() + "位"
+                : deskInfoBean.getMinPerson() + " - " + deskInfoBean.getMaxPerson() + "位用餐的上宾，";
+
+        result.put("message", "店小二放桌喽！" + personInfo + "里面请！");
+
         result.put("type", "3");
         return JSON.toJSONString(result);
     }
@@ -170,7 +177,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static String newDeskNotify(JSONObject jsonObj){
+    public String newDeskNotify(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -195,7 +202,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static String userOfferPrice(JSONObject jsonObj){
+    public String userOfferPrice(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -241,7 +248,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static ComeinRestBean grabDesk(JSONObject jsonObj){
+    public ComeinRestBean grabDesk(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -267,7 +274,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public static ComeinRestBean grabDeskNotify(JSONObject jsonObj){
+    public ComeinRestBean grabDeskNotify(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -301,10 +308,6 @@ public class ComeinRestService {
     public ComeinRestBean deskHistory(JSONObject jsonObj){
         //
         return new ComeinRestBean();
-    }
-
-    public String open(){
-        return tableBidService.openBid();
     }
 
 }
