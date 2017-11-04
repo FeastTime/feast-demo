@@ -252,7 +252,8 @@ public class ComeinRestService {
             result.put("resultCode" , crBean.getResultCode());
             result.put("isWinner" , isWinner);
             result.put("highPrice" , price);
-            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
+            result.put("userID" , userID);
+//            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
         }
 
         return JSON.toJSONString(result);
