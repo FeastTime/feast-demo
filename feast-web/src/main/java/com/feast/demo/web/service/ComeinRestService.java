@@ -1,6 +1,7 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.bid.service.BidService;
 import com.feast.demo.web.entity.ComeinRestBean;
@@ -25,7 +26,7 @@ public class ComeinRestService {
     // 所有店铺用户缓存
     private static HashMap<String, ArrayList> store_userMap= new HashMap<String, ArrayList>();
     // 桌位-用户缓存
-    private static HashMap<String, UserBean> desk_userMap = new HashMap<String, UserBean>();
+    private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
@@ -212,12 +213,16 @@ public class ComeinRestService {
         System.out.println("deskID is:"+jsonObj.getString("deskID"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
-        System.out.println("type is:"+jsonObj.getString("type"));
         Map<Object,Object> result = Maps.newHashMap();
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
-        UserBean userBean = desk_userMap.get(userID);
+        String deskID = jsonObj.getString("deskID");
+
+        UserBean userBean = null;
+        if(desk_userMap.get(deskID) != null){
+            userBean = desk_userMap.get(deskID).get("userID");
+        }
         if(userBean == null){
             userBean = new UserBean();
         }
@@ -225,21 +230,23 @@ public class ComeinRestService {
         userBean.setUserID(userID);
         userBean.setName(userID); // 暂时用手机号代替姓名
         userBean.setPrice(price);
-        String deskID = jsonObj.getString("deskID");
         BigDecimal highPrice = new BigDecimal("0.00");
         if(desk_userMap.get(deskID)!=null){
-            highPrice = desk_userMap.get(deskID).getHighPrice();
+            highPrice = desk_userMap.get(deskID).get(userID).getHighPrice();
         }
         if(highPrice.compareTo(price)<0){
             highPrice = price;
         }
         userBean.setHighPrice(highPrice);
 
-        desk_userMap.put(deskID, userBean);
+        HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
+        tempUserMap.put(userID, userBean);
+        desk_userMap.put(deskID, tempUserMap);
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
         result.put("resultCode", crBean.getResultCode());
+        result.put("resultList", parseMapToJSONArray(desk_userMap.get(deskID)));
         return JSON.toJSONString(result);
     }
 
@@ -308,6 +315,17 @@ public class ComeinRestService {
     public ComeinRestBean deskHistory(JSONObject jsonObj){
         //
         return new ComeinRestBean();
+    }
+
+    private JSONArray parseMapToJSONArray(HashMap map){
+        JSONArray jsonArray = new JSONArray();
+        for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
+            Map.Entry e = (Map.Entry) it.next();
+            Object val = e.getValue();
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(val);
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
     }
 
 }
