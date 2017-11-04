@@ -129,34 +129,35 @@ public class WSService {
         }
 
         System.out.println("来自客户端的消息:" + message);
-        //群发消息
+
         String storeId = null;
 
         try{
-            JSONObject jsono = JSON.parseObject(message);
-            storeId = jsono.getString("storeID");
+            storeId = JSON.parseObject(message).getString("storeID");
+        } catch (Exception ignored){}
 
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        if (null == storeId){
+        if (null == storeId)
             return;
-        }
 
-        String resultMessage = comeinRestService.WSInterfaceProc(message);
+        String resultMessage = null;
+
+        try{
+            resultMessage = comeinRestService.WSInterfaceProc(message);
+        } catch (Exception ignored){}
+
+        // 返回消息判空
+        if (null == resultMessage && resultMessage.length() == 0)
+            return;
 
         webSocketSet = hm.get(storeId);
 
-        for (WsBean item : webSocketSet) {
+        // 群发消息
+        for (WsBean item : webSocketSet)
             try {
                 item.getWsService().sendMessage(resultMessage);
-                //item.sedMessage(resultMessage);
             } catch (IOException e) {
-                e.printStackTrace();
-                continue;
+                System.out.println("发送消息异常");
             }
-        }
     }
 
     /**
