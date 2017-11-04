@@ -128,7 +128,6 @@ public class WSService {
             setComeinRestService();
         }
 
-        System.out.println(comeinRestService.open());
         System.out.println("来自客户端的消息:" + message);
         //群发消息
         String storeId = null;
