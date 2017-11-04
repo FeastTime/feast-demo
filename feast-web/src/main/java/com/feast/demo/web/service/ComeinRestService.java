@@ -210,18 +210,18 @@ public class ComeinRestService {
         System.out.println("mac is:"+jsonObj.getString("mac"));
         System.out.println("storeID is:"+jsonObj.getString("storeID"));
         System.out.println("type is:"+jsonObj.getString("type"));
-        System.out.println("deskID is:"+jsonObj.getString("deskID"));
+        System.out.println("bid is:"+jsonObj.getString("bid"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
         Map<Object,Object> result = Maps.newHashMap();
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
-        String deskID = jsonObj.getString("deskID");
+        String bid = jsonObj.getString("bid");
 
         UserBean userBean = null;
-        if(desk_userMap.get(deskID) != null){
-            userBean = desk_userMap.get(deskID).get("userID");
+        if(desk_userMap.get(bid) != null){
+            userBean = desk_userMap.get(bid).get("userID");
         }
         if(userBean == null){
             userBean = new UserBean();
@@ -231,8 +231,8 @@ public class ComeinRestService {
         userBean.setName(userID); // 暂时用手机号代替姓名
         userBean.setPrice(price);
         BigDecimal highPrice = new BigDecimal("0.00");
-        if(desk_userMap.get(deskID)!=null){
-            highPrice = desk_userMap.get(deskID).get(userID).getHighPrice();
+        if(desk_userMap.get(bid)!=null){
+            highPrice = desk_userMap.get(bid).get(userID).getHighPrice();
         }
         if(highPrice.compareTo(price)<0){
             highPrice = price;
@@ -241,12 +241,12 @@ public class ComeinRestService {
 
         HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
         tempUserMap.put(userID, userBean);
-        desk_userMap.put(deskID, tempUserMap);
+        desk_userMap.put(bid, tempUserMap);
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
         result.put("resultCode", crBean.getResultCode());
-        result.put("resultList", parseMapToJSONArray(desk_userMap.get(deskID)));
+        result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
         return JSON.toJSONString(result);
     }
 
