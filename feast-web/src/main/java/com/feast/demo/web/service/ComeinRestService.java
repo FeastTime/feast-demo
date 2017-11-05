@@ -158,7 +158,7 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
-        result.put("time", 120);
+        result.put("timeLimit", 120000);
 
         String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
                 ? deskInfoBean.getMaxPerson() + "位"
