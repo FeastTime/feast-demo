@@ -21,7 +21,7 @@ public class BidRecordServiceTest {
     @Autowired
     private BidRecordService bidRecordService;
 
-    //@Test
+    @Test
     public void test1(){
         JSONObject json = new JSONObject();
         json.put("storeId","1000000000");
@@ -47,13 +47,13 @@ public class BidRecordServiceTest {
         System.out.println(states);
     }
 
-   // @Test
+    @Test
     public void test3(){
         JSONObject json = new JSONObject();
-        json.put("mobileNo","13999192949");
+        json.put("mobileNo","13993344556");
         json.put("bid","uussx789797978976867887");
-        json.put("maxPrice","222");
-        json.put("stt","0");
+        json.put("maxPrice","3333444");
+        json.put("stt","11");
 
         String states = bidRecordService.updBidRecord(json);
         System.out.println(states);

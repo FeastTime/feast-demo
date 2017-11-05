@@ -41,7 +41,6 @@ public class BidRecordDaoImpl implements BidRecordDaoCustom{
 
     public String addBidRecord(String storeId, String mobileNo, String bid, String maxPrice, String stt){
         StringBuilder sb = new StringBuilder();
-//        Map<String,Object> params = Maps.newHashMap();
         Map<String,Object> params = Maps.newHashMap();
 
         sb.append("insert into bidrecord(bidrecordid, storeid, mobileno, bid, maxprice, stt) ");
@@ -60,26 +59,32 @@ public class BidRecordDaoImpl implements BidRecordDaoCustom{
 
     public String updBidRecord(String mobileNo, String maxPrice, String stt, String bid){
         StringBuilder sb = new StringBuilder();
+        StringBuilder sb1 = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
-
-        sb.append("update BidRecord set" );
+        if(mobileNo !=null && !"".equals(mobileNo) ||
+                maxPrice !=null && !"".equals(maxPrice) ||
+                stt !=null && !"".equals(stt)) {
+            sb.append("update bidrecord set");
+        }else{
+            return "0";
+        }
         if(mobileNo !=null && !"".equals(mobileNo)){
-            sb.append(" mobileno = :mobileNo");
+            sb.append(" mobileno = :mobileNo,");
             params.put("mobileNo",mobileNo);
         }
         if(maxPrice !=null && !"".equals(maxPrice)){
-            sb.append(" maxprice = :maxPrice");
+            sb.append(" maxprice = :maxPrice,");
             params.put("maxPrice",maxPrice);
         }
         if(stt !=null && !"".equals(stt)){
-            sb.append(" stt = :stt");
+            sb.append(" stt = :stt,");
             params.put("stt",stt);
         }
-
-        sb.append(" where bid = :bid");
+        sb1.append(sb.toString().substring(0,sb.toString().length()-1));
+        sb1.append(" where bid = :bid");
         params.put("bid",bid);
 
-        Query query = em.createQuery(sb.toString());
+        Query query = em.createNativeQuery(sb1.toString());
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }

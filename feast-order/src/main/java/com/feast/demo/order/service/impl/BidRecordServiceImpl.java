@@ -62,11 +62,11 @@ public class BidRecordServiceImpl implements BidRecordService {
         if (StringUtils.isNotEmpty(storeId) && StringUtils.isNotEmpty(mobileNo)
                 && StringUtils.isNotEmpty(bid) && StringUtils.isNotEmpty(maxPrice)
                 && StringUtils.isNotEmpty(stt)) {
-            return (String) bidRecordDao.addBidRecord(storeId, mobileNo, bid, maxPrice, stt);
+            return (String) bidRecordDao.addBidRecord(storeId, mobileNo, bid, maxPrice, stt);//返回值是更新的条数
         }
-        return "1";
+        return "0";
     }
-
+    @Transactional(readOnly = false)
     public String updBidRecord(JSONObject jsonObj) {
 
         String mobileNo = jsonObj.getString("mobileNo") == null ? "" : jsonObj.getString("mobileNo");
@@ -76,6 +76,6 @@ public class BidRecordServiceImpl implements BidRecordService {
         if (StringUtils.isNotEmpty(bid)) {
             return (String) bidRecordDao.updBidRecord(mobileNo, maxPrice, stt, bid);
         }
-        return "1";
+        return "0";
     }
 }
