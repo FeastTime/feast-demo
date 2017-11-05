@@ -149,12 +149,17 @@ public class WSService {
         if (null == resultMessage && resultMessage.length() == 0)
             return;
 
-        webSocketSet = hm.get(storeId);
+        sendMessage(storeId, resultMessage);
+    }
 
+    // 对外发送消息
+    public static void sendMessage(String storeId, String message){
+
+        CopyOnWriteArraySet<WsBean> webSocketSet = hm.get(storeId);
         // 群发消息
         for (WsBean item : webSocketSet)
             try {
-                item.getWsService().sendMessage(resultMessage);
+                item.getWsService().sendMessage(message);
             } catch (IOException e) {
                 System.out.println("发送消息异常");
             }
