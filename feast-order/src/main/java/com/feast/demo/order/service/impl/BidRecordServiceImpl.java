@@ -8,6 +8,7 @@ import com.feast.demo.order.service.BidRecordService;
 import com.feast.demo.order.vo.BidRecordVo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,8 +51,8 @@ public class BidRecordServiceImpl implements BidRecordService {
         return vo;
     }
 
+    @Transactional(readOnly = false)
     public String addBidRecord(JSONObject jsonObj) {
-
         String storeId = jsonObj.getString("storeId");
         String mobileNo = jsonObj.getString("mobileNo");
         String bid = jsonObj.getString("bid");

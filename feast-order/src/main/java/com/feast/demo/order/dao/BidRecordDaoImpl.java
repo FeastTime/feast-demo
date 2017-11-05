@@ -42,25 +42,19 @@ public class BidRecordDaoImpl implements BidRecordDaoCustom{
     public String addBidRecord(String storeId, String mobileNo, String bid, String maxPrice, String stt){
         StringBuilder sb = new StringBuilder();
 //        Map<String,Object> params = Maps.newHashMap();
-        Map<Integer,Object> params = Maps.newHashMap();
+        Map<String,Object> params = Maps.newHashMap();
 
-        sb.append("insert into BidRecord(bidrecordid, storeid, mobileno, bid, maxprice, stt) ");
-//        sb.append(" values(_nextval('BIDRECORD_SEQ'),:storeId,:mobileNo,:bid,:maxPrice,:stt)");
-        sb.append(" values({?=call _nextval('BIDRECORD_SEQ')},?,?,?,?,?)");
-//        params.put("storeId",storeId);
-//        params.put("mobileNo",mobileNo);
-//        params.put("bid",bid);
-//        params.put("maxPrice",maxPrice);
-//        params.put("stt",stt);
-        params.put(1,storeId);
-        params.put(2,mobileNo);
-        params.put(3,bid);
-        params.put(4,maxPrice);
-        params.put(5,stt);
+        sb.append("insert into bidrecord(bidrecordid, storeid, mobileno, bid, maxprice, stt) ");
+        sb.append(" values(_nextval('BIDRECORD_SEQ'),:storeId,:mobileNo,:bid,:maxPrice,:stt)");
+        params.put("storeId",storeId);
+        params.put("mobileNo",mobileNo);
+        params.put("bid",bid);
+        params.put("maxPrice",maxPrice);
+        params.put("stt",stt);
         Query query = em.createNativeQuery(sb.toString());
-//        for(int key:params.keySet()){
-//            query.setParameter(key,params.get(key));
-//        }
+        for(String key:params.keySet()){
+            query.setParameter(key,params.get(key));
+        }
         return String.valueOf(query.executeUpdate());
     }
 
