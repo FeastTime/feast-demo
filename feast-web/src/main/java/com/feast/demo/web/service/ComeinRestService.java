@@ -131,6 +131,7 @@ public class ComeinRestService {
         Map<Object,Object> result = Maps.newHashMap();
         // 开启竞价
         String bid = tbService.openBid(120000L);
+
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
             deskList.add(bid);
@@ -157,6 +158,7 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
+        result.put("time", 120);
 
         String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
                 ? deskInfoBean.getMaxPerson() + "位"
