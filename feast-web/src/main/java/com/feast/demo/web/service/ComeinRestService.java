@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.bid.core.BidRequest;
 import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.service.BidService;
+import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
@@ -132,6 +133,8 @@ public class ComeinRestService {
         // 开启竞价
         String bid = tbService.openBid(120000L);
 
+        startThread(12000L, storeID, bid);
+
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
             deskList.add(bid);
@@ -168,6 +171,27 @@ public class ComeinRestService {
 
         result.put("type", "3");
         return JSON.toJSONString(result);
+    }
+
+    public void startThread(Long time, String storeID, String bid) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Start。。。");
+                System.out.println("进入睡眠状态" + time + "毫秒");
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Collection<BidRequest> cbr = tbService.getBidRequests(bid);
+                String message = JSON.toJSONString(cbr);
+                // 通知客户端
+                WSService.sendMessage(storeID, message);
+                System.out.println("Thread End。。。");
+            }
+        });
+        t.start();
     }
 
     /**
