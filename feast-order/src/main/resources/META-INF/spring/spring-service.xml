@@ -25,4 +25,5 @@
 
     <dubbo:service interface="com.feast.demo.store.service.StoreService" protocol="dubbo" ref="storeServiceImpl"/>
 
+    <dubbo:service interface="com.feast.demo.order.service.BidRecordService" protocol="dubbo" ref="bidRecordServiceImpl" timeout="1200000"/>
 </beans>

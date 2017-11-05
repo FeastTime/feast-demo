@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 public class UserBean {
     private String userID;
     private String name;
-    private BigDecimal price;
-    private BigDecimal highPrice;
+    private long price;
+//    private long highPrice;
 
     public String getUserID() {
         return userID;
@@ -27,19 +27,19 @@ public class UserBean {
         this.name = name;
     }
 
-    public BigDecimal getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 
-    public BigDecimal getHighPrice() {
-        return highPrice;
-    }
-
-    public void setHighPrice(BigDecimal highPrice) {
-        this.highPrice = highPrice;
-    }
+//    public long getHighPrice() {
+//        return highPrice;
+//    }
+//
+//    public void setHighPrice(long highPrice) {
+//        this.highPrice = highPrice;
+//    }
 }

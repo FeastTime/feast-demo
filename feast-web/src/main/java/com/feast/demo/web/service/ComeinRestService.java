@@ -1,8 +1,12 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.bid.core.BidRequest;
+import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.service.BidService;
+import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
@@ -25,7 +29,7 @@ public class ComeinRestService {
     // 所有店铺用户缓存
     private static HashMap<String, ArrayList> store_userMap= new HashMap<String, ArrayList>();
     // 桌位-用户缓存
-    private static HashMap<String, UserBean> desk_userMap = new HashMap<String, UserBean>();
+    private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
@@ -60,7 +64,7 @@ public class ComeinRestService {
                 retMessage = addDeskList(jsono);
                 break;
             case 3:
-//                retMessage = newDeskNotify(jsono);
+//              retMessage = newDeskNotify(jsono);
                 break;
             case 4:
                 retMessage = userOfferPrice(jsono);
@@ -126,33 +130,29 @@ public class ComeinRestService {
 
         DeskInfoBean deskInfoBean = new DeskInfoBean();
         Map<Object,Object> result = Maps.newHashMap();
-        String deskID = "";
+        // 开启竞价
+        String bid = tbService.openBid(120000L);
+
+        startThread(12000L, storeID, bid);
+
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
-            String currentTime = String.valueOf(System.currentTimeMillis());
-            deskID = currentTime + storeID;
             ArrayList<String> deskList = storeMap.get(storeID);
-            deskList.add(deskID);
+            deskList.add(bid);
             storeMap.put(storeID, deskList);
         }else{
-            String currentTime = String.valueOf(System.currentTimeMillis());
-            deskID = currentTime + storeID;
             ArrayList<String> deskList = new ArrayList<String>();
-            deskList.add(deskID);
+            deskList.add(bid);
             storeMap.put(storeID, deskList);
         }
         deskInfoBean.setResultCode("0");
-        deskInfoBean.setDeskID(deskID);
+        deskInfoBean.setDeskID(bid);
         deskInfoBean.setMaxPerson(maxPerson);
         deskInfoBean.setMinPerson(minPerson);
         deskInfoBean.setDesc(desc);
         deskInfoBean.setStoreID(storeID);
 
-
-        // 开启竞价
-        String bid = tbService.openBid(120000L);
-
         deskInfoBean.setBid(bid);
-        desk_infoMap.put(deskID, deskInfoBean);
+        desk_infoMap.put(bid, deskInfoBean);
 
         result.put("resultCode", deskInfoBean.getResultCode());
         result.put("maxPerson", deskInfoBean.getMaxPerson());
@@ -161,6 +161,7 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
+        result.put("timeLimit", 120000);
 
         String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
                 ? deskInfoBean.getMaxPerson() + "位"
@@ -170,6 +171,27 @@ public class ComeinRestService {
 
         result.put("type", "3");
         return JSON.toJSONString(result);
+    }
+
+    public void startThread(Long time, String storeID, String bid) {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Start。。。");
+                System.out.println("进入睡眠状态" + time + "毫秒");
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Collection<BidRequest> cbr = tbService.getBidRequests(bid);
+                String message = JSON.toJSONString(cbr);
+                // 通知客户端
+                WSService.sendMessage(storeID, message);
+                System.out.println("Thread End。。。");
+            }
+        });
+        t.start();
     }
 
     /**
@@ -209,37 +231,57 @@ public class ComeinRestService {
         System.out.println("mac is:"+jsonObj.getString("mac"));
         System.out.println("storeID is:"+jsonObj.getString("storeID"));
         System.out.println("type is:"+jsonObj.getString("type"));
-        System.out.println("deskID is:"+jsonObj.getString("deskID"));
+        System.out.println("bid is:"+jsonObj.getString("bid"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
-        System.out.println("type is:"+jsonObj.getString("type"));
         Map<Object,Object> result = Maps.newHashMap();
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
-        UserBean userBean = desk_userMap.get(userID);
+        String bid = jsonObj.getString("bid");
+
+        UserBean userBean = null;
+        if(desk_userMap.get(bid) != null){
+            userBean = desk_userMap.get(bid).get("userID");
+        }
         if(userBean == null){
             userBean = new UserBean();
         }
-        BigDecimal price = new BigDecimal(jsonObj.getString("price"));
+        Long price = Long.parseLong(jsonObj.getString("price"));
         userBean.setUserID(userID);
         userBean.setName(userID); // 暂时用手机号代替姓名
         userBean.setPrice(price);
-        String deskID = jsonObj.getString("deskID");
-        BigDecimal highPrice = new BigDecimal("0.00");
-        if(desk_userMap.get(deskID)!=null){
-            highPrice = desk_userMap.get(deskID).getHighPrice();
-        }
-        if(highPrice.compareTo(price)<0){
-            highPrice = price;
-        }
-        userBean.setHighPrice(highPrice);
+//        long highPrice = 0;
+//        if(desk_userMap.get(bid)!=null){
+//            highPrice = desk_userMap.get(bid).get(userID).getHighPrice();
+//        }
+//        if(highPrice<price){
+//            highPrice = price;
+//        }
+//        userBean.setHighPrice(highPrice);
 
-        desk_userMap.put(deskID, userBean);
+//        BidRequest br = new BidRequest();
+//        br.setBidActivityId(bid);
+//        br.setBidPrice(price);
+//        br.setBidTime(System.currentTimeMillis());
+//        br.setUserId(userID);
+        BidResponse bres = tbService.toBid(bid, userID, new BigDecimal(price));
+        Boolean isWinner = bres.getWinner();
+
+        HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
+        tempUserMap.put(userID, userBean);
+        desk_userMap.put(bid, tempUserMap);
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
-        result.put("resultCode", crBean.getResultCode());
+        if(isWinner){
+            result.put("resultCode" , crBean.getResultCode());
+            result.put("isWinner" , isWinner);
+            result.put("highPrice" , price);
+            result.put("userID" , userID);
+//            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
+        }
+
         return JSON.toJSONString(result);
     }
 
@@ -308,6 +350,17 @@ public class ComeinRestService {
     public ComeinRestBean deskHistory(JSONObject jsonObj){
         //
         return new ComeinRestBean();
+    }
+
+    private JSONArray parseMapToJSONArray(HashMap map){
+        JSONArray jsonArray = new JSONArray();
+        for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
+            Map.Entry e = (Map.Entry) it.next();
+            Object val = e.getValue();
+            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(val);
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
     }
 
 }
