@@ -364,17 +364,18 @@ public class ComeinRestService {
     }
 
     private Collection<BidRequest> resultFilter(Collection<BidRequest> cbr){
-        Iterator it = cbr.iterator();
+        Iterator it1 = cbr.iterator();
+        Iterator it2 = cbr.iterator();
         BigDecimal price = new BigDecimal(0);
         Collection<BidRequest> tmpCbr = new ArrayList<BidRequest>();
-        while(it.hasNext()){
-            BidRequest br = (BidRequest) it.next();
+        while(it1.hasNext()){
+            BidRequest br = (BidRequest) it1.next();
             if(br.getBidPrice().compareTo(price)>0){
                 price = br.getBidPrice();
             }
         }
-        while(it.hasNext()){
-            BidRequest br = (BidRequest) it.next();
+        while(it2.hasNext()){
+            BidRequest br = (BidRequest) it2.next();
             if(br.getBidPrice().compareTo(price)==0){
                 tmpCbr.add(br);
             }
