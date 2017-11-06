@@ -174,6 +174,7 @@ public class ComeinRestService {
                     e.printStackTrace();
                 }
                 Collection<BidRequest> cbr = tbService.getBidRequests(bid);
+                cbr = resultFilter(cbr);
 
                 Map<String, Object> map = new HashMap<>();
 
@@ -360,6 +361,25 @@ public class ComeinRestService {
             jsonArray.add(jsonObject);
         }
         return jsonArray;
+    }
+
+    private Collection<BidRequest> resultFilter(Collection<BidRequest> cbr){
+        Iterator it = cbr.iterator();
+        BigDecimal price = new BigDecimal(0);
+        Collection<BidRequest> tmpCbr = new ArrayList<BidRequest>();
+        while(it.hasNext()){
+            BidRequest br = (BidRequest) it.next();
+            if(br.getBidPrice().compareTo(price)>0){
+                price = br.getBidPrice();
+            }
+        }
+        while(it.hasNext()){
+            BidRequest br = (BidRequest) it.next();
+            if(br.getBidPrice().compareTo(price)==0){
+                tmpCbr.add(br);
+            }
+        }
+        return tmpCbr;
     }
 
 }
