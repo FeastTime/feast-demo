@@ -71,6 +71,9 @@ public class ComeinRestService {
             case 4:
                 retMessage = userOfferPrice(jsono);
                 break;
+            case 5:
+                retMessage = grabDesk(jsono);
+                break;
 
         }
         return retMessage;
@@ -294,7 +297,7 @@ public class ComeinRestService {
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean grabDesk(JSONObject jsonObj){
+    public String grabDesk(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
         System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
@@ -305,35 +308,19 @@ public class ComeinRestService {
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("type is:"+jsonObj.getString("type"));
 
-        // 抢桌位恒成功。逻辑暂时不定。结束后清除缓存桌位信息。
-        String deskID = jsonObj.getString("deskID");
-        desk_userMap.remove(deskID);
-        // 保存历史到数据库历史桌位，待后续查询使用。
+        Map<Object,Object> result = Maps.newHashMap();
+        // 先到先得，结束后清除缓存桌位信息。
+        String bid = jsonObj.getString("bid");
+        String storeID = jsonObj.getString("storeID");
+        if(storeID!=null && storeMap.get(storeID)!=null
+                &&storeMap.get(storeID).contains(bid)){
+            storeMap.get(storeID).remove(bid);
+            result.put("resultCode" , "0");
+        }else{
+            result.put("resultCode" , "1");
+        }
 
-        ComeinRestBean crBean = new ComeinRestBean();
-        crBean.setResultCode("0");
-        return crBean;
-    }
-
-    /**
-     * 抢桌位通知
-     * @param jsonObj
-     * @return
-     */
-    public ComeinRestBean grabDeskNotify(JSONObject jsonObj){
-        System.out.println("androidID is:"+jsonObj.getString("androidID"));
-        System.out.println("imei is:"+jsonObj.getString("imei"));
-        System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
-        System.out.println("mac is:"+jsonObj.getString("mac"));
-        System.out.println("storeID is:"+jsonObj.getString("storeID"));
-        System.out.println("deskID is:"+jsonObj.getString("deskID"));
-        System.out.println("userID is:"+jsonObj.getString("userID"));
-        System.out.println("type is:"+jsonObj.getString("type"));
-        System.out.println("price is:"+jsonObj.getString("price"));
-
-        ComeinRestBean crBean = new ComeinRestBean();
-        crBean.setResultCode("0");
-        return crBean;
+        return JSON.toJSONString(result);
     }
 
     /**
