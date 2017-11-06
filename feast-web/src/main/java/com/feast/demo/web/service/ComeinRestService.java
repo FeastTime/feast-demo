@@ -181,6 +181,7 @@ public class ComeinRestService {
                 map.put("resultCode" , 0);
                 map.put("type", "7");
                 map.put("data", cbr);
+                map.put("bid", bid);
 
                 String message = JSON.toJSONString(map);
                 // 通知客户端
@@ -236,18 +237,19 @@ public class ComeinRestService {
         // 用户相关信息
         String userID = jsonObj.getString("userID");
         String bid = jsonObj.getString("bid");
-
-        UserBean userBean = null;
-        if(desk_userMap.get(bid) != null){
-            userBean = desk_userMap.get(bid).get("userID");
-        }
-        if(userBean == null){
-            userBean = new UserBean();
-        }
         Long price = Long.parseLong(jsonObj.getString("price"));
-        userBean.setUserID(userID);
-        userBean.setName(userID); // 暂时用手机号代替姓名
-        userBean.setPrice(price);
+//
+//        UserBean userBean = null;
+//        if(desk_userMap.get(bid) != null){
+//            userBean = desk_userMap.get(bid).get("userID");
+//        }
+//        if(userBean == null){
+//            userBean = new UserBean();
+//        }
+//        Long price = Long.parseLong(jsonObj.getString("price"));
+//        userBean.setUserID(userID);
+//        userBean.setName(userID); // 暂时用手机号代替姓名
+//        userBean.setPrice(price);
 //        long highPrice = 0;
 //        if(desk_userMap.get(bid)!=null){
 //            highPrice = desk_userMap.get(bid).get(userID).getHighPrice();
@@ -262,20 +264,22 @@ public class ComeinRestService {
 //        br.setBidPrice(price);
 //        br.setBidTime(System.currentTimeMillis());
 //        br.setUserId(userID);
+        System.out.println(bid + "---" + userID + "----" + price);
         BidResponse bres = tbService.toBid(bid, userID, new BigDecimal(price));
+        System.out.println("----bres.toString() : " + bres.toString());
         Boolean isWinner = bres.isWinner();
 
 
-        HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
-        tempUserMap.put(userID, userBean);
-        desk_userMap.put(bid, tempUserMap);
+//        HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
+//        tempUserMap.put(userID, userBean);
+//        desk_userMap.put(bid, tempUserMap);
 
-        ComeinRestBean crBean = new ComeinRestBean();
-        crBean.setResultCode("0");
+//        ComeinRestBean crBean = new ComeinRestBean();
+//        crBean.setResultCode("0");
 
         Map<Object,Object> result = Maps.newHashMap();
         if(isWinner){
-            result.put("resultCode" , crBean.getResultCode());
+            result.put("resultCode" , "0");
             result.put("highPrice" , price);
             result.put("userID" , userID);
             result.put("type" , "6");
