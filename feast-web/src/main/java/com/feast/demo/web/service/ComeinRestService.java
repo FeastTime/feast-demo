@@ -379,6 +379,7 @@ public class ComeinRestService {
             if(br.getBidPrice().compareTo(price)==0){
                 tmpCbr.add(br);
             }
+            System.out.println(tmpCbr.size());
         }
         return tmpCbr;
     }
