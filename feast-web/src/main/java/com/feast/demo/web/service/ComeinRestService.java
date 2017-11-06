@@ -24,10 +24,11 @@ import java.util.*;
  */
 @Service
 public class ComeinRestService {
+
+    private static long bidTime = 40000L;
     // 所有店铺缓存
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
-    // 所有店铺用户缓存
-    private static HashMap<String, ArrayList> store_userMap= new HashMap<String, ArrayList>();
+
     // 桌位-用户缓存
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
@@ -55,6 +56,7 @@ public class ComeinRestService {
         }
 
         int type = Integer.parseInt(jsono.getString("type"));
+
         String retMessage = "";
         switch(type){
             case 1:
@@ -89,26 +91,13 @@ public class ComeinRestService {
         System.out.println("deskID is:"+jsonObj.getString("deskID"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
 
-        ComeinRestBean crBean = new ComeinRestBean();
-        Map<Object,Object> result = Maps.newHashMap();
-        // 用户相关信息
-        UserBean userBean = new UserBean();
-        userBean.setUserID(jsonObj.getString("userID"));
-        String storeID = jsonObj.getString("storeID");
-        String userID = jsonObj.getString("userID");
+        HashMap<String ,String> resultMap = new HashMap<>();
+        resultMap.put("resultCode","0");
+        resultMap.put("message","欢迎"+jsonObj.getString("userID") + "进店！店小二祝您用餐愉快！");
+        resultMap.put("type","1");
 
-        // 添加此人信息到本店缓存列表
-        if(store_userMap.get(storeID)!=null && store_userMap.get(storeID).size()>0){
-            store_userMap.get(storeID).add(userID);
-        }else{
-            ArrayList<String> userList = new ArrayList<String>();
-            userList.add(userID);
-            store_userMap.put(storeID, userList);
-        }
 
-        crBean.setResultCode("0");
-        result.put("resultCode", crBean.getResultCode());
-        return JSON.toJSONString(result);
+        return JSON.toJSONString(resultMap);
     }
 
     /**
@@ -131,9 +120,9 @@ public class ComeinRestService {
         DeskInfoBean deskInfoBean = new DeskInfoBean();
         Map<Object,Object> result = Maps.newHashMap();
         // 开启竞价
-        String bid = tbService.openBid(120000L);
+        String bid = tbService.openBid(bidTime);
 
-        startThread(12000L, storeID, bid);
+        startThread(bidTime - 3000L, storeID, bid);
 
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
@@ -161,7 +150,7 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
-        result.put("timeLimit", 120000);
+        result.put("timeLimit", bidTime);
 
         String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
                 ? deskInfoBean.getMaxPerson() + "位"
@@ -185,7 +174,15 @@ public class ComeinRestService {
                     e.printStackTrace();
                 }
                 Collection<BidRequest> cbr = tbService.getBidRequests(bid);
-                String message = JSON.toJSONString(cbr);
+                cbr = resultFilter(cbr);
+
+                Map<String, Object> map = new HashMap<>();
+
+                map.put("resultCode" , 0);
+                map.put("type", "7");
+                map.put("data", cbr);
+
+                String message = JSON.toJSONString(map);
                 // 通知客户端
                 WSService.sendMessage(storeID, message);
                 System.out.println("Thread End。。。");
@@ -234,7 +231,7 @@ public class ComeinRestService {
         System.out.println("bid is:"+jsonObj.getString("bid"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
-        Map<Object,Object> result = Maps.newHashMap();
+
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
@@ -266,7 +263,8 @@ public class ComeinRestService {
 //        br.setBidTime(System.currentTimeMillis());
 //        br.setUserId(userID);
         BidResponse bres = tbService.toBid(bid, userID, new BigDecimal(price));
-        Boolean isWinner = bres.getWinner();
+        Boolean isWinner = bres.isWinner();
+
 
         HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
         tempUserMap.put(userID, userBean);
@@ -274,11 +272,13 @@ public class ComeinRestService {
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
+
+        Map<Object,Object> result = Maps.newHashMap();
         if(isWinner){
             result.put("resultCode" , crBean.getResultCode());
-            result.put("isWinner" , isWinner);
             result.put("highPrice" , price);
             result.put("userID" , userID);
+            result.put("type" , "6");
 //            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
         }
 
@@ -361,6 +361,25 @@ public class ComeinRestService {
             jsonArray.add(jsonObject);
         }
         return jsonArray;
+    }
+
+    private Collection<BidRequest> resultFilter(Collection<BidRequest> cbr){
+        Iterator it = cbr.iterator();
+        BigDecimal price = new BigDecimal(0);
+        Collection<BidRequest> tmpCbr = new ArrayList<BidRequest>();
+        while(it.hasNext()){
+            BidRequest br = (BidRequest) it.next();
+            if(br.getBidPrice().compareTo(price)>0){
+                price = br.getBidPrice();
+            }
+        }
+        while(it.hasNext()){
+            BidRequest br = (BidRequest) it.next();
+            if(br.getBidPrice().compareTo(price)==0){
+                tmpCbr.add(br);
+            }
+        }
+        return tmpCbr;
     }
 
 }
