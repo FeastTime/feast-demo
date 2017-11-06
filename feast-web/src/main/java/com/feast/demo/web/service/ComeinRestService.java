@@ -122,7 +122,7 @@ public class ComeinRestService {
         // 开启竞价
         String bid = tbService.openBid(bidTime);
 
-        startThread(bidTime, storeID, bid);
+        startThread(bidTime - 3000L, storeID, bid);
 
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
