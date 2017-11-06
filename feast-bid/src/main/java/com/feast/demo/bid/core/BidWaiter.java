@@ -114,18 +114,16 @@ public class BidWaiter {
         }
         requestMap.put(request.getUserId(),request);
         BidResponse bidResponse = new BidResponse(request);
-        for(BidRequest bid:requestMap.values()){
-            if(bid.getBidPrice().compareTo(maxPrice) > 0){
-                maxPrice = bid.getBidPrice();
-                winners.clear();
-                winners.add(bid);
-                bidResponse.setWinner(true);
-            }else if(bid.getBidPrice().compareTo(maxPrice) == 0){
-                winners.add(bid);
-                bidResponse.setWinner(true);
-            }else{
-                bidResponse.setWinner(false);
-            }
+        if(request.getBidPrice().compareTo(maxPrice) > 0){
+            maxPrice = request.getBidPrice();
+            winners.clear();
+            winners.add(request);
+            bidResponse.setWinner(true);
+        }else if(request.getBidPrice().compareTo(maxPrice) == 0){
+            winners.add(request);
+            bidResponse.setWinner(true);
+        }else{
+            bidResponse.setWinner(false);
         }
         return bidResponse;
     }
