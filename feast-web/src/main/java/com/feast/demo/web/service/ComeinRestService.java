@@ -24,6 +24,8 @@ import java.util.*;
  */
 @Service
 public class ComeinRestService {
+
+    private static long bidTime = 30000L;
     // 所有店铺缓存
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
     // 所有店铺用户缓存
@@ -131,9 +133,9 @@ public class ComeinRestService {
         DeskInfoBean deskInfoBean = new DeskInfoBean();
         Map<Object,Object> result = Maps.newHashMap();
         // 开启竞价
-        String bid = tbService.openBid(120000L);
+        String bid = tbService.openBid(bidTime);
 
-        startThread(12000L, storeID, bid);
+        startThread(bidTime, storeID, bid);
 
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
@@ -161,7 +163,7 @@ public class ComeinRestService {
         result.put("desc", deskInfoBean.getDesc());
         result.put("deskID", deskInfoBean.getDeskID());
         result.put("bid", deskInfoBean.getBid());
-        result.put("timeLimit", 120000);
+        result.put("timeLimit", bidTime);
 
         String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
                 ? deskInfoBean.getMaxPerson() + "位"
@@ -185,7 +187,14 @@ public class ComeinRestService {
                     e.printStackTrace();
                 }
                 Collection<BidRequest> cbr = tbService.getBidRequests(bid);
-                String message = JSON.toJSONString(cbr);
+
+                Map<String, Object> map = new HashMap<>();
+
+                map.put("resultCode" , 0);
+                map.put("type", "7");
+                map.put("data", cbr);
+
+                String message = JSON.toJSONString(map);
                 // 通知客户端
                 WSService.sendMessage(storeID, message);
                 System.out.println("Thread End。。。");
@@ -234,7 +243,7 @@ public class ComeinRestService {
         System.out.println("bid is:"+jsonObj.getString("bid"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
         System.out.println("price is:"+jsonObj.getString("price"));
-        Map<Object,Object> result = Maps.newHashMap();
+
 
         // 用户相关信息
         String userID = jsonObj.getString("userID");
@@ -266,7 +275,8 @@ public class ComeinRestService {
 //        br.setBidTime(System.currentTimeMillis());
 //        br.setUserId(userID);
         BidResponse bres = tbService.toBid(bid, userID, new BigDecimal(price));
-        Boolean isWinner = bres.getWinner();
+        Boolean isWinner = bres.isWinner();
+
 
         HashMap<String, UserBean> tempUserMap = new HashMap<String, UserBean>();
         tempUserMap.put(userID, userBean);
@@ -274,6 +284,8 @@ public class ComeinRestService {
 
         ComeinRestBean crBean = new ComeinRestBean();
         crBean.setResultCode("0");
+
+        Map<Object,Object> result = Maps.newHashMap();
         if(isWinner){
             result.put("resultCode" , crBean.getResultCode());
             result.put("isWinner" , isWinner);
