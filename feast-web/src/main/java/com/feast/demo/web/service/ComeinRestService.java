@@ -28,8 +28,7 @@ public class ComeinRestService {
     private static long bidTime = 30000L;
     // 所有店铺缓存
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
-    // 所有店铺用户缓存
-    private static HashMap<String, ArrayList> store_userMap= new HashMap<String, ArrayList>();
+
     // 桌位-用户缓存
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
@@ -57,6 +56,7 @@ public class ComeinRestService {
         }
 
         int type = Integer.parseInt(jsono.getString("type"));
+
         String retMessage = "";
         switch(type){
             case 1:
@@ -91,26 +91,13 @@ public class ComeinRestService {
         System.out.println("deskID is:"+jsonObj.getString("deskID"));
         System.out.println("userID is:"+jsonObj.getString("userID"));
 
-        ComeinRestBean crBean = new ComeinRestBean();
-        Map<Object,Object> result = Maps.newHashMap();
-        // 用户相关信息
-        UserBean userBean = new UserBean();
-        userBean.setUserID(jsonObj.getString("userID"));
-        String storeID = jsonObj.getString("storeID");
-        String userID = jsonObj.getString("userID");
+        HashMap<String ,String> resultMap = new HashMap<>();
+        resultMap.put("resultCode","0");
+        resultMap.put("message","欢迎"+jsonObj.getString("userID") + "进店！店小二祝您用餐愉快！");
+        resultMap.put("type","1");
 
-        // 添加此人信息到本店缓存列表
-        if(store_userMap.get(storeID)!=null && store_userMap.get(storeID).size()>0){
-            store_userMap.get(storeID).add(userID);
-        }else{
-            ArrayList<String> userList = new ArrayList<String>();
-            userList.add(userID);
-            store_userMap.put(storeID, userList);
-        }
 
-        crBean.setResultCode("0");
-        result.put("resultCode", crBean.getResultCode());
-        return JSON.toJSONString(result);
+        return JSON.toJSONString(resultMap);
     }
 
     /**

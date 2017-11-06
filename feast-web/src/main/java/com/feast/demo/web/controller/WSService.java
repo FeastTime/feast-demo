@@ -12,6 +12,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
@@ -58,6 +59,10 @@ public class WSService {
     @OnOpen
     public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId) {
 
+        if(comeinRestService == null) {
+            setComeinRestService();
+        }
+
         this.session = session;
         this.mobileNo = mobileNo;
         this.storeId = storeId;
@@ -73,6 +78,8 @@ public class WSService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 
         WsBean wsb = new WsBean();
 
@@ -93,6 +100,18 @@ public class WSService {
         addOnlineCount();           //在线数加1
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
+
+        try {
+
+            Map<String , String> map = new HashMap<>();
+            map.put("storeID", storeId);
+            map.put("userID", mobileNo);
+            map.put("type", "1");
+            String resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
+            sendMessage(storeId, resultMessage);
+        }catch (Exception ignored){}
+
+
     }
 
     /**
