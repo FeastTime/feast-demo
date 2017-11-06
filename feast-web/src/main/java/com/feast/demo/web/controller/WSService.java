@@ -74,8 +74,11 @@ public class WSService {
 
         // 回消息
         try {
+//            System.out.println("发送回应start");
             this.sendMessage("success666success");
-        } catch (IOException e) {
+            Thread.sleep(500L);
+//            System.out.println("发送回应end");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -147,7 +150,7 @@ public class WSService {
             setComeinRestService();
         }
 
-        System.out.println("来自客户端的消息:" + message);
+//        System.out.println("来自客户端的消息:" + message);
 
         String storeId = null;
 
@@ -165,7 +168,7 @@ public class WSService {
         } catch (Exception ignored){}
 
         // 返回消息判空
-        if (null == resultMessage && resultMessage.length() == 0)
+        if (null == resultMessage || resultMessage.length() == 0)
             return;
 
         sendMessage(storeId, resultMessage);

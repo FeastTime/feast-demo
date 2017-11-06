@@ -25,7 +25,7 @@ import java.util.*;
 @Service
 public class ComeinRestService {
 
-    private static long bidTime = 30000L;
+    private static long bidTime = 40000L;
     // 所有店铺缓存
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
 
@@ -275,9 +275,9 @@ public class ComeinRestService {
         Map<Object,Object> result = Maps.newHashMap();
         if(isWinner){
             result.put("resultCode" , crBean.getResultCode());
-            result.put("isWinner" , isWinner);
             result.put("highPrice" , price);
             result.put("userID" , userID);
+            result.put("type" , "6");
 //            result.put("resultList", parseMapToJSONArray(desk_userMap.get(bid)));
         }
 
