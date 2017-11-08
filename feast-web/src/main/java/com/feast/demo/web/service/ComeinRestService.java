@@ -1,11 +1,11 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.bid.core.BidRequest;
 import com.feast.demo.bid.core.BidResponse;
-import com.feast.demo.bid.service.BidService;
+import com.feast.demo.order.service.BidRecordService;
+import com.feast.demo.order.vo.BidRecordVo;
 import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -24,6 +23,11 @@ import java.util.*;
  */
 @Service
 public class ComeinRestService {
+    @Autowired
+    private BidRecordService bidRecordService;
+
+    @Autowired
+    private TableBidService tbService;
 
     private static long bidTime = 40000L;
     // 所有店铺缓存
@@ -33,9 +37,6 @@ public class ComeinRestService {
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
-
-    @Autowired
-    private TableBidService tbService;
 
     /**
      * 对接老马接口入口
@@ -73,6 +74,9 @@ public class ComeinRestService {
                 break;
             case 5:
                 retMessage = grabDesk(jsono);
+                break;
+            case 6:
+                retMessage = deskHistory(jsono);
                 break;
 
         }
@@ -146,6 +150,15 @@ public class ComeinRestService {
         deskInfoBean.setBid(bid);
         desk_infoMap.put(bid, deskInfoBean);
 
+        JSONObject json = new JSONObject();
+        json.put("storeId",deskInfoBean.getStoreID());
+        json.put("mobileNo",deskInfoBean.getMobileNO());
+        json.put("bid",deskInfoBean.getBid());
+        json.put("maxPrice","");
+        json.put("stt","1");
+
+        bidRecordService.addBidRecord(json);
+
         result.put("resultCode", deskInfoBean.getResultCode());
         result.put("maxPerson", deskInfoBean.getMaxPerson());
         result.put("minPerson", deskInfoBean.getMinPerson());
@@ -176,6 +189,15 @@ public class ComeinRestService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                JSONObject json = new JSONObject();
+                json.put("mobileNo","");
+                json.put("bid",bid);
+                json.put("maxPrice","");
+                json.put("stt","2");
+
+                bidRecordService.updBidRecord(json);
+
                 Collection<BidRequest> cbr = tbService.getBidRequests(bid);
                 cbr = resultFilter(cbr);
 
@@ -316,6 +338,14 @@ public class ComeinRestService {
                 &&storeMap.get(storeID).contains(bid)){
             storeMap.get(storeID).remove(bid);
             result.put("resultCode" , "0");
+
+            JSONObject json = new JSONObject();
+            json.put("mobileNo",jsonObj.getString("userID"));
+            json.put("bid",bid);
+            json.put("maxPrice",jsonObj.getString("price"));
+            json.put("stt","3");
+
+            bidRecordService.updBidRecord(json);
         }else{
             result.put("resultCode" , "1");
         }
@@ -324,34 +354,20 @@ public class ComeinRestService {
     }
 
     /**
-     * 出价排名变更通知
-     * @param jsonObj
-     * @return
-     */
-    public ComeinRestBean priceRankNotify(JSONObject jsonObj){
-        //
-        return new ComeinRestBean();
-    }
-
-    /**
      * 历史桌位列表接口
      * @param jsonObj
      * @return
      */
-    public ComeinRestBean deskHistory(JSONObject jsonObj){
-        //
-        return new ComeinRestBean();
-    }
+    public String deskHistory(JSONObject jsonObj){
+        Map<String,Object> result = Maps.newHashMap();
+        JSONObject json = new JSONObject();
+        json.put("storeId",jsonObj.getString("storeID"));
+        json.put("pageNo",jsonObj.getString("pageNo"));
+        json.put("pageNum",jsonObj.getString("pageNum"));
 
-    private JSONArray parseMapToJSONArray(HashMap map){
-        JSONArray jsonArray = new JSONArray();
-        for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
-            Map.Entry e = (Map.Entry) it.next();
-            Object val = e.getValue();
-            net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(val);
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
+        List<BidRecordVo> list = bidRecordService.findBidRecordByStoreId(json);
+        result.put("list",list);
+        return JSON.toJSONString(result);
     }
 
     private Collection<BidRequest> resultFilter(Collection<BidRequest> cbr){
