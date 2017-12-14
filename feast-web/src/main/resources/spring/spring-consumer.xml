@@ -33,4 +33,6 @@
 
     <dubbo:reference id="cacheService" interface="com.feast.demo.cache.service.CacheService"/>
 
+    <dubbo:reference id="bidRecordService" interface="com.feast.demo.order.service.BidRecordService"/>
+
 </beans>

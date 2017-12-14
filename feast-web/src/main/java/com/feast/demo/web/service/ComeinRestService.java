@@ -23,6 +23,7 @@ import java.util.*;
  */
 @Service
 public class ComeinRestService {
+
     @Autowired
     private BidRecordService bidRecordService;
 
