@@ -121,5 +121,13 @@ public class UserService {
     public List<User> findByName(String name){
         return userRemoteService.findByName(name);
     }
+
+    public void saveWeChatUserInfo(User user) {
+        userRemoteService.saveWeChatUserInfo(user);
+    }
+
+    public User checkWeChatUserBindStatus(User user) {
+        return userRemoteService.checkWeChatUserBindStatus(user);
+    }
 }
 

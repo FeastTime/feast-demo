@@ -65,6 +65,26 @@ public class User extends TimedEntity{
     @Enumerated(EnumType.STRING)
     private UserType userType= UserType.customer;
 
+    /**
+     * 微信用户唯一标识
+     */
+    private String openId;
+
+    /**
+     * 用户电话
+     */
+    private String phone;
+
+    /**
+     * 昵称
+     */
+    private String nickName;
+
+    /**
+     * 用户头像
+     */
+    private String userIcon;
+
     public enum UserType{
         customer,//客户
         store//店铺

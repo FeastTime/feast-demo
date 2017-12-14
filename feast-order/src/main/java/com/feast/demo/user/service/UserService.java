@@ -17,5 +17,9 @@ public interface UserService {
 
     public List<User> findByName(String name);
 
-    public User findByMobileAndPwd(Long mobileNo,String pwd);
+    public User findByMobileAndPwd(Long mobileNo, String pwd);
+
+    public void saveWeChatUserInfo(User user);
+
+    public User checkWeChatUserBindStatus(User user);
 }

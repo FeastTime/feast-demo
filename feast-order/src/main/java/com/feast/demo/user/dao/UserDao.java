@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -25,4 +24,8 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
 
     @Query("select u from User u where u.mobileNo=?1 and u.pwd=?2")
     User findByMobileAndPwd(Long mobileNo, String pwd);
+
+    @Query("select u from User u where u.openId=?1 and u.imei=?2 and u.androidId=?3 and u.ipv4=?4 and u.mac=?5")
+    User checkWeChatUserBindStatus(String openId, String imei, String androidId, String ipv4, String mac);
 }
+

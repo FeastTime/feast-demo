@@ -1,12 +1,12 @@
 package com.feast.demo.user.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.user.dao.UserDao;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -68,5 +68,15 @@ public class UserServiceImpl implements UserService{
 
     public User findByMobileAndPwd(Long mobileNo, String pwd) {
         return userDao.findByMobileAndPwd(mobileNo,pwd);
+    }
+
+    @Transactional(readOnly = false)
+    public void saveWeChatUserInfo(User user) {
+        userDao.save(user);
+    }
+
+    public User checkWeChatUserBindStatus(User user) {
+        //String openId,String imei,String androidId,String ipv4,String mac
+        return userDao.checkWeChatUserBindStatus(user.getOpenId(),user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac());
     }
 }

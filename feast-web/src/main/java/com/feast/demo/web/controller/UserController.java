@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.json.JsonObject;
 import java.util.Map;
 
 /**
@@ -134,5 +135,43 @@ public class UserController {
             LoginMemory.remove(resultObj.getMobileNO());
         }
         return JSON.toJSONString(resultObj);
+    }
+
+    @RequestMapping(value="saveWeChatUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String saveWeChatUserInfo(@RequestBody String text){
+        try{
+            text = StringUtils.decode(text);
+            User user = JSONObject.parseObject(text,User.class);
+            User newuser = userService.checkWeChatUserBindStatus(user);
+            if(newuser!=null){
+                return "0";
+            }
+            userService.saveWeChatUserInfo(user);
+            return "0";
+        }catch(Exception e){
+            e.printStackTrace();
+            return "1";
+        }
+    }
+
+    @RequestMapping(value="checkWeChatUserBindStatus",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String checkWeChatUserBindStatus(@RequestBody String text){
+        Map<Object,Object> result = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            User user = JSONObject.parseObject(text,User.class);
+            User user_ = userService.checkWeChatUserBindStatus(user);
+            if(user_!=null){
+                result.put("status","0");
+            }else{
+                result.put("status","1");
+            }
+            result.put("resultCode","0");
+        }catch(Exception e){
+            e.printStackTrace();
+            result.put("resultCode","1");
+        }
+        return JSON.toJSONString(result);
     }
 }
