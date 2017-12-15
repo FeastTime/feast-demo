@@ -139,19 +139,23 @@ public class UserController {
 
     @RequestMapping(value="saveWeChatUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String saveWeChatUserInfo(@RequestBody String text){
+        Map<Object,Object> result = null;
         try{
+            result = Maps.newHashMap();
             text = StringUtils.decode(text);
             User user = JSONObject.parseObject(text,User.class);
             User newuser = userService.checkWeChatUserBindStatus(user);
             if(newuser!=null){
-                return "0";
+                result.put("resultCode","0");
+                return JSON.toJSONString(result);
             }
             userService.saveWeChatUserInfo(user);
-            return "0";
+            result.put("resultCode","0");
         }catch(Exception e){
             e.printStackTrace();
-            return "1";
+            result.put("resultCode","1");
         }
+        return JSON.toJSONString(result);
     }
 
     @RequestMapping(value="checkWeChatUserBindStatus",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -167,6 +171,24 @@ public class UserController {
             }else{
                 result.put("status","1");
             }
+            result.put("resultCode","0");
+        }catch(Exception e){
+            e.printStackTrace();
+            result.put("resultCode","1");
+        }
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value="saveUserPhone",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String saveUserPhone(@RequestBody String text){
+        Map<Object,Object> result = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            User user = JSONObject.parseObject(text,User.class);
+            JSONObject obj= JSONObject.parseObject(text);
+            user.setId(obj.getLong("userId"));
+            userService.saveUserPhone(user);
             result.put("resultCode","0");
         }catch(Exception e){
             e.printStackTrace();

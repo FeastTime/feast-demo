@@ -129,5 +129,9 @@ public class UserService {
     public User checkWeChatUserBindStatus(User user) {
         return userRemoteService.checkWeChatUserBindStatus(user);
     }
+
+    public void saveUserPhone(User user) {
+        userRemoteService.saveUserPhone(user);
+    }
 }
 

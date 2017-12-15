@@ -79,4 +79,12 @@ public class UserServiceImpl implements UserService{
         //String openId,String imei,String androidId,String ipv4,String mac
         return userDao.checkWeChatUserBindStatus(user.getOpenId(),user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac());
     }
+
+    public void saveUserPhone(User user) {
+        User user_ = userDao.findUserByImeiAndAndroidIdAndIpv4AndMacAndOpenIdAndUserId(user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac(),user.getOpenId(),user.getId());
+        if(user_!=null){
+            user_.setMobileNo(user.getMobileNo());
+            userDao.save(user_);
+        }
+    }
 }

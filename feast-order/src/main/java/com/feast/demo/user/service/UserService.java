@@ -22,4 +22,6 @@ public interface UserService {
     public void saveWeChatUserInfo(User user);
 
     public User checkWeChatUserBindStatus(User user);
+
+    public void saveUserPhone(User user);
 }
