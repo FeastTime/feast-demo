@@ -24,4 +24,6 @@ public interface UserService {
     public User checkWeChatUserBindStatus(User user);
 
     public void saveUserPhone(User user);
+
+    public User findById(Long userId);
 }

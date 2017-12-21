@@ -133,5 +133,7 @@ public class UserService {
     public void saveUserPhone(User user) {
         userRemoteService.saveUserPhone(user);
     }
+
+    public User findById(Long userId) { return userRemoteService.findById(userId);}
 }
 

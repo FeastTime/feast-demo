@@ -30,5 +30,8 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
 
     @Query("select u from User u where u.imei=?1 and u.androidId=?2 and u.ipv4=?3 and u.mac=?4 and u.openId=?5 and u.id=?6")
     User findUserByImeiAndAndroidIdAndIpv4AndMacAndOpenIdAndUserId(String imei, String androidId, String ipv4, String mac, String openId, Long id);
+
+    @Query("select u from User u where u.id=?1")
+    User findById(Long userId);
 }
 

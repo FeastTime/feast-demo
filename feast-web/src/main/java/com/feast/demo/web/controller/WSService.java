@@ -2,8 +2,11 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
+import com.feast.demo.web.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -20,17 +23,18 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket/{mobileNo}/{storeId}")
+@ServerEndpoint("/websocket/{mobileNo}/{storeId}/{userId}")
 public class WSService {
 
     private ComeinRestService comeinRestService;
-
+    private UserService userService;
 
     void setComeinRestService() {
         String configLocation = "classpath*:/spring*/*.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
+        userService = context.getBean(UserService.class);
     }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -46,6 +50,7 @@ public class WSService {
 
     private String mobileNo;
     private String storeId;
+    private Long userId;
 
     public WSService() {
         webSocketSet = new CopyOnWriteArraySet<WsBean>();
@@ -57,7 +62,7 @@ public class WSService {
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId) {
+    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId,@PathParam("userId") Long userId) {
 
         if(comeinRestService == null) {
             setComeinRestService();
@@ -66,9 +71,10 @@ public class WSService {
         this.session = session;
         this.mobileNo = mobileNo;
         this.storeId = storeId;
+        this.userId = userId;
 
         // 如果店铺id 或者手机号为空 关闭连接
-        if(storeId == null || "".equals(storeId) || mobileNo == null || "".equals(mobileNo)){
+        if(storeId == null || "".equals(storeId) || mobileNo == null || "".equals(mobileNo)||userId == null || "".equals(userId)){
             onClose();
         }
 
@@ -85,10 +91,13 @@ public class WSService {
 
 
         WsBean wsb = new WsBean();
+        System.out.println(userService);
+        User user = userService.findById(userId);
 
         wsb.setWsService(this);
         wsb.setMobileNo(mobileNo);
         wsb.setStoreId(storeId);
+        wsb.setUser(user);
 
         if(hm.containsKey(storeId)){
             webSocketSet = hm.get(storeId);

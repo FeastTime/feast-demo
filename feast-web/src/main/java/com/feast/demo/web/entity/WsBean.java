@@ -1,5 +1,6 @@
 package com.feast.demo.web.entity;
 
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.controller.WSService;
 import lombok.Data;
 
@@ -13,5 +14,5 @@ public class WsBean {
     private WSService wsService;
     private String mobileNo;
     private String storeId;
-
+    private User user;
 }

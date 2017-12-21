@@ -87,4 +87,8 @@ public class UserServiceImpl implements UserService{
             userDao.save(user_);
         }
     }
+
+    public User findById(Long userId) {
+        return userDao.findById(userId);
+    }
 }
