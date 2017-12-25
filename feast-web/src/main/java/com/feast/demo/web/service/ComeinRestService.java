@@ -6,6 +6,7 @@ import com.feast.demo.bid.core.BidRequest;
 import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.order.service.BidRecordService;
 import com.feast.demo.order.vo.BidRecordVo;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
@@ -16,17 +17,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * Created by Administrator on 2017/10/22.
  */
-@Service
+@Service()
 public class ComeinRestService {
 
     @Autowired
     private BidRecordService bidRecordService;
 
+    @Autowired
+    private UserService userService;
     @Autowired
     private TableBidService tbService;
 
@@ -79,9 +83,33 @@ public class ComeinRestService {
             case 6:
                 retMessage = deskHistory(jsono);
                 break;
-
+            case 7:
+                retMessage = chat(jsono);
+                break;
         }
         return retMessage;
+    }
+
+    public String chat(JSONObject jsono) {
+        User user =  userService.findById(Long.parseLong(jsono.getString("userId")));
+        System.out.println(user+"111111111111");
+        String userIcon = user.getUserIcon();
+        Long userId = user.getId();
+        String message = jsono.getString("message");
+        String nickname = user.getNickName();
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String dateStr = format.format(date);
+        HashMap<String,String> map = new HashMap<>();
+        map.put("resultCode","0");
+        map.put("userId",userId+"");
+        map.put("nickname","张三");
+        map.put("userIcon","http://www.jrfazh.cn/daikuan/ykjk/hdtui/?cid=B4-4208");
+        map.put("date",dateStr);
+        map.put("type","7");
+        map.put("message",message);
+        System.out.println(JSON.toJSONString(map)+"000000");
+        return JSON.toJSONString(map);
     }
 
     /**

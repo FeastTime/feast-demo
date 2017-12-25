@@ -18,7 +18,7 @@
          if ('WebSocket' in window) {
 //                websocket = new WebSocket("ws://47.94.16.58:9798/feast-web/websocket/111222/111333");
 //                websocket = new WebSocket("ws://192.168.1.166:8080/websocket/112244/111222");
-                websocket = new WebSocket("ws://localhost:8080/websocket/token:asieurqknro239480984234lkasj/13242/1");
+                websocket = new WebSocket("ws://localhost:8080/websocket/13776677667/13242/1");
              }
          else {
                  alert('当前浏览器 Not support websocket')
@@ -37,7 +37,7 @@
         //接收到消息的回调方法
         websocket.onmessage = function (event) {
                  setMessageInnerHTML(event.data);
-             }
+        }
 
          //连接关闭的回调方法
         websocket.onclose = function () {
@@ -62,6 +62,7 @@
          //发送消息
          function send() {
                  var message = document.getElementById('text').value;
+                 //alert(message);
                  websocket.send(message);
              }
      </script>

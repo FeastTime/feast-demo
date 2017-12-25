@@ -1,12 +1,12 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.history.entity.History;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
+import com.feast.demo.web.service.HistoryService;
 import com.feast.demo.web.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -28,6 +28,7 @@ public class WSService {
 
     private ComeinRestService comeinRestService;
     private UserService userService;
+    private HistoryService historyService;
 
     void setComeinRestService() {
         String configLocation = "classpath*:/spring*/*.xml";
@@ -35,6 +36,7 @@ public class WSService {
                 configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
         userService = context.getBean(UserService.class);
+        historyService = context.getBean(HistoryService.class);
     }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -63,7 +65,6 @@ public class WSService {
      */
     @OnOpen
     public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId,@PathParam("userId") Long userId) {
-
         if(comeinRestService == null) {
             setComeinRestService();
         }
@@ -82,6 +83,11 @@ public class WSService {
         try {
 //            System.out.println("发送回应start");
             this.sendMessage("success666success");
+            History history = new History();
+            history.setStoreId(Long.parseLong(storeId));
+            history.setUserId(userId);
+            history.setMobileNo(Long.parseLong(mobileNo));
+            historyService.save(history);
             Thread.sleep(500L);
 //            System.out.println("发送回应end");
         } catch (Exception e) {
@@ -159,27 +165,29 @@ public class WSService {
             setComeinRestService();
         }
 
-//        System.out.println("来自客户端的消息:" + message);
+        System.out.println("来自客户端的消息:" + message);
 
-        String storeId = null;
-
-        try{
+       // String storeId = null;
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("userId",userId);
+        map.put("message",message);
+        map.put("type","7");
+      /*  try{
             storeId = JSON.parseObject(message).getString("storeID");
         } catch (Exception ignored){}
 
         if (null == storeId)
-            return;
+            return;*/
 
         String resultMessage = null;
 
         try{
-            resultMessage = comeinRestService.WSInterfaceProc(message);
-        } catch (Exception ignored){}
+            resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
+        } catch (Exception ignored){ignored.printStackTrace();}
 
         // 返回消息判空
         if (null == resultMessage || resultMessage.length() == 0)
             return;
-
         sendMessage(storeId, resultMessage);
     }
 

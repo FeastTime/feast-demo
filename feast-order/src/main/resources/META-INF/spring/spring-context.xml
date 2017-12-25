@@ -11,6 +11,7 @@
 
     <!-- 使用注解方式暴露接口 -->
     <dubbo:annotation package="com.feast.demo.order.service" />
+    <dubbo:annotation package="com.feast.demo.history.service" />
     <dubbo:annotation package="com.feast.demo.user.service" />
     <dubbo:annotation package="com.feast.demo.device.service" />
     <dubbo:annotation package="com.feast.demo.store.service" />
