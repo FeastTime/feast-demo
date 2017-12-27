@@ -1,6 +1,8 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
@@ -8,6 +10,7 @@ import com.feast.demo.web.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,5 +138,10 @@ public class UserService {
     }
 
     public User findById(Long userId) { return userRemoteService.findById(userId);}
+
+    public List<Store> selectVisitStore(Long userId) {
+        return userRemoteService.selectVisitStore(userId);
+    }
+
 }
 

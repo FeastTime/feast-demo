@@ -3,6 +3,7 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.device.entity.Device;
+import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.json.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -191,6 +194,24 @@ public class UserController {
             userService.saveUserPhone(user);
             result.put("resultCode","0");
         }catch(Exception e){
+            e.printStackTrace();
+            result.put("resultCode","1");
+        }
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "selectVisitStore",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String selectVisitStore(@RequestBody String text){
+        Map<Object,Object> result = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long userId = obj.getLong("userId");
+            List<Store> list = userService.selectVisitStore(userId);
+            result.put(userId,list);
+            result.put("resultCode","0");
+        }catch (Exception e){
             e.printStackTrace();
             result.put("resultCode","1");
         }

@@ -1,19 +1,20 @@
-package com.feast.demo.history.entity;
+package com.feast.demo.store.entity;
 
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
-@Table(name="history")
+@Table(name="historyperson")
 @Data
-public class History implements Serializable{
+public class HistoryPerson implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long historyId;
     private Long storeId;
     private Long userId;
-    private Long mobileNo;
+    private Date visitTime;
 }

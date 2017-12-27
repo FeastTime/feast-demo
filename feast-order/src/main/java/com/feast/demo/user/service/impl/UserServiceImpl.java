@@ -1,5 +1,8 @@
 package com.feast.demo.user.service.impl;
 
+import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.store.entity.Store;
+import com.feast.demo.user.dao.HistoryStoreDao;
 import com.feast.demo.user.dao.UserDao;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.user.service.UserService;
@@ -9,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,6 +23,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private HistoryStoreDao historyStoreDao;
 
     public User findByMobileNo(Long mobileNo) {
         if(mobileNo == null){
@@ -89,6 +96,11 @@ public class UserServiceImpl implements UserService{
     }
 
     public User findById(Long userId) {
-        return userDao.findById(userId);
+        return userDao.findOne(userId);
     }
+
+    public List<Store> selectVisitStore(Long userId) {
+        return historyStoreDao.selectVisitStore(userId);
+    }
+
 }

@@ -1,11 +1,13 @@
 package com.feast.demo.user.dao;
 
+import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +33,5 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     @Query("select u from User u where u.imei=?1 and u.androidId=?2 and u.ipv4=?3 and u.mac=?4 and u.openId=?5 and u.id=?6")
     User findUserByImeiAndAndroidIdAndIpv4AndMacAndOpenIdAndUserId(String imei, String androidId, String ipv4, String mac, String openId, Long id);
 
-    @Query("select u from User u where u.id=?1")
-    User findById(Long userId);
 }
 

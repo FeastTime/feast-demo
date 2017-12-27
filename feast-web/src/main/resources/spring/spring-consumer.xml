@@ -19,8 +19,6 @@
 
     <dubbo:reference id="userRemoteService" interface="com.feast.demo.user.service.UserService"/>
 
-    <dubbo:reference id="historyRemoteService" interface="com.feast.demo.history.service.HistoryService"/>
-
     <dubbo:reference id="deviceRemoteService" interface="com.feast.demo.device.service.DeviceService"/>
 
     <dubbo:reference id="storeRemoteService" interface="com.feast.demo.store.service.StoreService"/>

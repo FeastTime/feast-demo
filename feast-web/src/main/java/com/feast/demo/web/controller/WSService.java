@@ -1,11 +1,11 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.feast.demo.history.entity.History;
+import com.feast.demo.store.entity.HistoryPerson;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
-import com.feast.demo.web.service.HistoryService;
+import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -14,6 +14,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -28,7 +29,7 @@ public class WSService {
 
     private ComeinRestService comeinRestService;
     private UserService userService;
-    private HistoryService historyService;
+    private StoreService storeService;
 
     void setComeinRestService() {
         String configLocation = "classpath*:/spring*/*.xml";
@@ -36,7 +37,7 @@ public class WSService {
                 configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
         userService = context.getBean(UserService.class);
-        historyService = context.getBean(HistoryService.class);
+        storeService = context.getBean(StoreService.class);
     }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -83,11 +84,17 @@ public class WSService {
         try {
 //            System.out.println("发送回应start");
             this.sendMessage("success666success");
-            History history = new History();
-            history.setStoreId(Long.parseLong(storeId));
-            history.setUserId(userId);
-            history.setMobileNo(Long.parseLong(mobileNo));
-            historyService.save(history);
+            HistoryPerson history = storeService.findByUserIdAndStoreId(userId,Long.parseLong(storeId));
+            if(history==null){
+                history = new HistoryPerson();
+                history.setStoreId(Long.parseLong(storeId));
+                history.setUserId(userId);
+                history.setVisitTime(new Date());
+                storeService.save(history);
+            }else{
+                history.setVisitTime(new Date());
+                storeService.save(history);
+            }
             Thread.sleep(500L);
 //            System.out.println("发送回应end");
         } catch (Exception e) {
