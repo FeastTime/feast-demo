@@ -7,6 +7,7 @@ import com.feast.demo.store.entity.HistoryPerson;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.store.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by ggke on 2017/8/1.
@@ -24,6 +25,7 @@ public class StoreServiceImpl implements StoreService {
         return storeDao.findOne(id);
     }
 
+    @Transactional(readOnly = false)
     public void save(HistoryPerson history) {
         historyDao.save(history);
     }

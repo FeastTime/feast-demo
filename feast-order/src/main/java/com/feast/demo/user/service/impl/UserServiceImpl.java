@@ -87,6 +87,7 @@ public class UserServiceImpl implements UserService{
         return userDao.checkWeChatUserBindStatus(user.getOpenId(),user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac());
     }
 
+    @Transactional(readOnly = false)
     public void saveUserPhone(User user) {
         User user_ = userDao.findUserByImeiAndAndroidIdAndIpv4AndMacAndOpenIdAndUserId(user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac(),user.getOpenId(),user.getId());
         if(user_!=null){
