@@ -14,4 +14,6 @@ public interface TableService {
     public void setBusinessInfo(DeskTemplate desk);
 
     public DeskTemplate getBusinessInfo(long storeId, long userId);
+
+    public DeskInfo queryPayTableDetail(Long deskId);
 }

@@ -100,4 +100,24 @@ public class TableController {
         }
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/queryPayTableDetail")
+    public String queryPayTableDetail(@RequestBody String text){
+        Map<Object,Object> result = null;
+        try{
+            result = new HashMap<>();
+            text = StringUtils.decode(text);
+            JSONObject jsono = JSON.parseObject(text);
+            DeskInfo deskInfo = tableService.queryPayTableDetail(jsono.getLong("deskId"));
+            result.put("resultMsg","取桌成功");
+            result.put("resultCode","0");
+            result.put("description",deskInfo.getDescription());
+            result.put("deskId",deskInfo.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            result.put("resultMsg","发生错误");
+            result.put("resultCode","1");
+        }
+        return JSON.toJSONString(result);
+    }
 }

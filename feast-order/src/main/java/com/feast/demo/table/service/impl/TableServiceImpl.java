@@ -39,4 +39,9 @@ public class TableServiceImpl implements TableService{
     public DeskTemplate getBusinessInfo(long storeId, long userId) {
         return deskTemplateDao.selectDeskByStoreIdAndUserd(storeId,userId);
     }
+
+    public DeskInfo queryPayTableDetail(Long deskId) {
+
+        return deskInfoDao.findOne(deskId);
+    }
 }

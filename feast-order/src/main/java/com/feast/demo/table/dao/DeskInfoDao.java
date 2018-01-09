@@ -10,5 +10,4 @@ public interface DeskInfoDao extends PagingAndSortingRepository<DeskInfo,Long>{
     @Query("select d from DeskInfo d where d.userId = ?1 and d.storeId = ?2 and d.id = ?3 ")
     DeskInfo selectDeskByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
 
-
 }

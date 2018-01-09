@@ -31,4 +31,8 @@ public class TableService {
     public DeskTemplate getBusinessInfo(long storeId, long userId) {
         return tableRemoteService.getBusinessInfo(storeId,userId);
     }
+
+    public DeskInfo queryPayTableDetail(Long deskId) {
+        return tableRemoteService.queryPayTableDetail(deskId);
+    }
 }
