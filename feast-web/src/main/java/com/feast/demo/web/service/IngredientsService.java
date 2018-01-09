@@ -22,7 +22,7 @@ public class IngredientsService {
     private com.feast.demo.menu.service.IngredientsService ingredientsRemoteService;
 
     public IngredientsObj findIngredientsByDishId(JSONObject jsonObj) {
-        System.out.println("dishId is:" + jsonObj.getString("dishId"));
+        System.out.println("dishId is:" + jsonObj.getString("dishId")+"===========");
 
         IngredientsObj ingredientsObj = new IngredientsObj();
         try {

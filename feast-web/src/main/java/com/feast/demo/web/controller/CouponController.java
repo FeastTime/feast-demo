@@ -1,6 +1,8 @@
 package com.feast.demo.web.controller;
 
-import com.feast.demo.coupon.entity.Coupon;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.web.service.CouponService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +34,48 @@ public class CouponController {
         params = StringUtils.decode(params);
         System.out.println("转之后"+params);
 
-        List<Coupon> list = couponService.findAllCoupon();
+        List<CouponTemplate> list = couponService.findAllCoupon();
         result.put("data",list);
         result.put("resultCode",1);
         return result;
     }
+
+    @RequestMapping(value="/createCouponTemplate")
+    public String createCouponTemplate(@RequestBody String params){
+
+        Map<Object,Object> result = null;
+        try{
+            result = new HashMap<>();
+            params = StringUtils.decode(params);
+            CouponTemplate coupon = JSONObject.parseObject(params,CouponTemplate.class);
+            coupon.setCreateTime(new Date());
+            couponService.createCouponTemplate(coupon);
+            result.put("resultCode","0");
+            result.put("resultMsg","创建优惠券模板成功");
+        }catch (Exception e){
+            e.printStackTrace();
+            result.put("resultCode","1");
+            result.put("resultMsg","创建优惠券模板失败");
+        }
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value="/deleteCouponTemplate")
+    public String deleteCouponTemplate(@RequestBody String params){
+        Map<Object,Object> result = null;
+        try{
+            params = StringUtils.decode(params);
+            JSONObject jsono = JSON.parseObject(params);
+            Long couponTemplateId = jsono.getLong("couponTemplateId");
+            couponService.deleteCouponTemplate(couponTemplateId);
+            result.put("resultCode","0");
+            result.put("resultMsg","删除优惠券模板成功");
+        }catch (Exception e){
+            e.printStackTrace();
+            result.put("resultCode","1");
+            result.put("resultMsg","删除优惠券模板失败");
+        }
+        return JSON.toJSONString(result);
+    }
+
 }

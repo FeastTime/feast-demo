@@ -33,7 +33,7 @@ public class OrderController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/createOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    @RequestMapping(value = "/cretaeOrder",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String createOrder(@RequestBody String jsonString){
         System.out.println("createOrder old = " + jsonString);
         jsonString = StringUtils.decode(jsonString);

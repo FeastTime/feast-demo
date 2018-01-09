@@ -1,7 +1,5 @@
 package com.feast.demo.store.service;
 
-import com.feast.demo.device.entity.Device;
-import com.feast.demo.store.entity.HistoryPerson;
 import com.feast.demo.store.entity.Store;
 
 /**
@@ -11,8 +9,5 @@ public interface StoreService {
 
     public Store findById(Long id);
 
-    public void save(HistoryPerson history);
-
-    public HistoryPerson findByUserIdAndStoreId(Long userId,Long storeId);
 
 }

@@ -1,6 +1,6 @@
 package com.feast.demo.coupon.service;
 
-import com.feast.demo.coupon.entity.Coupon;
+import com.feast.demo.coupon.entity.CouponTemplate;
 
 import java.util.List;
 
@@ -9,5 +9,9 @@ import java.util.List;
  */
 public interface CouponService {
 
-    public List<Coupon> findAll();
+    public List<CouponTemplate> findAll();
+
+    public void createCouponTemplate(CouponTemplate coupon);
+
+    public void deleteCouponTemplate(Long couponTemplateId);
 }

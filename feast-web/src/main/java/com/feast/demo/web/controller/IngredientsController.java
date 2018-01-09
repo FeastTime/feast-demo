@@ -33,5 +33,4 @@ public class IngredientsController {
         return JSON.toJSONString(resultObj);
     }
 
-
 }

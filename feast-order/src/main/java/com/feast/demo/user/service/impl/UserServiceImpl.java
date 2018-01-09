@@ -1,10 +1,12 @@
 package com.feast.demo.user.service.impl;
 
-import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.history.dao.HistoryDao;
+import com.feast.demo.history.entity.History;
 import com.feast.demo.store.entity.Store;
-import com.feast.demo.user.dao.HistoryStoreDao;
+import com.feast.demo.user.dao.UserCouponDao;
 import com.feast.demo.user.dao.UserDao;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserCoupon;
 import com.feast.demo.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,11 +22,15 @@ import java.util.List;
 @Service()
 public class UserServiceImpl implements UserService{
 
+
     @Autowired
     private UserDao userDao;
 
     @Autowired
-    private HistoryStoreDao historyStoreDao;
+    private UserCouponDao userCouponDao;
+
+    @Autowired
+    private HistoryDao historyDao;
 
     public User findByMobileNo(Long mobileNo) {
         if(mobileNo == null){
@@ -100,8 +105,35 @@ public class UserServiceImpl implements UserService{
         return userDao.findOne(userId);
     }
 
-    public List<Store> selectVisitStore(Long userId) {
-        return historyStoreDao.selectVisitStore(userId);
+    public User findByNameAndPwd(String name, String pwd) {
+        return userDao.findByNameAndPwd(name,pwd);
     }
+
+    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
+        return historyDao.selectHistoryByUserIdAndStoreId(userId,storeId);
+    }
+
+    public List<Store> selectVisitStore(Long userId) {
+
+        List<Store> stores = historyDao.selectVisitStore(userId);
+        return stores;
+    }
+
+    public void saveHistory(History history) {
+        historyDao.save(history);
+    }
+
+    public List<User> selectVisitUser(Long storeId) {
+        return historyDao.selectVisitUser(storeId);
+    }
+
+    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon) {
+        return userDao.selectCouponByUserIdAndStoreIdAndCouponCode(userCoupon.getUserId(),userCoupon.getStoreId(),userCoupon.getCode());
+    }
+
+    public void updateUserCoupon(UserCoupon userCoupon) {
+        userCouponDao.save(userCoupon);
+    }
+
 
 }

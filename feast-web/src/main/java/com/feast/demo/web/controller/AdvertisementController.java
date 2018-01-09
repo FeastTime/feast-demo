@@ -146,4 +146,10 @@ public class AdvertisementController {
         return result;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/test",method = RequestMethod.POST)
+    public void test(@RequestBody String text){
+        System.out.println("hhahahaha+=============");
+    }
+
 }

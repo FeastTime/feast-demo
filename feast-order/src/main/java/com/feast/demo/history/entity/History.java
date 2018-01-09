@@ -1,17 +1,15 @@
-package com.feast.demo.user.entity;
+package com.feast.demo.history.entity;
 
-import com.feast.demo.store.entity.Store;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name="historystore")
+@Table(name="history")
 @Data
-public class HistoryStore {
-
+public class History implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,4 +17,6 @@ public class HistoryStore {
     private Long storeId;
     private Character status;
     private Date visitTime;
+    private Long count;
+
 }

@@ -1,11 +1,10 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.history.entity.History;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
-import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.service.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,7 +28,6 @@ public class WSService {
 
     private ComeinRestService comeinRestService;
     private UserService userService;
-    private StoreService storeService;
 
     void setComeinRestService() {
         String configLocation = "classpath*:/spring*/*.xml";
@@ -37,7 +35,6 @@ public class WSService {
                 configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
         userService = context.getBean(UserService.class);
-        storeService = context.getBean(StoreService.class);
     }
 
     //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
@@ -84,17 +81,7 @@ public class WSService {
         try {
 //            System.out.println("发送回应start");
             this.sendMessage("success666success");
-            HistoryPerson history = storeService.findByUserIdAndStoreId(userId,Long.parseLong(storeId));
-            if(history==null){
-                history = new HistoryPerson();
-                history.setStoreId(Long.parseLong(storeId));
-                history.setUserId(userId);
-                history.setVisitTime(new Date());
-                storeService.save(history);
-            }else{
-                history.setVisitTime(new Date());
-                storeService.save(history);
-            }
+
             Thread.sleep(500L);
 //            System.out.println("发送回应end");
         } catch (Exception e) {
@@ -125,6 +112,24 @@ public class WSService {
         addOnlineCount();           //在线数加1
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
+
+        /**
+            将用户信息与店铺信息加入到历史表中
+         */
+        History history = userService.selectHistoryByUserIdAndStoreId(userId,Long.parseLong(storeId));
+        if(history==null){
+            history = new History();
+            history.setUserId(userId);
+            history.setStoreId(Long.parseLong(storeId));
+            history.setCount(1l);
+            history.setVisitTime(new Date());
+            history.setStatus('3');
+            userService.saveHistory(history);
+        }else{
+            history.setCount(history.getCount()+1);
+            userService.saveHistory(history);
+        }
+
 
         try {
 

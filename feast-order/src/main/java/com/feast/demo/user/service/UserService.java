@@ -1,10 +1,10 @@
 package com.feast.demo.user.service;
 
-import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.history.entity.History;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserCoupon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +30,17 @@ public interface UserService {
 
     public User findById(Long userId);
 
+    public User findByNameAndPwd(String name, String pwd);
+
+    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId);
+
     public List<Store> selectVisitStore(Long userId);
 
+    public void saveHistory(History history);
+
+    public List<User> selectVisitUser(Long storeId);
+
+    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon);
+
+    public void updateUserCoupon(UserCoupon userCoupon);
 }

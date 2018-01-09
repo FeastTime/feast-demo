@@ -2,7 +2,7 @@ package com.feast.demo.web.ad2.ad;
 
 import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.service.AdService;
-import com.feast.demo.coupon.entity.Coupon;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.service.CouponService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ public class AppTest {
     //@Test
     public void testApp()
     {
-        for(Coupon c: couponServiceImpl.findAll())
+        for(CouponTemplate c: couponServiceImpl.findAll())
         System.out.println(c);
     }
     @Test

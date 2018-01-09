@@ -3,6 +3,8 @@ package com.feast.demo.store.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by ggke on 2017/8/2.
@@ -14,7 +16,7 @@ import javax.persistence.*;
 //@ToString(exclude = {"devices"})
 //@JsonIgnoreProperties(value = { "devices"})
 //@EqualsAndHashCode(exclude = {"devices"})
-public class Store {
+public class Store implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +27,20 @@ public class Store {
      */
     private String name;
 
+
+    private String locate;
+
+    private String phone;
+
+    private BigDecimal longitude;
+
+    private BigDecimal latitude;
+
+
 //    @OneToMany(mappedBy = "store",cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 //    @Lazy(value = false)
 //    private List<Device> devices;
+
+
 
 }

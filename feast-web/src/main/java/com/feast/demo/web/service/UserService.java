@@ -1,16 +1,16 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.store.entity.HistoryPerson;
+import com.feast.demo.history.entity.History;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserCoupon;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -139,9 +139,32 @@ public class UserService {
 
     public User findById(Long userId) { return userRemoteService.findById(userId);}
 
+    public User findByNameAndPwd(String name, String pwd) {
+        return userRemoteService.findByNameAndPwd(name,pwd);
+    }
+
     public List<Store> selectVisitStore(Long userId) {
         return userRemoteService.selectVisitStore(userId);
     }
 
+    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
+       return userRemoteService.selectHistoryByUserIdAndStoreId(userId,storeId);
+    }
+
+    public void saveHistory(History history) {
+        userRemoteService.saveHistory(history);
+    }
+
+    public List<User> selectVisitUser(Long storeId) {
+        return userRemoteService.selectVisitUser(storeId);
+    }
+
+    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon) {
+        return userRemoteService.selectCouponByUserIdAndStoreIdAndCouponCode(userCoupon);
+    }
+
+    public void updateUserCoupon(UserCoupon userCoupon) {
+         userRemoteService.updateUserCoupon(userCoupon);
+    }
 }
 

@@ -1,7 +1,7 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.coupon.entity.Coupon;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.menu.entity.CategoryMenu;
 import com.feast.demo.menu.entity.Menu;
 import com.feast.demo.menu.service.CategoryMenuService;
@@ -32,7 +32,7 @@ public class CouponService {
     @Autowired
     private com.feast.demo.menu.service.MenuService menuRemoteService;
 
-    public List<Coupon> findAllCoupon(){
+    public List<CouponTemplate> findAllCoupon(){
         return couponRemoteService.findAll();
     }
 
@@ -65,4 +65,11 @@ public class CouponService {
 
     }
 
+    public void createCouponTemplate(CouponTemplate coupon) {
+        couponRemoteService.createCouponTemplate(coupon);
+    }
+
+    public void deleteCouponTemplate(Long couponTemplateId) {
+        couponRemoteService.deleteCouponTemplate(couponTemplateId);
+    }
 }
