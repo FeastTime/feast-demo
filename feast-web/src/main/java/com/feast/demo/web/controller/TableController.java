@@ -2,33 +2,41 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.table.entity.DeskInfo;
-import com.feast.demo.table.entity.DeskTemplate;
+import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableTemplate;
 import com.feast.demo.web.service.TableService;
 import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping(value = "/table")
 public class TableController {
+
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     private TableService tableService;
 
     //修改桌位记录
     @RequestMapping(value = "/setTableStatus",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String logoutUser(@RequestBody String text){
+    public String setTableStatus(@RequestBody String text){
         Map<Object,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
         try{
             result = new HashMap<>();
             text = StringUtils.decode(text);
+            logger.info(text);
             JSONObject jsono  = JSON.parseObject(text);
             Byte operateType = jsono.getByte("operateType");
             Long userId = jsono.getLong("userId");
@@ -36,88 +44,188 @@ public class TableController {
             Long tableId = jsono.getLong("tableId");
             Integer delayTime = jsono.getInteger("delayTime");
             //operateType==1延时，operateType==2到店
-            DeskInfo desk = tableService.selectDeskByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
+            TableInfo tableInfo = tableService.findTableInfoByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
             if(operateType==1){
                 //修改预留时间
-                desk.setRecieveTime(desk.getRecieveTime()+delayTime);
-                tableService.updateRecieveTime(desk);
-                result.put("resultMsg","延时成功");
-                result.put("resultCode","0");
+                tableInfo.setRecieveTime(tableInfo.getRecieveTime()+delayTime);
+                tableService.updateTableInfo(tableInfo);
+                resultMsg = "延时成功";
+                resultCode = 0;
             }else if(operateType==2){
                 //修改是否到店标识
-                desk.setIsCome(1);
-                tableService.updateIsCome(desk);
-                result.put("resultMsg","已经到店");
-                result.put("resultCode","0");
+                tableInfo.setIsCome(1);
+                tableService.updateTableInfo(tableInfo);
+                resultMsg = "已经到店";
+                resultCode = 0;
             }
 
         }catch (Exception e){
             e.printStackTrace();
-            result.put("resultMsg","发生错误");
-            result.put("resultCode","1");
+            resultMsg = "发生错误";
         }
+        result.put("resultMsg",resultMsg);
+        result.put("resultCode",resultCode);
         return JSON.toJSONString(result);
     }
 
     //设置桌位基本信息
-    @RequestMapping("/setBusinessInfo")
+    @RequestMapping(value = "/setBusinessInfo",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String setBusinessInfo(@RequestBody String text){
         Map<Object,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
         try{
             result = new HashMap<>();
             text = StringUtils.decode(text);
-            DeskTemplate desk = JSONObject.parseObject(text, DeskTemplate.class);
-            tableService.setBusinessInfo(desk);
-            result.put("resultMsg","设置桌位信息成功");
-            result.put("resultCode","0");
+            logger.info(text);
+            TableTemplate tableTemplate = JSONObject.parseObject(text,TableTemplate.class);
+            tableService.setBusinessInfo(tableTemplate);
+            resultMsg = "设置桌位信息成功";
+            resultCode = 0;
         }catch (Exception e){
             e.printStackTrace();
-            result.put("resultMsg","发生错误");
-            result.put("resultCode","1");
+            resultMsg = "设置桌位信息失败";
         }
+
+        result.put("resultMsg",resultMsg);
+        result.put("resultCode",resultCode);
         return JSON.toJSONString(result);
     }
 
     //获取桌位信息
-    @RequestMapping("/getBusinessInfo")
+    @RequestMapping(value = "/getBusinessInfo",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String getBusinessInfo(@RequestBody String text){
         Map<Object,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        String description = "";
+        Integer recieveTime = null;
         try{
             result = new HashMap<>();
             text = StringUtils.decode(text);
+            logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
-            String storeId = jsono.getString("storeId");
-            String userId = jsono.getString("userId");
-            DeskTemplate desk = tableService.getBusinessInfo(Long.parseLong(storeId),Long.parseLong(userId));
-            result.put("resultMsg","取桌成功");
-            result.put("resultCode","0");
-            result.put("description",desk.getDescription());
-            result.put("defaultDelayTime",desk.getRecieveTime());
+            Long storeId = jsono.getLong("storeId");
+            Long userId = jsono.getLong("userId");
+            TableTemplate tableTemplate = tableService.getBusinessInfo(storeId,userId);
+            resultMsg = "取桌成功";
+            resultCode = 0;
+            description = tableTemplate.getDescription();
+            recieveTime = tableTemplate.getRecieveTime();
         }catch (Exception e){
             e.printStackTrace();
-            result.put("resultMsg","发生错误");
-            result.put("resultCode","1");
+            resultMsg = "取桌失败";
         }
+        result.put("resultMsg",resultMsg);
+        result.put("resultCode",resultCode);
+        result.put("description",description);
+        result.put("recieveTime",recieveTime);
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/queryPayTableDetail")
+    @RequestMapping(value = "/queryPayTableDetail",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String queryPayTableDetail(@RequestBody String text){
-        Map<Object,Object> result = null;
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        TableInfo tableInfo = null;
         try{
-            result = new HashMap<>();
+            result = Maps.newHashMap();
             text = StringUtils.decode(text);
+            logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
-            DeskInfo deskInfo = tableService.queryPayTableDetail(jsono.getLong("deskId"));
-            result.put("resultMsg","取桌成功");
-            result.put("resultCode","0");
-            result.put("description",deskInfo.getDescription());
-            result.put("deskId",deskInfo.getId());
+            Long tableId = jsono.getLong("tableId");
+            tableInfo = tableService.queryPayTableDetail(tableId);
+            resultMsg = "查询付费桌位详情成功";
+            resultCode = 0;
         }catch (Exception e){
             e.printStackTrace();
-            result.put("resultMsg","发生错误");
-            result.put("resultCode","1");
+            resultMsg = "查询付费桌位详情失败";
         }
+        result.put("tableInfo",tableInfo);
+        result.put("resultMsg",resultMsg);
+        result.put("resultCode",resultCode);
+        return JSON.toJSONString(result);
+    }
+
+    //查询付费桌位列表
+    @RequestMapping(value = "/queryPayTableList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String queryPayTableList(@RequestBody String text){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        ArrayList<TableInfo> tableList = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            JSONObject jsono = JSON.parseObject(text);
+            Long storeId = jsono.getLong("storeId");
+            Long userId = jsono.getLong("userId");
+            tableList = tableService.queryPayTableList(userId,storeId);
+            resultMsg = "查询付费桌位列表成功";
+            resultCode = 0;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询付费桌位列表失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        result.put("tableList",tableList);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/getHistoryTables",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String getHistoryTables(@RequestBody String text){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        ArrayList<TableInfo> tablesList = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject jsono = JSON.parseObject(text);
+            Long storeId = jsono.getLong("storeId");
+            tablesList = tableService.getHistoryTables(storeId);
+            resultMsg = "查询今日历史桌位列表成功";
+            resultCode = 0;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询今日历史桌位列表失败";
+        }
+        result.put("resultMsg",resultMsg);
+        result.put("resultCode",resultCode);
+        result.put("tablesList",tablesList);
+        return JSON.toJSONString(result);
+    }
+
+    /**
+     * 查询已得到桌位列表
+     方法名 queryMyTableList
+     */
+
+    @RequestMapping(value = "/queryMyTableList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String queryMyTableList(@RequestBody String text){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        ArrayList<TableInfo> tablesList = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject jsono = JSON.parseObject(text);
+            Long userId = jsono.getLong("userId");
+            tablesList = tableService.queryMyTableList(userId);
+            resultMsg = "查询已得到桌位列表成功";
+            resultCode = 0;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询已得到桌位列表失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        result.put("tablesList",tablesList);
         return JSON.toJSONString(result);
     }
 }

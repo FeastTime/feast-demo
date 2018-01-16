@@ -10,4 +10,5 @@ public interface StoreService {
     public Store findById(Long id);
 
 
+    public Store getStoreInfo(Long storeId);
 }

@@ -94,7 +94,7 @@ public class ComeinRestService {
         User user =  userService.findById(Long.parseLong(jsono.getString("userId")));
         System.out.println(user+"111111111111");
         String userIcon = user.getUserIcon();
-        Long userId = user.getId();
+        Long userId = user.getUserId();
         String message = jsono.getString("message");
         String nickname = user.getNickName();
         Date date = new Date();

@@ -18,10 +18,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private DeviceDao deviceDao;
 
-    public Device fingByImei(String imei) {
-        if(StringUtils.isNotEmpty(imei)){
-            return deviceDao.fingByImei(imei);
-        }
-        return null;
+
+    public Device fingByDeviceId(Long deviceId) {
+        return deviceDao.findOne(deviceId);
     }
 }

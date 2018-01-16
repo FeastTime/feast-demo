@@ -7,5 +7,5 @@ import com.feast.demo.device.entity.Device;
  */
 public interface DeviceService {
 
-    public Device fingByImei(String imei);
+    public Device fingByDeviceId(Long deviceId);
 }

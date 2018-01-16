@@ -20,13 +20,8 @@ public class DeviceService {
     @Autowired
     private StoreService storeRemoteService;
 
-    public Device findDeviceInfoByImei(String imei){
-        Device device = deviceRemoteService.fingByImei(imei);
-//        device.getStore().getDevices();
-        return device;
-    }
 
-    public Store findStoreById(Long id){
-        return storeRemoteService.findById(id);
+    public Device findByDeviceId(Long deviceId) {
+        return deviceRemoteService.fingByDeviceId(deviceId);
     }
 }

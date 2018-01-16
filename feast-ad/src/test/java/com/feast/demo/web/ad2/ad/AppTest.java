@@ -29,7 +29,7 @@ public class AppTest {
     //@Test
     public void testApp()
     {
-        for(CouponTemplate c: couponServiceImpl.findAll())
+        for(CouponTemplate c: couponServiceImpl.findAllCouponTemplate())
         System.out.println(c);
     }
     @Test

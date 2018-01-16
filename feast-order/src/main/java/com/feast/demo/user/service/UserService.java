@@ -1,10 +1,10 @@
 package com.feast.demo.user.service;
 
-import com.feast.demo.history.entity.History;
+import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
-import com.feast.demo.user.entity.UserCoupon;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,35 +12,38 @@ import java.util.List;
  */
 public interface UserService {
 
-    public User findByMobileNo(Long mobileNo);
+    public User findByMobileNo(String mobileNo);
 
     public void create(User user);
 
     public void update(User user);
 
-    public List<User> findByName(String name);
+    public User findByMobileAndPwd(String mobileNo, String pwd);
 
-    public User findByMobileAndPwd(Long mobileNo, String pwd);
-
+    /**
+     * @param user
+     */
     public void saveWeChatUserInfo(User user);
 
-    public User checkWeChatUserBindStatus(User user);
+    public User checkWeChatUserBindStatus(String openId);
 
-    public void saveUserPhone(User user);
+    public void saveUserPhone(Long userId,String mobileNo);
 
     public User findById(Long userId);
 
-    public User findByNameAndPwd(String name, String pwd);
+    public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId);
 
-    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId);
-
-    public List<Store> selectVisitStore(Long userId);
-
-    public void saveHistory(History history);
+    public void saveHistory(UserStore history);
 
     public List<User> selectVisitUser(Long storeId);
 
-    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon);
+    public User queryUserInfo(Long userId);
 
-    public void updateUserCoupon(UserCoupon userCoupon);
+    public void setRelationshipWithStore(Long userId, Long storeId, Integer status);
+
+    public User storeLogin(String username, String password);
+
+    public List<User> findByUsername(String username);
+
+    public ArrayList<Store> queryHadEatenStore(Long userId, Integer order);
 }

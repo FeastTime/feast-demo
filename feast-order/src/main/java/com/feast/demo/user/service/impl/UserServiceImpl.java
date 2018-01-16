@@ -1,19 +1,20 @@
 package com.feast.demo.user.service.impl;
 
-import com.feast.demo.history.dao.HistoryDao;
-import com.feast.demo.history.entity.History;
+import com.feast.demo.history.dao.UserStoreDao;
+import com.feast.demo.history.entity.UserStore;
+import com.feast.demo.store.dao.StoreDao;
 import com.feast.demo.store.entity.Store;
-import com.feast.demo.user.dao.UserCouponDao;
 import com.feast.demo.user.dao.UserDao;
 import com.feast.demo.user.entity.User;
-import com.feast.demo.user.entity.UserCoupon;
 import com.feast.demo.user.service.UserService;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,12 +28,12 @@ public class UserServiceImpl implements UserService{
     private UserDao userDao;
 
     @Autowired
-    private UserCouponDao userCouponDao;
+    private UserStoreDao historyDao;
 
     @Autowired
-    private HistoryDao historyDao;
+    private StoreDao storeDao;
 
-    public User findByMobileNo(Long mobileNo) {
+    public User findByMobileNo(String mobileNo) {
         if(mobileNo == null){
             return null;
         }
@@ -69,16 +70,8 @@ public class UserServiceImpl implements UserService{
         return userDao.findByPage2(pageRequest);
     }
 
-    /**
-     * 根据名称查询用户
-     * @param name
-     * @return
-     */
-    public List<User> findByName(String name){
-        return userDao.findByName(name);
-    }
 
-    public User findByMobileAndPwd(Long mobileNo, String pwd) {
+    public User findByMobileAndPwd(String mobileNo, String pwd) {
         return userDao.findByMobileAndPwd(mobileNo,pwd);
     }
 
@@ -87,17 +80,16 @@ public class UserServiceImpl implements UserService{
         userDao.save(user);
     }
 
-    public User checkWeChatUserBindStatus(User user) {
-        //String openId,String imei,String androidId,String ipv4,String mac
-        return userDao.checkWeChatUserBindStatus(user.getOpenId(),user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac());
+    public User checkWeChatUserBindStatus(String openId) {
+        return userDao.findByOpenId(openId);
     }
 
     @Transactional(readOnly = false)
-    public void saveUserPhone(User user) {
-        User user_ = userDao.findUserByImeiAndAndroidIdAndIpv4AndMacAndOpenIdAndUserId(user.getImei(),user.getAndroidId(),user.getIpv4(),user.getMac(),user.getOpenId(),user.getId());
-        if(user_!=null){
-            user_.setMobileNo(user.getMobileNo());
-            userDao.save(user_);
+    public void saveUserPhone(Long userId,String mobileNo) {
+        User user = userDao.findOne(userId);
+        if(user!=null){
+            user.setMobileNo(mobileNo);
+            userDao.save(user);
         }
     }
 
@@ -105,21 +97,12 @@ public class UserServiceImpl implements UserService{
         return userDao.findOne(userId);
     }
 
-    public User findByNameAndPwd(String name, String pwd) {
-        return userDao.findByNameAndPwd(name,pwd);
-    }
 
-    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
+    public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
         return historyDao.selectHistoryByUserIdAndStoreId(userId,storeId);
     }
 
-    public List<Store> selectVisitStore(Long userId) {
-
-        List<Store> stores = historyDao.selectVisitStore(userId);
-        return stores;
-    }
-
-    public void saveHistory(History history) {
+    public void saveHistory(UserStore history) {
         historyDao.save(history);
     }
 
@@ -127,13 +110,43 @@ public class UserServiceImpl implements UserService{
         return historyDao.selectVisitUser(storeId);
     }
 
-    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon) {
-        return userDao.selectCouponByUserIdAndStoreIdAndCouponCode(userCoupon.getUserId(),userCoupon.getStoreId(),userCoupon.getCode());
+    public User queryUserInfo(Long userId) {
+        return userDao.findOne(userId);
     }
 
-    public void updateUserCoupon(UserCoupon userCoupon) {
-        userCouponDao.save(userCoupon);
+    public void setRelationshipWithStore(Long userId, Long storeId, Integer status) {
+        UserStore us = historyDao.findByUserIdAndStoreId(userId,storeId);
+        if(us!=null){
+            us.setStatus(status);
+            historyDao.save(us);
+        }
     }
 
+    public User storeLogin(String username, String password) {
+        return userDao.findByUsernameAndPassword(username,password);
+    }
+
+    public List<User> findByUsername(String username) {
+        return userDao.findByUsername(username);
+    }
+
+    public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
+        List<UserStore> userStoreList = null;
+        if(order==1){
+            userStoreList = historyDao.findByUserIdOrderByCount(userId);
+        }else if(order==2){
+            userStoreList = historyDao.findByUserIdOrderByCountDesc(userId);
+        }else{
+            userStoreList = historyDao.findByUserIdOrderByLastModifiedDesc(userId);
+        }
+        List<Long> storeIdList = Lists.newArrayList();
+        for (UserStore userStore:userStoreList) {
+            if(!storeIdList.contains(userStore.getStoreId())){
+                storeIdList.add(userStore.getStoreId());
+            }
+        }
+        ArrayList<Store> storeList = storeDao.findByStoreIdIn(storeIdList);
+        return storeList;
+    }
 
 }

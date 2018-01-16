@@ -2,10 +2,8 @@ package com.feast.demo.coupon.entity;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -15,29 +13,28 @@ import java.util.Date;
 
 @Entity
 @Data
-public class CouponTemplate {
+@Table(name = "coupon_template")
+public class CouponTemplate implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String couponTitle;
 
-    private String picture;
+    private String couponPicture;
 
-    private Long count;
+    private Long couponCount;
 
-    private String discountMessage;
+    private String permissionsDescribed;
 
     private Date createTime;
 
-    private Date updateTime;
+    private Integer couponValidity;
 
-    private Date startTime;
+    private Date lastModified;
 
-    private Date endTime;
-
-    private Integer type;
+    private Integer couponType;
 
     private Long storeId;
 

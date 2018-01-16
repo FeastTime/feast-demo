@@ -1,7 +1,7 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.feast.demo.history.entity.History;
+import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
@@ -49,7 +49,7 @@ public class WSService {
     private Session session;
 
     private String mobileNo;
-    private String storeId;
+    private Long storeId;
     private Long userId;
 
     public WSService() {
@@ -62,7 +62,7 @@ public class WSService {
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId,@PathParam("userId") Long userId) {
+    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") Long storeId,@PathParam("userId") Long userId) {
         if(comeinRestService == null) {
             setComeinRestService();
         }
@@ -91,12 +91,11 @@ public class WSService {
 
 
         WsBean wsb = new WsBean();
-        System.out.println(userService);
         User user = userService.findById(userId);
 
         wsb.setWsService(this);
         wsb.setMobileNo(mobileNo);
-        wsb.setStoreId(storeId);
+        wsb.setStoreId(storeId+"");
         wsb.setUser(user);
 
         if(hm.containsKey(storeId)){
@@ -106,7 +105,7 @@ public class WSService {
         } else {
             webSocketSet = new CopyOnWriteArraySet<WsBean>();
             webSocketSet.add(wsb);
-            hm.put(storeId, webSocketSet);
+            hm.put(storeId+"", webSocketSet);
         }
 
         addOnlineCount();           //在线数加1
@@ -116,14 +115,14 @@ public class WSService {
         /**
             将用户信息与店铺信息加入到历史表中
          */
-        History history = userService.selectHistoryByUserIdAndStoreId(userId,Long.parseLong(storeId));
+        UserStore history = userService.selectHistoryByUserIdAndStoreId(userId,storeId);
         if(history==null){
-            history = new History();
+            history = new UserStore();
             history.setUserId(userId);
-            history.setStoreId(Long.parseLong(storeId));
+            history.setStoreId(storeId);
             history.setCount(1l);
-            history.setVisitTime(new Date());
-            history.setStatus('3');
+            history.setCreateTime(new Date());
+            history.setStatus(3);
             userService.saveHistory(history);
         }else{
             history.setCount(history.getCount()+1);
@@ -134,11 +133,11 @@ public class WSService {
         try {
 
             Map<String , String> map = new HashMap<>();
-            map.put("storeID", storeId);
+            map.put("storeID", storeId+"");
             map.put("userID", mobileNo);
             map.put("type", "1");
             String resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
-            sendMessage(storeId, resultMessage);
+            sendMessage(storeId+"", resultMessage);
         }catch (Exception ignored){}
 
 
@@ -200,7 +199,7 @@ public class WSService {
         // 返回消息判空
         if (null == resultMessage || resultMessage.length() == 0)
             return;
-        sendMessage(storeId, resultMessage);
+        sendMessage(storeId+"", resultMessage);
     }
 
     // 对外发送消息

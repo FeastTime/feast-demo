@@ -1,16 +1,16 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.history.entity.History;
+import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
-import com.feast.demo.user.entity.UserCoupon;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,7 +89,7 @@ public class UserService {
      * @param mobileNo
      * @return
      */
-    public User fingByMobileNo(Long mobileNo){
+    public User fingByMobileNo(String mobileNo){
         return userRemoteService.findByMobileNo(mobileNo);
     }
 
@@ -99,7 +99,7 @@ public class UserService {
      * @param pwd
      * @return
      */
-    public User findByMobileAndPwd(Long mobileNo,String pwd){
+    public User findByMobileAndPwd(String mobileNo,String pwd){
         return userRemoteService.findByMobileAndPwd(mobileNo,pwd);
     }
 
@@ -115,43 +115,26 @@ public class UserService {
         }
         return msg;
     }
-
-    /**
-     * 根据名称查询用户
-     * @param name
-     * @return
-     */
-    public List<User> findByName(String name){
-        return userRemoteService.findByName(name);
-    }
-
+    
     public void saveWeChatUserInfo(User user) {
         userRemoteService.saveWeChatUserInfo(user);
     }
 
-    public User checkWeChatUserBindStatus(User user) {
-        return userRemoteService.checkWeChatUserBindStatus(user);
+    public User checkWeChatUserBindStatus(String openId) {
+        return userRemoteService.checkWeChatUserBindStatus(openId);
     }
 
-    public void saveUserPhone(User user) {
-        userRemoteService.saveUserPhone(user);
+    public void saveUserPhone(Long userId,String mobileNo) {
+        userRemoteService.saveUserPhone(userId,mobileNo);
     }
 
     public User findById(Long userId) { return userRemoteService.findById(userId);}
 
-    public User findByNameAndPwd(String name, String pwd) {
-        return userRemoteService.findByNameAndPwd(name,pwd);
-    }
-
-    public List<Store> selectVisitStore(Long userId) {
-        return userRemoteService.selectVisitStore(userId);
-    }
-
-    public History selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
+    public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
        return userRemoteService.selectHistoryByUserIdAndStoreId(userId,storeId);
     }
 
-    public void saveHistory(History history) {
+    public void saveHistory(UserStore history) {
         userRemoteService.saveHistory(history);
     }
 
@@ -159,12 +142,25 @@ public class UserService {
         return userRemoteService.selectVisitUser(storeId);
     }
 
-    public UserCoupon selectCouponByUserIdAndStoreIdAndCouponCode(UserCoupon userCoupon) {
-        return userRemoteService.selectCouponByUserIdAndStoreIdAndCouponCode(userCoupon);
+
+    public User queryUserInfo(Long userId) {
+        return userRemoteService.queryUserInfo(userId);
     }
 
-    public void updateUserCoupon(UserCoupon userCoupon) {
-         userRemoteService.updateUserCoupon(userCoupon);
+    public void setRelationshipWithStore(Long userId, Long storeId, Integer status) {
+        userRemoteService.setRelationshipWithStore(userId,storeId,status);
+    }
+
+    public User storeLogin(String username, String password) {
+        return userRemoteService.storeLogin(username,password);
+    }
+
+    public List<User> findByUsername(String username) {
+        return userRemoteService.findByUsername(username);
+    }
+
+    public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
+        return userRemoteService.queryHadEatenStore(userId,order);
     }
 }
 

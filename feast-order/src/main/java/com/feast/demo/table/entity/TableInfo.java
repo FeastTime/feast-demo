@@ -4,24 +4,25 @@ package com.feast.demo.table.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="desk_info")
+@Table(name="table_info")
 @Data
-public class DeskInfo {
+public class TableInfo implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long tableId;
 
-    private Integer personCount;
+    private String suportSeatNumber;
 
-    private Integer passtype;
+    private Integer passType;
 
-    private Date makedeskTime;
+    private Date maketableTime;
 
-    private Date takedeskTime;
+    private Date taketableTime;
 
     private Integer recieveTime;
 

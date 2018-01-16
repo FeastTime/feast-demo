@@ -20,12 +20,12 @@ public class Store implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long storeId;
 
     /**
      *店铺名称
      */
-    private String name;
+    private String storeName;
 
 
     private String locate;
@@ -36,6 +36,9 @@ public class Store implements Serializable{
 
     private BigDecimal latitude;
 
+    private String storeIcon;
+
+    private String storePicture;
 
 //    @OneToMany(mappedBy = "store",cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 //    @Lazy(value = false)

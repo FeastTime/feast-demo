@@ -21,6 +21,9 @@ public class StoreServiceImpl implements StoreService {
         return storeDao.findOne(id);
     }
 
+    public Store getStoreInfo(Long storeId) {
+        return storeDao.findOne(storeId);
+    }
 
 
 }

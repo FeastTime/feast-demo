@@ -2,6 +2,7 @@ package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
+import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.menu.entity.CategoryMenu;
 import com.feast.demo.menu.entity.Menu;
 import com.feast.demo.menu.service.CategoryMenuService;
@@ -11,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +33,6 @@ public class CouponService {
 
     @Autowired
     private com.feast.demo.menu.service.MenuService menuRemoteService;
-
-    public List<CouponTemplate> findAllCoupon(){
-        return couponRemoteService.findAll();
-    }
 
     public List<Menu> findCouponDishes(String storeId){
         JSONObject json = new JSONObject();
@@ -71,5 +69,28 @@ public class CouponService {
 
     public void deleteCouponTemplate(Long couponTemplateId) {
         couponRemoteService.deleteCouponTemplate(couponTemplateId);
+    }
+
+    public void updateCouponTemplate(CouponTemplate coupon) {
+        couponRemoteService.updateCouponTemplate(coupon);
+    }
+
+    public ArrayList<UserCoupon> getUsedCoupon(Long storeId) {
+        return couponRemoteService.getUsedCoupon(storeId);
+    }
+
+    public UserCoupon useCoupon(Long storeId, Long userId, String couponCode) {
+        return couponRemoteService.useCoupon(storeId,userId,couponCode);
+    }
+    public void updateUserCoupon(UserCoupon userCoupon) {
+        couponRemoteService.updateUserCoupon(userCoupon);
+    }
+
+    public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId) {
+        return couponRemoteService.queryCouponTemplateList(storeId);
+    }
+
+    public ArrayList<UserCoupon> queryCouponList(Long userId,Integer flag) {
+        return couponRemoteService.queryCouponList(userId,flag);
     }
 }

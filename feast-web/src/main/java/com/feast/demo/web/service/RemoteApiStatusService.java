@@ -59,7 +59,7 @@ public class RemoteApiStatusService {
         list.addAll(adverstismentService.findAll());
         list.addAll(orderRemoteService.findAll());
 //        list.addAll(menuRemoteService.findAll());
-        list.add(userRemoteService.findByMobileNo(13800138000l));
+        list.add(userRemoteService.findByMobileNo("13800138000"));
         return list;
     }
 }

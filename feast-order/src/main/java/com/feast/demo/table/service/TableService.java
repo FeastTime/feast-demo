@@ -1,19 +1,26 @@
 package com.feast.demo.table.service;
 
 
-import com.feast.demo.table.entity.DeskInfo;
-import com.feast.demo.table.entity.DeskTemplate;
+import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableTemplate;
+
+import java.util.ArrayList;
 
 public interface TableService {
-    public DeskInfo selectDeskByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
 
-    public void updateRecieveTime(DeskInfo desk);
+    public void setBusinessInfo(TableTemplate tableTemplate);
 
-    public void updateIsCome(DeskInfo desk);
+    public TableTemplate getBusinessInfo(long storeId, long userId);
 
-    public void setBusinessInfo(DeskTemplate desk);
+    public TableInfo queryPayTableDetail(Long tableId);
 
-    public DeskTemplate getBusinessInfo(long storeId, long userId);
+    public ArrayList<TableInfo> queryPayTableList(Long userId,Long storeId);
 
-    public DeskInfo queryPayTableDetail(Long deskId);
+    public ArrayList<TableInfo> getHistoryTables(Long storeId);
+
+    public ArrayList<TableInfo> queryMyTableList(Long userId);
+
+    public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
+
+    public void updateTableInfo(TableInfo tableInfo);
 }

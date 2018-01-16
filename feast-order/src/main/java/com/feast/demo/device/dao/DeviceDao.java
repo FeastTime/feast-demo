@@ -9,6 +9,4 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  */
 public interface DeviceDao extends PagingAndSortingRepository<Device,Long> {
 
-    @Query("select d from Device d where d.imei=?1")
-    Device fingByImei(String imei);
 }

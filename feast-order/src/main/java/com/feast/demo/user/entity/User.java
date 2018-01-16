@@ -4,6 +4,8 @@ import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by ggke on 2017/7/23.
@@ -12,52 +14,35 @@ import javax.persistence.*;
 @Entity
 @Table(name="user")
 @Data
-public class User extends TimedEntity{
+public class User extends TimedEntity implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
+
+
 
     /**
      * 密码
      */
-    private String pwd;
+    private String password;
 
-    /**
-     * 乐观锁
-     */
-    private Long version=-1l;
-
-    /**
-     * imei
-     */
-    private String imei;
 
     /**
      *android设备id
      */
-    private String androidId;
-
-    /**
-     *ipv4地址
-     */
-    private String ipv4;
-
-    /**
-     *MAC地址
-     */
-    private String mac;
+    private Long deviceId;
 
 
     /**
      *手机号
      */
-    private Long mobileNo;
+    private String mobileNo;
 
     /**
      * 用户名
      */
-    private String name;
+    private String username;
 
     /**
      * 用户类型，默认是客户
@@ -70,10 +55,6 @@ public class User extends TimedEntity{
      */
     private String openId;
 
-    /**
-     * 用户电话
-     */
-    private String phone;
 
     /**
      * 昵称
