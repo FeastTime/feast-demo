@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService{
     private UserDao userDao;
 
     @Autowired
-    private UserStoreDao historyDao;
+    private UserStoreDao userStoreDao;
 
     @Autowired
     private StoreDao storeDao;
@@ -99,15 +99,15 @@ public class UserServiceImpl implements UserService{
 
 
     public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
-        return historyDao.selectHistoryByUserIdAndStoreId(userId,storeId);
+        return userStoreDao.selectHistoryByUserIdAndStoreId(userId,storeId);
     }
 
     public void saveHistory(UserStore history) {
-        historyDao.save(history);
+        userStoreDao.save(history);
     }
 
     public List<User> selectVisitUser(Long storeId) {
-        return historyDao.selectVisitUser(storeId);
+        return userStoreDao.selectVisitUser(storeId);
     }
 
     public User queryUserInfo(Long userId) {
@@ -115,10 +115,10 @@ public class UserServiceImpl implements UserService{
     }
 
     public void setRelationshipWithStore(Long userId, Long storeId, Integer status) {
-        UserStore us = historyDao.findByUserIdAndStoreId(userId,storeId);
+        UserStore us = userStoreDao.findByUserIdAndStoreId(userId,storeId);
         if(us!=null){
             us.setStatus(status);
-            historyDao.save(us);
+            userStoreDao.save(us);
         }
     }
 
@@ -133,11 +133,11 @@ public class UserServiceImpl implements UserService{
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
         List<UserStore> userStoreList = null;
         if(order==1){
-            userStoreList = historyDao.findByUserIdOrderByCount(userId);
+            userStoreList = userStoreDao.findByUserIdOrderByCount(userId);
         }else if(order==2){
-            userStoreList = historyDao.findByUserIdOrderByCountDesc(userId);
+            userStoreList = userStoreDao.findByUserIdOrderByCountDesc(userId);
         }else{
-            userStoreList = historyDao.findByUserIdOrderByLastModifiedDesc(userId);
+            userStoreList = userStoreDao.findByUserIdOrderByLastModifiedDesc(userId);
         }
         List<Long> storeIdList = Lists.newArrayList();
         for (UserStore userStore:userStoreList) {

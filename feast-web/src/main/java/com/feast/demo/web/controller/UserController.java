@@ -88,6 +88,9 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+    /**
+     *商家登录
+     */
     @RequestMapping(value = "/storeLogin",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String storeLogin(@RequestBody String text) {
         Map<Object,Object> result = null;
@@ -193,6 +196,9 @@ public class UserController {
         return JSON.toJSONString(resultObj);
     }
 
+    /**
+     *保存微信用户信息
+     */
     @RequestMapping(value="/saveWeChatUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String saveWeChatUserInfo(@RequestBody String text){
         Map<String,Object> result = null;
@@ -220,6 +226,9 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+    /**
+     *检查微信用户是否绑定
+     */
     @RequestMapping(value="/checkWeChatUserBindStatus",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String checkWeChatUserBindStatus(@RequestBody String text){
         Map<String,Object> result = null;
@@ -250,6 +259,9 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+    /**
+     *保存用户手机号
+     */
     @RequestMapping(value="/saveUserPhone",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String saveUserPhone(@RequestBody String text){
         Map<String,Object> result = null;
@@ -274,6 +286,9 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+    /**
+     *查询去过的商家
+     */
     @RequestMapping(value = "/queryHadEatenStore",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String queryHadEatenStore(@RequestBody String text){
         Map<String,Object> result = null;
@@ -300,28 +315,9 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping(value = "/selectVisitUser",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String selectVisitUser(@RequestBody String text){
-        logger.info(StringUtils.decode(text));
-        Map<Object,Object> result = null;
-        try{
-            result = Maps.newHashMap();
-            text = StringUtils.decode(text);
-            JSONObject obj = JSONObject.parseObject(text);
-            Long storeId = obj.getLong("storeId");
-            List<User> list = userService.selectVisitUser(storeId);
-            result.put("userList",list);
-            result.put("resultCode","0");
-        }catch (Exception e){
-            e.printStackTrace();
-            result.put("resultCode","1");
-        }
-        return JSON.toJSONString(result);
-    }
 
     /**
      * 查询用户信息
-     方法名 queryUserInfo
      */
 
     @RequestMapping(value = "/queryUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")

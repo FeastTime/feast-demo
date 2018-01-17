@@ -138,10 +138,6 @@ public class UserService {
         userRemoteService.saveHistory(history);
     }
 
-    public List<User> selectVisitUser(Long storeId) {
-        return userRemoteService.selectVisitUser(storeId);
-    }
-
 
     public User queryUserInfo(Long userId) {
         return userRemoteService.queryUserInfo(userId);
@@ -162,5 +158,6 @@ public class UserService {
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
         return userRemoteService.queryHadEatenStore(userId,order);
     }
+
 }
 

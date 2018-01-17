@@ -3,6 +3,7 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.store.entity.Store;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -57,6 +60,31 @@ public class StoreController {
         }
         result.put("resultCode",resultCode);
         result.put("reslutMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/queryHadVisitUser",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String queryHadVisitUser(@RequestBody String text){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        ArrayList<User> userList = null;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long storeId = obj.getLong("storeId");
+            userList = storeService.queryHadVisitUser(storeId);
+            resultCode = 0;
+            resultMsg = "查询历史用户成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询历史用户失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        result.put("userList",userList);
         return JSON.toJSONString(result);
     }
 }

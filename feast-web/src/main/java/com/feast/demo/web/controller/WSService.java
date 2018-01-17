@@ -115,18 +115,18 @@ public class WSService {
         /**
             将用户信息与店铺信息加入到历史表中
          */
-        UserStore history = userService.selectHistoryByUserIdAndStoreId(userId,storeId);
-        if(history==null){
-            history = new UserStore();
-            history.setUserId(userId);
-            history.setStoreId(storeId);
-            history.setCount(1l);
-            history.setCreateTime(new Date());
-            history.setStatus(3);
-            userService.saveHistory(history);
+        UserStore userStore = userService.selectHistoryByUserIdAndStoreId(userId,storeId);
+        if(userStore==null){
+            userStore = new UserStore();
+            userStore.setUserId(userId);
+            userStore.setStoreId(storeId);
+            userStore.setCount(1l);
+            userStore.setCreateTime(new Date());
+            userStore.setStatus(3);
+            userService.saveHistory(userStore);
         }else{
-            history.setCount(history.getCount()+1);
-            userService.saveHistory(history);
+            userStore.setCount(userStore.getCount()+1);
+            userService.saveHistory(userStore);
         }
 
 

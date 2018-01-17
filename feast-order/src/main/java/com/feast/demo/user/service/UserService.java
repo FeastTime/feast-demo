@@ -35,8 +35,6 @@ public interface UserService {
 
     public void saveHistory(UserStore history);
 
-    public List<User> selectVisitUser(Long storeId);
-
     public User queryUserInfo(Long userId);
 
     public void setRelationshipWithStore(Long userId, Long storeId, Integer status);
