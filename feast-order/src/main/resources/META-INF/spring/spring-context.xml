@@ -15,4 +15,5 @@
     <dubbo:annotation package="com.feast.demo.device.service" />
     <dubbo:annotation package="com.feast.demo.store.service" />
     <dubbo:annotation package="com.feast.demo.table.service" />
+    <dubbo:annotation package="com.feast.demo.feedback.service" />
 </beans>

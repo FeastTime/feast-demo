@@ -68,6 +68,7 @@
                 <value>com.feast.demo.store</value>
                 <value>com.feast.demo.table</value>
                 <value>com.feast.demo.history</value>
+                <value>com.feast.demo.feedback</value>
             </list>
         </property>
     </bean>
@@ -102,10 +103,14 @@
     <jpa:repositories base-package="com.feast.demo.history.dao"
                       entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
 
+    <jpa:repositories base-package="com.feast.demo.feedback.dao"
+                      entity-manager-factory-ref="entityManagerFactory"  transaction-manager-ref="transactionManager" repository-impl-postfix="Impl"/>
+
     <context:component-scan base-package="com.feast.demo.order" />
     <context:component-scan base-package="com.feast.demo.user" />
     <context:component-scan base-package="com.feast.demo.device" />
     <context:component-scan base-package="com.feast.demo.store" />
     <context:component-scan base-package="com.feast.demo.table" />
     <context:component-scan base-package="com.feast.demo.history" />
+    <context:component-scan base-package="com.feast.demo.feedback" />
 </beans>

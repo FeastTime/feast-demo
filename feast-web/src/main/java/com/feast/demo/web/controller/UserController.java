@@ -3,6 +3,8 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.device.entity.Device;
+import com.feast.demo.feedback.entity.Feedback;
+import com.feast.demo.web.service.FeedbackService;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
@@ -34,6 +36,9 @@ public class UserController {
 
     @Resource
     private DeviceService deviceService;
+
+    @Resource
+    private FeedbackService feedbackService;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String register(@RequestBody String text) {
@@ -93,7 +98,7 @@ public class UserController {
      */
     @RequestMapping(value = "/storeLogin",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String storeLogin(@RequestBody String text) {
-        Map<Object,Object> result = null;
+        Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;//0:成功，1:失败,2:未注册
         try{
@@ -364,6 +369,28 @@ public class UserController {
         }catch (Exception e){
             e.printStackTrace();
             resultMsg = "设置用户和商家关系失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String feedback(@RequestBody String text){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        try{
+            result = Maps.newHashMap();
+            text = StringUtils.decode(text);
+            logger.info(text);
+            Feedback feedback = JSONObject.parseObject(text, Feedback.class);
+            feedbackService.feedback(feedback);
+            resultCode = 0;
+            resultMsg = "添加意见反馈信息成功";
+        }catch(Exception e){
+            e.printStackTrace();
+            resultMsg = "添加意见反馈信息失败";
         }
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
