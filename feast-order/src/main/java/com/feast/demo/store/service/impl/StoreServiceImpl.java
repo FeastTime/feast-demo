@@ -1,6 +1,6 @@
 package com.feast.demo.store.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
+import org.springframework.stereotype.Service;
 import com.feast.demo.history.dao.UserStoreDao;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.dao.StoreDao;

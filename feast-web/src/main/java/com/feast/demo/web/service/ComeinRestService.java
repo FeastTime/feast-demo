@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.bid.core.BidRequest;
 import com.feast.demo.bid.core.BidResponse;
+import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.order.service.BidRecordService;
 import com.feast.demo.order.vo.BidRecordVo;
 import com.feast.demo.user.entity.User;
@@ -19,12 +20,15 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by Administrator on 2017/10/22.
  */
 @Service()
 public class ComeinRestService {
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     private BidRecordService bidRecordService;
@@ -53,6 +57,7 @@ public class ComeinRestService {
         message = StringUtils.decode(message);
         System.out.println("转之后"+message);
 
+        logger.info(message);
         JSONObject jsono  = new JSONObject();
 
         try{
@@ -72,7 +77,7 @@ public class ComeinRestService {
                 retMessage = addDeskList(jsono);
                 break;
             case 3:
-//              retMessage = newDeskNotify(jsono);
+                retMessage = newDeskNotify(jsono);
                 break;
             case 4:
                 retMessage = userOfferPrice(jsono);
@@ -90,25 +95,45 @@ public class ComeinRestService {
         return retMessage;
     }
 
+    /**
+     * 聊天
+     * @param jsono
+     * @return
+     */
     public String chat(JSONObject jsono) {
-        User user =  userService.findById(Long.parseLong(jsono.getString("userId")));
-        System.out.println(user+"111111111111");
-        String userIcon = user.getUserIcon();
-        Long userId = user.getUserId();
-        String message = jsono.getString("message");
-        String nickname = user.getNickName();
-        Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        String dateStr = format.format(date);
-        HashMap<String,String> map = new HashMap<>();
-        map.put("resultCode","0");
-        map.put("userId",userId+"");
-        map.put("nickname","张三");
-        map.put("userIcon","http://www.jrfazh.cn/daikuan/ykjk/hdtui/?cid=B4-4208");
+        HashMap<String,Object> map = null;
+        Byte resultCode = 1;
+        String resultMsg = "聊天信息发送失败";
+        Long userId = null;
+        String message = "";
+        String userIcon = "";
+        String dateStr = "";
+        Integer type = null;
+        String nickname = "";
+        try{
+            User user =  userService.findById(Long.parseLong(jsono.getString("userId")));
+            userIcon = user.getUserIcon();
+            userId = user.getUserId();
+            message = jsono.getString("message");
+            nickname = user.getNickName();
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            dateStr = format.format(date);
+            resultCode = 0;
+            resultMsg = "聊天信息发送成功";
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        map.put("resultCode",resultCode);
+        map.put("userId",userId);
+        map.put("nickname",nickname);
+        map.put("userIcon",userIcon);
         map.put("date",dateStr);
-        map.put("type","7");
+        map.put("type",type);
         map.put("message",message);
-        System.out.println(JSON.toJSONString(map)+"000000");
+        map.put("resultMsg",resultMsg);
         return JSON.toJSONString(map);
     }
 
@@ -118,20 +143,44 @@ public class ComeinRestService {
      * @return
      */
     public String userComeinProc(JSONObject jsonObj){
-        System.out.println("androidID is:"+jsonObj.getString("androidID"));
-        System.out.println("imei is:"+jsonObj.getString("imei"));
-        System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
-        System.out.println("mac is:"+jsonObj.getString("mac"));
-        System.out.println("storeID is:"+jsonObj.getString("storeID"));
-        System.out.println("type is:"+jsonObj.getString("type"));
-        System.out.println("deskID is:"+jsonObj.getString("deskID"));
-        System.out.println("userID is:"+jsonObj.getString("userID"));
+        HashMap<String,Object> resultMap = null;
+        Byte resultCode = 1;
+        String resultMsg = "";
+        Integer type = 1;
+        try{
+            resultMap = Maps.newHashMap();
+            Long userId = jsonObj.getLong("userId");
+            Long storeId = jsonObj.getLong("storeId");
 
-        HashMap<String ,String> resultMap = new HashMap<>();
-        resultMap.put("resultCode","0");
-        resultMap.put("message","欢迎"+jsonObj.getString("userID") + "进店！店小二祝您用餐愉快！");
-        resultMap.put("type","1");
+            UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,storeId);
+            Date date = new Date();
+            if(us==null){
+                us = new UserStore();
+                us.setCreateTime(date);
+                us.setStoreId(storeId);
+                us.setUserId(userId);
+                us.setCount(1l);
+                us.setStatus(3);
+                us.setLastModified(date);
+                userService.saveUserStore(us);
+            }else{
+                us.setLastModified(date);
+                us.setCount(us.getCount()+1);
+                userService.saveUserStore(us);
+            }
 
+            resultCode = 0;
+            resultMsg = "欢迎"+userId + "进店！店小二祝您用餐愉快";
+
+        }catch (Exception e){
+            e.printStackTrace();
+            resultCode = 1;
+            resultMsg = "用户进店失败";
+        }
+
+        resultMap.put("resultCode",resultCode);
+        resultMap.put("type",type);
+        resultMap.put("resultMsg",resultMsg);
 
         return JSON.toJSONString(resultMap);
     }
@@ -142,12 +191,6 @@ public class ComeinRestService {
      * @return
      */
     public String addDeskList(JSONObject jsonObj){
-        System.out.println("androidID is:"+jsonObj.getString("androidID"));
-        System.out.println("imei is:"+jsonObj.getString("imei"));
-        System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
-        System.out.println("mac is:"+jsonObj.getString("mac"));
-        System.out.println("storeID is:"+jsonObj.getString("storeID"));
-        System.out.println("type is:"+jsonObj.getString("type"));
         String maxPerson = jsonObj.getString("maxPerson");
         String minPerson = jsonObj.getString("minPerson");
         String storeID = jsonObj.getString("storeID");
@@ -252,16 +295,8 @@ public class ComeinRestService {
      * @return
      */
     public String newDeskNotify(JSONObject jsonObj){
-        System.out.println("androidID is:"+jsonObj.getString("androidID"));
-        System.out.println("imei is:"+jsonObj.getString("imei"));
-        System.out.println("ipv4 is:"+jsonObj.getString("ipv4"));
-        System.out.println("mac is:"+jsonObj.getString("mac"));
-        System.out.println("maxPerson is:"+jsonObj.getString("maxPerson"));
-        System.out.println("storeID is:"+jsonObj.getString("storeID"));
-        System.out.println("minPerson is:"+jsonObj.getString("minPerson"));
-        System.out.println("desc is:"+jsonObj.getString("desc"));
-        System.out.println("type is:"+jsonObj.getString("type"));
-        Map<Object,Object> result = Maps.newHashMap();
+
+        Map<String,Object> result = Maps.newHashMap();
 
         ComeinRestBean crBean = new ComeinRestBean();
 

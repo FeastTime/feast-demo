@@ -31,4 +31,18 @@
             <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
         </mvc:message-converters>
     </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/user/login"/>
+            <mvc:exclude-mapping path="/user/checkWeChatUserBindStatus"/>
+            <mvc:exclude-mapping path="/user/saveWeChatUserInfo"/>
+            <mvc:exclude-mapping path="/user/saveUserPhone"/>
+            <mvc:exclude-mapping path="/user/storeLogin"/>
+            <mvc:exclude-mapping path="/request.html"/>
+            <mvc:exclude-mapping path="/ws.html"/>
+            <bean class="com.feast.demo.web.controller.intercepter.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>

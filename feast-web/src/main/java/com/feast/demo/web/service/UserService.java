@@ -159,5 +159,12 @@ public class UserService {
         return userRemoteService.queryHadEatenStore(userId,order);
     }
 
+    public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId) {
+        return userRemoteService.findUserStoreByUserIdAndStoreId(userId,storeId);
+    }
+
+    public void saveUserStore(UserStore us) {
+        userRemoteService.saveUserStore(us);
+    }
 }
 

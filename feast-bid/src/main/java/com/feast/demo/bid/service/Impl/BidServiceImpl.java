@@ -1,10 +1,10 @@
 package com.feast.demo.bid.service.Impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.bid.core.*;
 import com.feast.demo.bid.service.BidService;
 import com.feast.demo.cache.CacheManager;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package com.feast.demo.menu.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
+import org.springframework.stereotype.Service;
 import com.feast.demo.menu.dao.CategoryMenuDao;
 import com.feast.demo.menu.entity.CategoryMenu;
 import com.feast.demo.menu.service.CategoryMenuService;

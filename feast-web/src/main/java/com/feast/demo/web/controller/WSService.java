@@ -112,29 +112,11 @@ public class WSService {
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
 
-        /**
-            将用户信息与店铺信息加入到历史表中
-         */
-        UserStore userStore = userService.selectHistoryByUserIdAndStoreId(userId,storeId);
-        if(userStore==null){
-            userStore = new UserStore();
-            userStore.setUserId(userId);
-            userStore.setStoreId(storeId);
-            userStore.setCount(1l);
-            userStore.setCreateTime(new Date());
-            userStore.setStatus(3);
-            userService.saveHistory(userStore);
-        }else{
-            userStore.setCount(userStore.getCount()+1);
-            userService.saveHistory(userStore);
-        }
-
-
         try {
 
-            Map<String , String> map = new HashMap<>();
-            map.put("storeID", storeId+"");
-            map.put("userID", mobileNo);
+            Map<String , Object> map = new HashMap<>();
+            map.put("storeID", storeId);
+            map.put("userID", userId);
             map.put("type", "1");
             String resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
             sendMessage(storeId+"", resultMessage);
@@ -193,7 +175,7 @@ public class WSService {
         String resultMessage = null;
 
         try{
-            resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
+            resultMessage = comeinRestService.WSInterfaceProc(message);
         } catch (Exception ignored){ignored.printStackTrace();}
 
         // 返回消息判空

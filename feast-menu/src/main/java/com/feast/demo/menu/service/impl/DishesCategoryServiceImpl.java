@@ -1,7 +1,7 @@
 package com.feast.demo.menu.service.impl;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.alibaba.dubbo.config.annotation.Service;
+import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.menu.dao.DishesCategoryDao;
 import com.feast.demo.menu.service.DishesCategoryService;

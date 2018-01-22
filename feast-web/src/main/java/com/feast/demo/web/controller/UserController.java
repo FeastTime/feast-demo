@@ -48,21 +48,22 @@ public class UserController {
 
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text) {
-        logger.info(StringUtils.decode(text));
+
         Map<Object,Object> result = Maps.newHashMap();
         System.out.println("转之前"+text);
         text = StringUtils.decode(text);
+        logger.info(text);
         System.out.println("转之后"+text);
         User user = JSONObject.parseObject(text,User.class);
 
         String resultMsg = "";
         Integer success = 1;//0:成功，1:失败,2:未注册
-        Device device = deviceService.findByDeviceId(user.getDeviceId());
-        if(device != null && device.getStore() != null){
-            result.put("storeId",device.getStore().getStoreId());
-        }else{
-            result.put("storeId",null);
-        }
+//        Device device = deviceService.findByDeviceId(user.getDeviceId());
+//        if(device != null && device.getStore() != null){
+//            result.put("storeId",device.getStore().getStoreId());
+//        }else{
+//            result.put("storeId",null);
+//        }
         //访客
         if(user.getMobileNo() == null || StringUtils.isEmpty(user.getPassword())){
             resultMsg = "参数错误";
@@ -82,7 +83,8 @@ public class UserController {
             }else {
                 LoginMemory.set(_user.getMobileNo() + "", _user);
                 resultMsg = "欢迎您登录成功!";
-                result.put("token", TokenUtils.getToken(JSONObject.parseObject(text).getString("deviceId"),user.getUserId()+""));
+                System.out.println(_user.getUserId()+" "+_user.getDeviceId());
+                result.put("token", TokenUtils.getToken(_user.getDeviceId()+"",_user.getUserId()+""));
                 result.put("userType",_user.getUserType());
                 success = 0;
             }
@@ -131,7 +133,7 @@ public class UserController {
                 }else {
                     LoginMemory.set(user.getUsername() + "", user);
                     resultMsg = "欢迎您登录成功!";
-                    result.put("token", TokenUtils.getToken(jsono.getString("deviceId"),user.getUserId()+""));
+                    result.put("token", TokenUtils.getToken(deviceId+"",user.getUserId()+""));
                     result.put("userType",user.getUserType());
                     result.put("userId",user.getUserId());
                     resultCode = 0;
@@ -149,9 +151,9 @@ public class UserController {
 
     @RequestMapping(value = "/registe",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String registe(@RequestBody String text){
-        logger.info(StringUtils.decode(text));
         Map<Object,Object> result = Maps.newHashMap();
         text = StringUtils.decode(text);
+        logger.info(text);
         User user = JSONObject.parseObject(text,User.class);
 
         String resultMsg = "";
@@ -184,17 +186,10 @@ public class UserController {
 
     @RequestMapping(value = "/logout",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String logoutUser(@RequestBody String text){
-        logger.info(StringUtils.decode(text));
         text = StringUtils.decode(text);
+        logger.info(text);
         JSONObject jsono  = JSON.parseObject(text);
-        System.out.println("androidID is:"+jsono.getString("androidID"));
-        System.out.println("imei is:"+jsono.getString("imei"));
-        System.out.println("ipv4 is:"+jsono.getString("ipv4"));
-        System.out.println("mac is:"+jsono.getString("mac"));
-        System.out.println("mobileNO is:"+jsono.getString("mobileNO"));
-
         UserObj resultObj = userService.getStatus(jsono,"logout");
-
         if("0".equals(resultObj.getResultCode())){
             LoginMemory.remove(resultObj.getMobileNO());
         }
@@ -375,15 +370,17 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping(value = "feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String feedback(@RequestBody String text){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
+
         try{
             result = Maps.newHashMap();
             text = StringUtils.decode(text);
             logger.info(text);
+            System.out.println(text+"9999999999");
             Feedback feedback = JSONObject.parseObject(text, Feedback.class);
             feedbackService.feedback(feedback);
             resultCode = 0;

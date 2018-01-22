@@ -44,4 +44,8 @@ public interface UserService {
     public List<User> findByUsername(String username);
 
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order);
+
+    public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId);
+
+    public void saveUserStore(UserStore us);
 }

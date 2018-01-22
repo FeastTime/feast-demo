@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -108,13 +109,13 @@ public class TableController {
             Long storeId = jsono.getLong("storeId");
             Long userId = jsono.getLong("userId");
             TableTemplate tableTemplate = tableService.getBusinessInfo(storeId,userId);
-            resultMsg = "取桌成功";
+            resultMsg = "获取桌位信息成功";
             resultCode = 0;
             description = tableTemplate.getDescription();
             recieveTime = tableTemplate.getRecieveTime();
         }catch (Exception e){
             e.printStackTrace();
-            resultMsg = "取桌失败";
+            resultMsg = "获取桌位信息失败";
         }
         result.put("resultMsg",resultMsg);
         result.put("resultCode",resultCode);

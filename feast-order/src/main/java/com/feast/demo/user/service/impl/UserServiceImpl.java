@@ -149,4 +149,12 @@ public class UserServiceImpl implements UserService{
         return storeList;
     }
 
+    public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId) {
+        return userStoreDao.findByUserIdAndStoreId(userId,storeId);
+    }
+
+    public void saveUserStore(UserStore us) {
+        userStoreDao.save(us);
+    }
+
 }

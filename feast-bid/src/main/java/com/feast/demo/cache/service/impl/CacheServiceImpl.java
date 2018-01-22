@@ -1,6 +1,6 @@
 package com.feast.demo.cache.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
+import org.springframework.stereotype.Service;
 import com.feast.demo.cache.CacheManager;
 import com.feast.demo.cache.service.CacheService;
 
