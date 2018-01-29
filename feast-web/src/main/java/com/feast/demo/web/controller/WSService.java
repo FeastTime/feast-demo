@@ -1,11 +1,15 @@
 package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
 import com.feast.demo.web.service.UserService;
+import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -16,6 +20,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
@@ -42,18 +47,28 @@ public class WSService {
 
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
 //    private static CopyOnWriteArraySet<WSService> webSocketSet = new CopyOnWriteArraySet<WSService>();
-    CopyOnWriteArraySet<WsBean> webSocketSet;
+//    CopyOnWriteArraySet<WsBean> webSocketSet;
+    // 用户与server关系
+    static Map<String, WsBean> user2Server;
+
+    // 用户与商户关系
+    static Map<String, CopyOnWriteArraySet<String>> user2Store;
+
     private static HashMap<String,CopyOnWriteArraySet> hm =new HashMap<String,CopyOnWriteArraySet>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
     private String mobileNo;
-    private Long storeId;
-    private Long userId;
+    private String storeId;
+    private String userId;
 
     public WSService() {
-        webSocketSet = new CopyOnWriteArraySet<WsBean>();
+//        webSocketSet = new CopyOnWriteArraySet<WsBean>();
+        user2Server = Maps.newConcurrentMap();
+
+        user2Store = Maps.newConcurrentMap();
+
         //hm =new HashMap<String,CopyOnWriteArraySet>();
     }
 
@@ -62,14 +77,14 @@ public class WSService {
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") Long storeId,@PathParam("userId") Long userId) {
+    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId,@PathParam("userId") String userId) {
         if(comeinRestService == null) {
             setComeinRestService();
         }
 
         this.session = session;
         this.mobileNo = mobileNo;
-        this.storeId = storeId;
+        this.storeId =storeId;
         this.userId = userId;
 
         // 如果店铺id 或者手机号为空 关闭连接
@@ -91,22 +106,26 @@ public class WSService {
 
 
         WsBean wsb = new WsBean();
-        User user = userService.findById(userId);
+        User user = userService.findById(Long.parseLong(userId));
 
         wsb.setWsService(this);
         wsb.setMobileNo(mobileNo);
         wsb.setStoreId(storeId+"");
         wsb.setUser(user);
 
-        if(hm.containsKey(storeId)){
-            webSocketSet = hm.get(storeId);
-            webSocketSet.add(wsb);
-
-        } else {
-            webSocketSet = new CopyOnWriteArraySet<WsBean>();
-            webSocketSet.add(wsb);
-            hm.put(storeId+"", webSocketSet);
+        if (!user2Server.containsKey(userId)){
+            user2Server.put(userId, wsb);
         }
+
+//        if(hm.containsKey(storeId)){
+//            webSocketSet = hm.get(storeId);
+//            webSocketSet.add(wsb);
+//
+//        } else {
+//            webSocketSet = new CopyOnWriteArraySet<WsBean>();
+//            webSocketSet.add(wsb);
+//            hm.put(storeId+"", webSocketSet);
+//        }
 
         addOnlineCount();           //在线数加1
 
@@ -117,10 +136,13 @@ public class WSService {
             Map<String , Object> map = new HashMap<>();
             map.put("storeID", storeId);
             map.put("userID", userId);
-            map.put("type", "1");
+            map.put("type", "7");
             String resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
             sendMessage(storeId+"", resultMessage);
-        }catch (Exception ignored){}
+        }catch (Exception ignored){
+
+            ignored.printStackTrace();
+        }
 
 
     }
@@ -136,6 +158,7 @@ public class WSService {
 
         webSocketSet = hm.get(storeId);
 
+        System.out.println(webSocketSet);
         for (WsBean wsBean: webSocketSet) {
             if (null != mobileNo && mobileNo.equals(wsBean.getMobileNo())){
                 webSocketSet.remove(wsBean);
@@ -154,17 +177,18 @@ public class WSService {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
+
         if(comeinRestService == null) {
             setComeinRestService();
         }
 
         System.out.println("来自客户端的消息:" + message);
 
-       // String storeId = null;
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("userId",userId);
-        map.put("message",message);
-        map.put("type","7");
+        // String storeId = null;
+//        HashMap<String,Object> map = new HashMap<>();
+//        map.put("userId",userId);
+//        map.put("message",message);
+//        map.put("type","1");
       /*  try{
             storeId = JSON.parseObject(message).getString("storeID");
         } catch (Exception ignored){}
@@ -172,26 +196,36 @@ public class WSService {
         if (null == storeId)
             return;*/
 
+
+        System.out.println("转之前--来自客户端的消息"+message);
+        message = StringUtils.decode(message);
+        System.out.println("转之后--来自客户端的消息"+message);
+
+        JSONObject jsonObject  = JSON.parseObject(message);
+
+        int type = jsonObject.getInteger("type");
+
         String resultMessage = null;
 
         try{
-            resultMessage = comeinRestService.WSInterfaceProc(message);
+            resultMessage = comeinRestService.WSInterfaceProc(type,jsonObject);
         } catch (Exception ignored){ignored.printStackTrace();}
 
         // 返回消息判空
         if (null == resultMessage || resultMessage.length() == 0)
             return;
-        sendMessage(storeId+"", resultMessage);
+
+        sendMessage(userId+"",resultMessage);
     }
 
     // 对外发送消息
-    public static void sendMessage(String storeId, String message){
+    public static void sendMessage(String userId, String message){
 
-        CopyOnWriteArraySet<WsBean> webSocketSet = hm.get(storeId);
+        user2Server.get(userId);
         // 群发消息
-        for (WsBean item : webSocketSet)
+        for (WsBean ws : webSocketSet)
             try {
-                item.getWsService().sendMessage(message);
+                ws.getWsService().sendMessage(message);
             } catch (IOException e) {
                 System.out.println("发送消息异常");
             }

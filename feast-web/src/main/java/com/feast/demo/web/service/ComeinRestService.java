@@ -49,47 +49,32 @@ public class ComeinRestService {
 
     /**
      * 对接老马接口入口
-     * @param message
-     * @return
+     *
      */
-    public String WSInterfaceProc(String message){
-        System.out.println("转之前"+message);
-        message = StringUtils.decode(message);
-        System.out.println("转之后"+message);
-
-        logger.info(message);
-        JSONObject jsono  = new JSONObject();
-
-        try{
-            jsono = JSON.parseObject(message);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        int type = Integer.parseInt(jsono.getString("type"));
+    public String WSInterfaceProc(int type,JSONObject jsonObject){
 
         String retMessage = "";
         switch(type){
             case 1:
-                retMessage = userComeinProc(jsono);
+                retMessage = userComeinProc(jsonObject);
                 break;
             case 2:
-                retMessage = addDeskList(jsono);
+                retMessage = addDeskList(jsonObject);
                 break;
             case 3:
-                retMessage = newDeskNotify(jsono);
+                retMessage = newDeskNotify(jsonObject);
                 break;
             case 4:
-                retMessage = userOfferPrice(jsono);
+                retMessage = userOfferPrice(jsonObject);
                 break;
             case 5:
-                retMessage = grabDesk(jsono);
+                retMessage = grabDesk(jsonObject);
                 break;
             case 6:
-                retMessage = deskHistory(jsono);
+                retMessage = deskHistory(jsonObject);
                 break;
             case 7:
-                retMessage = chat(jsono);
+                retMessage = chat(jsonObject);
                 break;
         }
         return retMessage;
