@@ -2,14 +2,14 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
 import com.feast.demo.web.service.UserService;
+import com.feast.demo.web.service.WebSocketEvent;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -17,133 +17,90 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
 /**
- * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
+ * ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket/{mobileNo}/{storeId}/{userId}")
+@ServerEndpoint("/websocket/{userId}")
 public class WSService {
 
     private ComeinRestService comeinRestService;
     private UserService userService;
+    private String userId;
 
-    void setComeinRestService() {
+    private void setComeInRestService() {
+
         String configLocation = "classpath*:/spring*/*.xml";
-        ApplicationContext context = new ClassPathXmlApplicationContext(
-                configLocation);
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
         userService = context.getBean(UserService.class);
     }
 
-    //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
-    private static int onlineCount = 0;
-
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
-//    private static CopyOnWriteArraySet<WSService> webSocketSet = new CopyOnWriteArraySet<WSService>();
-//    CopyOnWriteArraySet<WsBean> webSocketSet;
     // 用户与server关系
-    static Map<String, WsBean> user2Server;
+    private static Map<String, WsBean> user2Server;
 
     // 用户与商户关系
-    static Map<String, CopyOnWriteArraySet<String>> user2Store;
-
-    private static HashMap<String,CopyOnWriteArraySet> hm =new HashMap<String,CopyOnWriteArraySet>();
-
-    //与某个客户端的连接会话，需要通过它来给客户端发送数据
-    private Session session;
-
-    private String mobileNo;
-    private String storeId;
-    private String userId;
+    private static Map<String, CopyOnWriteArraySet<String>> user2Store;
 
     public WSService() {
-//        webSocketSet = new CopyOnWriteArraySet<WsBean>();
+
+        // 用户与服务端连接存储结构
         user2Server = Maps.newConcurrentMap();
 
+        // 用户与商家关系存储结构
         user2Store = Maps.newConcurrentMap();
-
-        //hm =new HashMap<String,CopyOnWriteArraySet>();
     }
+
 
     /**
      * 接建立成功调用的方法
-     * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
+     *
+     * @param session 连接
+     * @param userId 用户ID
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("mobileNo") String mobileNo,@PathParam("storeId") String storeId,@PathParam("userId") String userId) {
-        if(comeinRestService == null) {
-            setComeinRestService();
+    public void onOpen(Session session, @PathParam("userId") String userId) {
+
+        // 如果用户ID为空， 关闭连接
+        if(userId == null || "".equals(userId)){
+
+            try {
+                session.close();
+            } catch (Exception ignored) {
+            }
+
+            return;
         }
 
-        this.session = session;
-        this.mobileNo = mobileNo;
-        this.storeId =storeId;
         this.userId = userId;
 
-        // 如果店铺id 或者手机号为空 关闭连接
-        if(storeId == null || "".equals(storeId) || mobileNo == null || "".equals(mobileNo)||userId == null || "".equals(userId)){
-            onClose();
+        // 启动 Spring Service
+        if(comeinRestService == null) {
+            setComeInRestService();
         }
 
-        // 回消息
+        // 回消息 告诉客户端连接成功
+
         try {
-//            System.out.println("发送回应start");
             this.sendMessage("success666success");
-
             Thread.sleep(500L);
-//            System.out.println("发送回应end");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
 
-
-
-        WsBean wsb = new WsBean();
         User user = userService.findById(Long.parseLong(userId));
 
-        wsb.setWsService(this);
-        wsb.setMobileNo(mobileNo);
-        wsb.setStoreId(storeId+"");
-        wsb.setUser(user);
+        WsBean wsBean = new WsBean();
+        wsBean.setWsService(this);
+        wsBean.setUser(user);
 
         if (!user2Server.containsKey(userId)){
-            user2Server.put(userId, wsb);
+            user2Server.put(userId, wsBean);
         }
-
-//        if(hm.containsKey(storeId)){
-//            webSocketSet = hm.get(storeId);
-//            webSocketSet.add(wsb);
-//
-//        } else {
-//            webSocketSet = new CopyOnWriteArraySet<WsBean>();
-//            webSocketSet.add(wsb);
-//            hm.put(storeId+"", webSocketSet);
-//        }
-
-        addOnlineCount();           //在线数加1
-
-        System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
-
-        try {
-
-            Map<String , Object> map = new HashMap<>();
-            map.put("storeID", storeId);
-            map.put("userID", userId);
-            map.put("type", "7");
-            String resultMessage = comeinRestService.WSInterfaceProc(JSON.toJSONString(map));
-            sendMessage(storeId+"", resultMessage);
-        }catch (Exception ignored){
-
-            ignored.printStackTrace();
-        }
-
 
     }
 
@@ -153,21 +110,13 @@ public class WSService {
     @OnClose
     public void onClose() {
 
-        System.out.println(storeId + "--------------------storeId");
-        System.out.println(mobileNo + "--------------------mobileNo");
+        // 将连接  从  用户与服务端的关系结构中 删除
+        user2Server.remove(this.userId);
 
-        webSocketSet = hm.get(storeId);
-
-        System.out.println(webSocketSet);
-        for (WsBean wsBean: webSocketSet) {
-            if (null != mobileNo && mobileNo.equals(wsBean.getMobileNo())){
-                webSocketSet.remove(wsBean);
-                break;
-            }
+        // 将连接  从  用户与商户的关系结构中 删除
+        for (CopyOnWriteArraySet<String> set : user2Store.values()) {
+            set.remove(this.userId);
         }
-        webSocketSet.remove(this);  //从set中删除
-        subOnlineCount();           //在线数减1
-        System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -179,10 +128,10 @@ public class WSService {
     public void onMessage(String message, Session session) {
 
         if(comeinRestService == null) {
-            setComeinRestService();
+            setComeInRestService();
         }
 
-        System.out.println("来自客户端的消息:" + message);
+        System.out.println("来自客户端的消息:" + message + (null == session));
 
         // String storeId = null;
 //        HashMap<String,Object> map = new HashMap<>();
@@ -197,70 +146,119 @@ public class WSService {
             return;*/
 
 
-        System.out.println("转之前--来自客户端的消息"+message);
+        System.out.println("转之前 -- 来自客户端的消息"+message);
         message = StringUtils.decode(message);
-        System.out.println("转之后--来自客户端的消息"+message);
+        System.out.println("转之后 -- 来自客户端的消息"+message);
 
         JSONObject jsonObject  = JSON.parseObject(message);
 
         int type = jsonObject.getInteger("type");
 
-        String resultMessage = null;
+        // 如果是扫码进店, 添加用户与商家关系
+        if (type == WebSocketEvent.ENTER_STORE) {
 
-        try{
-            resultMessage = comeinRestService.WSInterfaceProc(type,jsonObject);
-        } catch (Exception ignored){ignored.printStackTrace();}
+            String storeId = jsonObject.getString("storeId");
+            String userId = jsonObject.getString("userId");
 
-        // 返回消息判空
-        if (null == resultMessage || resultMessage.length() == 0)
-            return;
+            if (null != storeId && null != userId){
 
-        sendMessage(userId+"",resultMessage);
+                user2Store.get(storeId).add(userId);
+            }
+
+        }
+        // 如果不是扫码进店，处理其他业务
+        else {
+
+            try {
+                List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject);
+
+                if (null != list){
+
+                    for (WebSocketMessageBean webSocketMessageBean: list) {
+
+                        // 发送消息给单个用户
+                        if (null != webSocketMessageBean.getUserId()
+                                && null != webSocketMessageBean.getMessage()
+                                && webSocketMessageBean.getMessage().length() > 0){
+
+                            sendMessageToUser(webSocketMessageBean.getUserId(), webSocketMessageBean.getMessage());
+                        }
+                        // 发送消息给店家所有用户
+                        else if (null != webSocketMessageBean.getStoreId()
+                                && null != webSocketMessageBean.getMessage()
+                                && webSocketMessageBean.getMessage().length() > 0){
+
+                            sendMessageToStore(webSocketMessageBean.getStoreId(), webSocketMessageBean.getMessage());
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
-    // 对外发送消息
-    public static void sendMessage(String userId, String message){
 
-        user2Server.get(userId);
-        // 群发消息
-        for (WsBean ws : webSocketSet)
+    /**
+     * 对用户发送消息
+     *
+     * @param userId 用户ID
+     * @param message 消息
+     */
+    private static void sendMessageToUser(String userId, String message) {
+
+        try {
+            user2Server.get(userId).getWsService().sendMessage(message);
+        } catch (IOException e) {
+            System.out.println("发送消息异常");
+        }
+    }
+
+
+    /**
+     * 对商户下所有用户发送消息
+     *
+     * @param storeId 店铺ID
+     * @param message 消息
+     */
+    private static void sendMessageToStore(String storeId, String message) {
+
+        CopyOnWriteArraySet<String> set = user2Store.get(storeId);
+
+        for (String userId : set) {
             try {
-                ws.getWsService().sendMessage(message);
+                user2Server.get(userId).getWsService().sendMessage(message);
             } catch (IOException e) {
                 System.out.println("发送消息异常");
             }
+        }
     }
 
     /**
      *发生错误时调用
-     *@param session
-     *@param error
+     *
+     *@param session Session
+     *@param error Throwable
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        System.out.println("发生错误");
+        System.out.println("发生错误" + (null == session));
         error.printStackTrace();
     }
 
     /**
      *这个方法与上面几个方法不一样。没有用注解，是根据自己需要添加的方法。
-     *@param message
-     *@throws IOException
+     *
+     *@param message 消息
+     *@throws IOException 异常
      */
-    public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
-        //this.session.getAsyncRemote().sendText(message);
+    private void sendMessage(String message) throws IOException {
+
+        System.out.println(message);
+        // this.session.getBasicRemote().sendText(message);
+        // this.session.getAsyncRemote().sendText(message);
     }
 
-    public static synchronized int getOnlineCount() {
-        return onlineCount;
-    }
-
-    public static synchronized void addOnlineCount() {
-        WSService.onlineCount++;
-    }
-
-    public static synchronized void subOnlineCount() {
-        WSService.onlineCount--;
-    }
 }

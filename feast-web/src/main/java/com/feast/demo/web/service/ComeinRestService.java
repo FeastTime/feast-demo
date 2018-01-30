@@ -12,6 +12,7 @@ import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
+import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +52,12 @@ public class ComeinRestService {
      * 对接老马接口入口
      *
      */
-    public String WSInterfaceProc(int type,JSONObject jsonObject){
+    public List<WebSocketMessageBean> WSInterfaceProc(int type, JSONObject jsonObject){
 
         String retMessage = "";
         switch(type){
             case 1:
-                retMessage = userComeinProc(jsonObject);
+//                retMessage = userComeinProc(jsonObject);
                 break;
             case 2:
                 retMessage = addDeskList(jsonObject);
@@ -77,7 +78,11 @@ public class ComeinRestService {
                 retMessage = chat(jsonObject);
                 break;
         }
-        return retMessage;
+
+        List<WebSocketMessageBean> list = new ArrayList<>();
+        list.add(new WebSocketMessageBean().setMessage(retMessage).toStore(""));
+
+        return list;
     }
 
     /**
@@ -124,18 +129,20 @@ public class ComeinRestService {
 
     /**
      * 用户进店
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return webSocketMessageBean WebSocketMessageBean
      */
-    public String userComeinProc(JSONObject jsonObj){
+    private WebSocketMessageBean userComeinProc(JSONObject jsonObj){
+
         HashMap<String,Object> resultMap = null;
         Byte resultCode = 1;
         String resultMsg = "";
         Integer type = 1;
+        Long storeId = null;
         try{
             resultMap = Maps.newHashMap();
             Long userId = jsonObj.getLong("userId");
-            Long storeId = jsonObj.getLong("storeId");
+            storeId = jsonObj.getLong("storeId");
 
             UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,storeId);
             Date date = new Date();
@@ -167,7 +174,8 @@ public class ComeinRestService {
         resultMap.put("type",type);
         resultMap.put("resultMsg",resultMsg);
 
-        return JSON.toJSONString(resultMap);
+        return new WebSocketMessageBean().setMessage(JSON.toJSONString(resultMap)).toStore(storeId + "");
+//        return JSON.toJSONString(resultMap);
     }
 
     /**
@@ -186,7 +194,7 @@ public class ComeinRestService {
         // 开启竞价
         String bid = tbService.openBid(bidTime);
 
-        startThread(bidTime - 3000L, storeID, bid);
+//        startThread(bidTime - 3000L, storeID, bid);
 
         if(storeMap.size() != 0 && storeMap.containsKey(storeID)){
             ArrayList<String> deskList = storeMap.get(storeID);
@@ -235,44 +243,44 @@ public class ComeinRestService {
         return JSON.toJSONString(result);
     }
 
-    public void startThread(Long time, String storeID, String bid) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Start。。。");
-                System.out.println("进入睡眠状态" + time + "毫秒");
-                try {
-                    Thread.sleep(time);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                JSONObject json = new JSONObject();
-                json.put("mobileNo","");
-                json.put("bid",bid);
-                json.put("maxPrice","");
-                json.put("stt","2");
-
-                bidRecordService.updBidRecord(json);
-
-                Collection<BidRequest> cbr = tbService.getBidRequests(bid);
-                cbr = resultFilter(cbr);
-
-                Map<String, Object> map = new HashMap<>();
-
-                map.put("resultCode" , 0);
-                map.put("type", "7");
-                map.put("data", cbr);
-                map.put("bid", bid);
-
-                String message = JSON.toJSONString(map);
-                // 通知客户端
-                WSService.sendMessage(storeID, message);
-                System.out.println("Thread End。。。");
-            }
-        });
-        t.start();
-    }
+//    public void startThread(Long time, String storeID, String bid) {
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                System.out.println("Start。。。");
+//                System.out.println("进入睡眠状态" + time + "毫秒");
+//                try {
+//                    Thread.sleep(time);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                JSONObject json = new JSONObject();
+//                json.put("mobileNo","");
+//                json.put("bid",bid);
+//                json.put("maxPrice","");
+//                json.put("stt","2");
+//
+//                bidRecordService.updBidRecord(json);
+//
+//                Collection<BidRequest> cbr = tbService.getBidRequests(bid);
+//                cbr = resultFilter(cbr);
+//
+//                Map<String, Object> map = new HashMap<>();
+//
+//                map.put("resultCode" , 0);
+//                map.put("type", "7");
+//                map.put("data", cbr);
+//                map.put("bid", bid);
+//
+//                String message = JSON.toJSONString(map);
+//                // 通知客户端
+//                WSService.sendMessage(storeID, message);
+//                System.out.println("Thread End。。。");
+//            }
+//        });
+//        t.start();
+//    }
 
     /**
      * 新桌位通知
