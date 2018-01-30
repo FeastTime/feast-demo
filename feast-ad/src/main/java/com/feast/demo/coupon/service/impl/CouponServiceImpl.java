@@ -93,8 +93,13 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findAll();
     }
 
-    public UserCoupon createUserCoupon(UserCoupon userCoupon) {
+
+    public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
         return userCouponDao.save(userCoupon);
+    }
+
+    public CouponTemplate findCouponTemplateById(Long id) {
+        return couponTemplateDao.findOne(id);
     }
 
 }

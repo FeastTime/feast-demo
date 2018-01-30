@@ -1,12 +1,17 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.bid.core.BidRequest;
 import com.feast.demo.bid.core.BidResponse;
+import com.feast.demo.coupon.entity.CouponTemplate;
+import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.order.service.BidRecordService;
 import com.feast.demo.order.vo.BidRecordVo;
+import com.feast.demo.store.entity.Store;
+import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.ComeinRestBean;
@@ -14,6 +19,7 @@ import com.feast.demo.web.entity.DeskInfoBean;
 import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.util.StringUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +27,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 /**
@@ -31,11 +39,28 @@ public class ComeinRestService {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
+    private static Map<String,Object> redPackages = Maps.newHashMap();
+
+    private static Map<String,String> redId2UserId = Maps.newHashMap();
+
+
+    private Lock lock = new ReentrantLock();
+
+    @Autowired
+    private CouponService couponService;
+
+    @Autowired
+    private TableService tableService;
+
+    @Autowired
+    private StoreService storeService;
+
     @Autowired
     private BidRecordService bidRecordService;
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private TableBidService tbService;
 
@@ -46,6 +71,7 @@ public class ComeinRestService {
     // 桌位-用户缓存
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
+
     private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
 
     /**
@@ -57,7 +83,7 @@ public class ComeinRestService {
         String retMessage = "";
         switch(type){
             case 1:
-//                retMessage = userComeinProc(jsonObject);
+                //retMessage = userComeinProc(jsonObject);
                 break;
             case 2:
                 retMessage = addDeskList(jsonObject);
@@ -84,6 +110,123 @@ public class ComeinRestService {
 
         return list;
     }
+
+    private String takeRedPackage(JSONObject jsono) {
+        Map<String,Object> result = null;
+        String message = "";
+        Long userId = null;
+        TableInfo tableInfo = null;
+        CouponTemplate couponTemplate = null;
+        Integer type = 6;
+        try{
+            result = Maps.newHashMap();
+            userId = jsono.getLong("userId");
+            String redPackageId = jsono.getString("redPackageId");
+            List<Object> redPackage = (List<Object>)redPackages.get(redPackageId);
+            System.out.println(redPackage);
+            lock.lock();
+            String userIds = redId2UserId.get(redPackageId+"");
+            if(userIds!=null&&userIds.contains(userId+",")){
+                message = "您已经抢过这个红包了";
+            }else if(redPackage.size()==0){
+                message = "对不起，您来晚了";
+            }else{
+                Object o = redPackage.get(0);
+                if(o instanceof TableInfo){
+                    tableInfo = (TableInfo)o;
+                    tableInfo.setUserId(userId);
+                    tableService.saveTableInfo(tableInfo);
+                    String oldUserId = redId2UserId.get("userId");
+                    if(oldUserId!=null&&!oldUserId.equals("")){
+                        redId2UserId.put(redPackageId,oldUserId+userId+",");
+
+                    }else{
+                        redId2UserId.put(redPackageId,userId+",");
+                    }
+                    result.put("tableInfo",tableInfo);
+                    redPackage.remove(0);
+                    message = "恭喜您获得一个桌位";
+                }else if(o instanceof CouponTemplate){
+                    Random random = new Random();
+                    int i = random.nextInt(redPackage.size());
+                    couponTemplate = (CouponTemplate)redPackage.get(i);
+                    couponTemplate = couponService.findCouponTemplateById(couponTemplate.getId());
+                    UserCoupon userCoupon = new UserCoupon();
+                    userCoupon.setCouponCode(UUID.randomUUID()+"");
+                    userCoupon.setCouponTitle(couponTemplate.getCouponTitle());
+                    userCoupon.setCouponPicture(couponTemplate.getCouponPicture());
+                    userCoupon.setCouponType(couponTemplate.getCouponType());
+                    userCoupon.setStartTime(new Date());
+                    userCoupon.setCouponValidity(new Date(new Date().getTime()+couponTemplate.getCouponValidity()*24*60*60*1000));
+                    userCoupon.setStoreId(couponTemplate.getStoreId());
+                    userCoupon.setPermissionsDescribed(couponTemplate.getPermissionsDescribed());
+                    userCoupon = couponService.saveUserCoupon(userCoupon);
+                    userCoupon.setUserId(userId);
+                    couponService.saveUserCoupon(userCoupon);
+                    String oldUserId = redId2UserId.get("userId");
+                    if(oldUserId!=null&&!oldUserId.equals("")){
+                        redId2UserId.put(redPackageId,oldUserId+userId+",");
+
+                    }else{
+                        redId2UserId.put(redPackageId,userId+",");
+                    }
+                    result.put("couponInfo",userCoupon);
+                    message = "恭喜您获得一张优惠券";
+                    redPackage.remove(i);
+                }
+            }
+            result.put("message",message);
+            result.put("type",type);
+            lock.unlock();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return JSON.toJSONString(result);
+    }
+
+    /**
+     * 发红包
+     * @param jsono
+     * @return
+     */
+    public String sendRedPackage(JSONObject jsono) {
+        List<Object> redPackage = null;
+        Map<String,Object> result = null;
+        Long storeId = null;
+        TableInfo tableInfo = null;
+        List<CouponTemplate> couponList = null;
+        Date date = null;
+        try{
+            storeId = jsono.getLong("storeId");
+            Store storeInfo = storeService.getStoreInfo(storeId);
+            redPackage = Lists.newArrayList();
+            result = Maps.newHashMap();
+            tableInfo = jsono.getObject("tableInfo",TableInfo.class);
+            tableInfo = tableService.saveTableInfo(tableInfo);
+            redPackage.add(tableInfo);
+            JSONArray couponArray = jsono.getJSONArray("couponInfo");
+            couponList = JSONArray.parseArray(JSON.toJSONString(couponArray),CouponTemplate.class);
+            for (CouponTemplate couponTemplate : couponList) {
+                Long count = couponTemplate.getCouponCount();
+                for (int i = 0; i < count; i++) {
+                    redPackage.add(couponTemplate);
+                }
+            }
+            String redPackageId = UUID.randomUUID()+"";
+            redPackages.put(redPackageId,redPackage);
+            result.put("resultCode",0);
+            result.put("redPackageId",redPackageId);
+            result.put("storeIcon",storeInfo.getStoreIcon());
+            result.put("storeName",storeInfo.getStoreName());
+            result.put("date",new Date());
+            result.put("type",4);
+        }catch (Exception e){
+            e.printStackTrace();
+            result.put("resultCode",1);
+        }
+        return JSON.toJSONString(result);
+    }
+
 
     /**
      * 聊天

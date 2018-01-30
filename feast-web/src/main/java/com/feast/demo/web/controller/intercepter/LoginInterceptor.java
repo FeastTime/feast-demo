@@ -19,7 +19,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
         String requestURI = httpServletRequest.getRequestURI();
         System.out.println(requestURI);
-        if(requestURI.contains("/websoket")){
+        if(requestURI.contains("/websocket")){
             System.out.println("xixixi");
             return true;
         }

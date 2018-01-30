@@ -96,7 +96,11 @@ public class CouponService {
         return couponRemoteService.queryCouponList(userId,flag);
     }
 
-    public UserCoupon createUserCoupon(UserCoupon userCoupon) {
-        return couponRemoteService.createUserCoupon(userCoupon);
+    public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
+        return couponRemoteService.saveUserCoupon(userCoupon);
+    }
+
+    public CouponTemplate findCouponTemplateById(Long id) {
+        return couponRemoteService.findCouponTemplateById(id);
     }
 }

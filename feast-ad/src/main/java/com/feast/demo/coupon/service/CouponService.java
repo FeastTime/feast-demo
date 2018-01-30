@@ -30,5 +30,7 @@ public interface CouponService {
 
     public Iterable<CouponTemplate> findAllCouponTemplate();
 
-    public UserCoupon createUserCoupon(UserCoupon userCoupon);
+    public UserCoupon saveUserCoupon(UserCoupon userCoupon);
+
+    public CouponTemplate findCouponTemplateById(Long id);
 }
