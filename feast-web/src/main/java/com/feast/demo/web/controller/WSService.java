@@ -101,6 +101,7 @@ public class WSService {
         wsBean.setUser(user);
 
         if (!user2Server.containsKey(userId)){
+            System.out.println("haha");
             user2Server.put(userId, wsBean);
         }
 
@@ -162,16 +163,21 @@ public class WSService {
         // 如果是扫码进店, 添加用户与商家关系
         if (type == WebSocketEvent.ENTER_STORE) {
 
-
             if (null != storeId && null != userId){
+
+                CopyOnWriteArraySet<String> set = user2Store.get(storeId);
+
+                if (null == set){
+                    set = new CopyOnWriteArraySet();
+                    user2Store.put(storeId, set);
+                }
 
                 user2Store.get(storeId).add(userId);
             }
-
         }
         // 如果不是扫码进店，处理其他业务
         else {
-
+            System.out.println(comeinRestService);
             try {
                 List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 

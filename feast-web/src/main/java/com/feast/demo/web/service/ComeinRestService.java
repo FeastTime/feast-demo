@@ -87,18 +87,23 @@ public class ComeinRestService {
             case WebSocketEvent.ENTER_STORE:
 //                retMessage = userComeinProc(jsonObject);
                 break;
+
+            case WebSocketEvent.SEND_RED_PACKAGE:
+                return sendRedPackage(jsonObject,sender,storeId);
             case 2:
                 retMessage = addDeskList(jsonObject);
                 break;
-            case 3:
-                retMessage = newDeskNotify(jsonObject);
-                break;
+//            case 3:
+//                retMessage = newDeskNotify(jsonObject);
+//                break;
             case 4:
                 retMessage = userOfferPrice(jsonObject);
                 break;
-            case 5:
-                retMessage = grabDesk(jsonObject);
-                break;
+            case WebSocketEvent.OPEN_RED_PACKAGE:
+                return takeRedPackage(jsonObject,sender,storeId);
+//            case 5:
+//                retMessage = grabDesk(jsonObject);
+//                break;
             case 6:
                 retMessage = deskHistory(jsonObject);
                 break;
@@ -113,13 +118,14 @@ public class ComeinRestService {
         return list;
     }
 
-    private String takeRedPackage(JSONObject jsono) {
+    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsono,User sender,String storeId) {
         Map<String,Object> result = null;
         String message = "";
         Long userId = null;
         TableInfo tableInfo = null;
         CouponTemplate couponTemplate = null;
         Integer type = 6;
+        String backMessage = "";
         try{
             result = Maps.newHashMap();
             userId = jsono.getLong("userId");
@@ -183,7 +189,11 @@ public class ComeinRestService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return JSON.toJSONString(result);
+        backMessage = JSON.toJSONString(result);
+        List list = new ArrayList<WebSocketMessageBean>();
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
+
+        return list;
     }
 
     /**
@@ -191,16 +201,14 @@ public class ComeinRestService {
      * @param jsono
      * @return
      */
-    public String sendRedPackage(JSONObject jsono) {
+    public List<WebSocketMessageBean> sendRedPackage(JSONObject jsono,User sender,String storeId) {
         List<Object> redPackage = null;
         Map<String,Object> result = null;
-        Long storeId = null;
         TableInfo tableInfo = null;
         List<CouponTemplate> couponList = null;
-        Date date = null;
+        String backMessage = "";
         try{
-            storeId = jsono.getLong("storeId");
-            Store storeInfo = storeService.getStoreInfo(storeId);
+            Store storeInfo = storeService.getStoreInfo(Long.parseLong(storeId));
             redPackage = Lists.newArrayList();
             result = Maps.newHashMap();
             tableInfo = jsono.getObject("tableInfo",TableInfo.class);
@@ -226,7 +234,11 @@ public class ComeinRestService {
             e.printStackTrace();
             result.put("resultCode",1);
         }
-        return JSON.toJSONString(result);
+        backMessage = JSON.toJSONString(result);
+        List list = new ArrayList<WebSocketMessageBean>();
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+        return list;
     }
 
 
