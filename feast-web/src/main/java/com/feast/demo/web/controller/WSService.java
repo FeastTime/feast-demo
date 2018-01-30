@@ -156,11 +156,12 @@ public class WSService {
 
         int type = jsonObject.getInteger("type");
 
+        String storeId = jsonObject.getString("storeId");
+        String userId = jsonObject.getString("userId");
+
         // 如果是扫码进店, 添加用户与商家关系
         if (type == WebSocketEvent.ENTER_STORE) {
 
-            String storeId = jsonObject.getString("storeId");
-            String userId = jsonObject.getString("userId");
 
             if (null != storeId && null != userId){
 
@@ -172,7 +173,7 @@ public class WSService {
         else {
 
             try {
-                List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject);
+                List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 
                 if (null != list){
 

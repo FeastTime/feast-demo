@@ -52,11 +52,11 @@ public class ComeinRestService {
      * 对接老马接口入口
      *
      */
-    public List<WebSocketMessageBean> WSInterfaceProc(int type, JSONObject jsonObject){
+    public List<WebSocketMessageBean> WSInterfaceProc(int type, JSONObject jsonObject, User sender, String storeId){
 
         String retMessage = "";
         switch(type){
-            case 1:
+            case WebSocketEvent.ENTER_STORE:
 //                retMessage = userComeinProc(jsonObject);
                 break;
             case 2:
@@ -74,9 +74,9 @@ public class ComeinRestService {
             case 6:
                 retMessage = deskHistory(jsonObject);
                 break;
-            case 7:
-                retMessage = chat(jsonObject);
-                break;
+            case WebSocketEvent.SEND_MESSAGE:
+                return chat(jsonObject, sender, storeId);
+                //break;
         }
 
         List<WebSocketMessageBean> list = new ArrayList<>();
@@ -87,44 +87,38 @@ public class ComeinRestService {
 
     /**
      * 聊天
-     * @param jsono
-     * @return
+     * @param jsonObject 发送json
+     * @param sender 发送者
+     * @return jsonString
      */
-    public String chat(JSONObject jsono) {
-        HashMap<String,Object> map = null;
-        Byte resultCode = 1;
-        String resultMsg = "聊天信息发送失败";
-        Long userId = null;
-        String message = "";
-        String userIcon = "";
-        String dateStr = "";
-        Integer type = null;
-        String nickname = "";
-        try{
-            User user =  userService.findById(Long.parseLong(jsono.getString("userId")));
-            userIcon = user.getUserIcon();
-            userId = user.getUserId();
-            message = jsono.getString("message");
-            nickname = user.getNickName();
-            Date date = new Date();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            dateStr = format.format(date);
-            resultCode = 0;
-            resultMsg = "聊天信息发送成功";
-        }catch (Exception e){
-            e.printStackTrace();
+    private List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
+
+        String message = jsonObject.getString("message");
+
+        if (null == message || message.length() == 0){
+            return null;
         }
 
 
-        map.put("resultCode",resultCode);
-        map.put("userId",userId);
-        map.put("nickname",nickname);
-        map.put("userIcon",userIcon);
-        map.put("date",dateStr);
-        map.put("type",type);
-        map.put("message",message);
-        map.put("resultMsg",resultMsg);
-        return JSON.toJSONString(map);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String dateStr = format.format(new Date());
+
+        HashMap<String,Object> map = new HashMap<>();
+
+        map.put("userId", sender.getUserId());
+        map.put("nickname", sender.getNickName());
+        map.put("userIcon", sender.getUserIcon());
+        map.put("date", dateStr);
+        map.put("type", WebSocketEvent.RECEIVED_MESSAGE);
+        map.put("message", message);
+
+        String backMessage = JSON.toJSONString(map);
+
+        List list = new ArrayList<WebSocketMessageBean>();
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+        return list;
+
     }
 
     /**
