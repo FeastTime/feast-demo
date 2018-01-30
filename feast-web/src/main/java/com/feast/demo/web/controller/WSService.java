@@ -16,7 +16,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -32,6 +31,8 @@ public class WSService {
     private ComeinRestService comeinRestService;
     private UserService userService;
     private String userId;
+
+    private Session session;
 
     private void setComeInRestService() {
 
@@ -77,6 +78,7 @@ public class WSService {
             return;
         }
 
+        this.session = session;
         this.userId = userId;
 
         // 启动 Spring Service
@@ -87,7 +89,7 @@ public class WSService {
         // 回消息 告诉客户端连接成功
 
         try {
-            this.sendMessage("success666success");
+            sendMessage("success666success", session);
             Thread.sleep(500L);
         } catch (Exception ignored) {
         }
@@ -210,8 +212,8 @@ public class WSService {
     private static void sendMessageToUser(String userId, String message) {
 
         try {
-            user2Server.get(userId).getWsService().sendMessage(message);
-        } catch (IOException e) {
+            sendMessage(message, user2Server.get(userId).getWsService().session);
+        } catch (Exception e) {
             System.out.println("发送消息异常");
         }
     }
@@ -229,8 +231,8 @@ public class WSService {
 
         for (String userId : set) {
             try {
-                user2Server.get(userId).getWsService().sendMessage(message);
-            } catch (IOException e) {
+                sendMessage(message, user2Server.get(userId).getWsService().session);
+            } catch (Exception e) {
                 System.out.println("发送消息异常");
             }
         }
@@ -252,13 +254,14 @@ public class WSService {
      *这个方法与上面几个方法不一样。没有用注解，是根据自己需要添加的方法。
      *
      *@param message 消息
-     *@throws IOException 异常
      */
-    private void sendMessage(String message) throws IOException {
+    private static void sendMessage(String message, Session session) {
 
-        System.out.println(message);
-        // this.session.getBasicRemote().sendText(message);
-        // this.session.getAsyncRemote().sendText(message);
+        //  同步发送消息
+        // session.getBasicRemote().sendText(message);
+
+        //  异步发送消息
+        session.getAsyncRemote().sendText(message);
     }
 
 }
