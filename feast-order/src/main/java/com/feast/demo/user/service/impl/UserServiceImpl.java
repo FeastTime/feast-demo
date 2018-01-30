@@ -157,4 +157,8 @@ public class UserServiceImpl implements UserService{
         userStoreDao.save(us);
     }
 
+    public Long findUserId(String openId) {
+        return userDao.findUserId(openId);
+    }
+
 }

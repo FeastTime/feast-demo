@@ -45,4 +45,8 @@ public class TableService {
     public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId) {
         return tableRemoteService.findTableInfoByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
     }
+
+    public TableInfo saveTableInfo(TableInfo tableInfo) {
+        return tableRemoteService.saveTableInfo(tableInfo);
+    }
 }

@@ -38,9 +38,6 @@ public class CouponServiceImpl implements CouponService {
         userCouponDao.save(userCoupon);
     }
 
-    public ArrayList<UserCoupon> findAllUserCoupon(Long userId) {
-        return userCouponDao.findByUserId(userId);
-    }
 
     public void updateCouponTemplate(CouponTemplate coupon) {
         CouponTemplate oldCouponTemplate = couponTemplateDao.findOne(coupon.getId());
@@ -64,28 +61,40 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findByStoreId(storeId);
     }
 
-    public ArrayList<UserCoupon> queryCouponList(Long userId,Integer flag) {
-        ArrayList<UserCoupon> couponList = userCouponDao.findByUserId(userId);
-        ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
-        ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
-        Long date = new Date().getTime();
-        for (UserCoupon userCoupon:couponList) {
-            if(userCoupon.getCouponValidity().getTime()>date){
-                couponValidList.add(userCoupon);
-            }else{
-                couponInValidList.add(userCoupon);
+    public List<List<UserCoupon>> queryCouponList(Long userId,Integer flag) {
+        System.out.println("pppp");
+        List<List<UserCoupon>> userCoupons = Lists.newArrayList();
+        System.out.println("oooo");
+        List<Long> storeIdList = userCouponDao.findStoreIdByUserId(userId);
+        for (Long storeId : storeIdList) {
+            ArrayList<UserCoupon> couponList = userCouponDao.findByUserIdAndStoreId(userId,storeId);
+            ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
+            ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
+            Long date = new Date().getTime();
+            for (UserCoupon userCoupon:couponList) {
+                if(userCoupon.getCouponValidity().getTime()>date){
+                    couponValidList.add(userCoupon);
+                }else{
+                    couponInValidList.add(userCoupon);
+                }
             }
+            if(flag==0){
+                couponList = couponValidList;
+            }else{
+                couponList = couponInValidList;
+            }
+            userCoupons.add(couponList);
         }
-        if(flag==0){
-            couponList = couponValidList;
-        }else{
-            couponList = couponInValidList;
-        }
-        return couponList;
+        System.out.println(userCoupons);
+        return userCoupons;
     }
 
     public Iterable<CouponTemplate> findAllCouponTemplate() {
         return couponTemplateDao.findAll();
+    }
+
+    public UserCoupon createUserCoupon(UserCoupon userCoupon) {
+        return userCouponDao.save(userCoupon);
     }
 
 }

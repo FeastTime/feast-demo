@@ -26,7 +26,9 @@ public interface CouponService {
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId);
 
-    public ArrayList<UserCoupon> queryCouponList(Long userId,Integer flag);
+    public List<List<UserCoupon>> queryCouponList(Long userId, Integer flag);
 
     public Iterable<CouponTemplate> findAllCouponTemplate();
+
+    public UserCoupon createUserCoupon(UserCoupon userCoupon);
 }

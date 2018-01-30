@@ -14,7 +14,7 @@ public interface TableService {
 
     public TableInfo queryPayTableDetail(Long tableId);
 
-    public ArrayList<TableInfo> queryPayTableList(Long userId,Long storeId);
+    public ArrayList<TableInfo> queryPayTableList(Long userId, Long storeId);
 
     public ArrayList<TableInfo> getHistoryTables(Long storeId);
 
@@ -23,4 +23,6 @@ public interface TableService {
     public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
 
     public void updateTableInfo(TableInfo tableInfo);
+
+    public TableInfo saveTableInfo(TableInfo tableInfo);
 }

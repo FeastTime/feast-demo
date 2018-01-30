@@ -20,5 +20,5 @@ public interface TableInfoDao extends PagingAndSortingRepository<TableInfo,Long>
 
     TableInfo findByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
 
-    ArrayList<TableInfo> findByUserIdAndStoreIdAndPassType(Long userId, Long storeId,Integer passType);
+    ArrayList<TableInfo> findByUserIdAndStoreIdAndPassType(Long userId, Long storeId, Integer passType);
 }

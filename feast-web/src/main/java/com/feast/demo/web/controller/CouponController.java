@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -36,15 +37,17 @@ public class CouponController {
 
     //查询优惠券列表信息
     @RequestMapping(value = "/queryCouponList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String queryCouponList(@RequestBody String params){
+    public String queryCouponList(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
-        ArrayList<UserCoupon> couponList = null;
+        List<List<UserCoupon>> couponList = null;
         try{
             result = Maps.newHashMap();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
+            System.out.println("kkkkk");
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
@@ -62,12 +65,13 @@ public class CouponController {
     }
 
     @RequestMapping(value="/createCouponTemplate",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String createCouponTemplate(@RequestBody String params){
+    public String createCouponTemplate(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = new HashMap<>();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             CouponTemplate coupon = JSONObject.parseObject(params,CouponTemplate.class);
@@ -85,12 +89,13 @@ public class CouponController {
     }
 
     @RequestMapping(value="/deleteCouponTemplate",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String deleteCouponTemplate(@RequestBody String params){
+    public String deleteCouponTemplate(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = Maps.newHashMap();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             JSONObject jsono = JSON.parseObject(params);
@@ -108,13 +113,14 @@ public class CouponController {
     }
 
     @RequestMapping(value="/useCoupon",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String useCoupon(@RequestBody String params){
+    public String useCoupon(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         Byte isSuccess = 1;
         try{
             result = new HashMap<>();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             JSONObject jsono  = JSON.parseObject(params);
@@ -148,12 +154,13 @@ public class CouponController {
     }
 
     @RequestMapping(value="/updateCouponTemplate",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String updateCouponTemplate(@RequestBody String params){
+    public String updateCouponTemplate(HttpServletRequest servletRequest){
             Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = new HashMap<>();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             CouponTemplate coupon = JSONObject.parseObject(params,CouponTemplate.class);
@@ -171,13 +178,14 @@ public class CouponController {
     }
 
     @RequestMapping(value="/queryCouponTemplateList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String queryCouponTemplateList(@RequestBody String params){
+    public String queryCouponTemplateList(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<CouponTemplate> couponTemplateList = null;
         try{
             result = Maps.newHashMap();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             JSONObject jsono = JSON.parseObject(params);
@@ -196,13 +204,14 @@ public class CouponController {
     }
 
     @RequestMapping(value="/getUsedCoupon",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String getUsedCoupon(@RequestBody String params){
+    public String getUsedCoupon(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<UserCoupon> couponList = null;
         try{
             result = new HashMap<>();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             JSONObject jsono = JSON.parseObject(params);

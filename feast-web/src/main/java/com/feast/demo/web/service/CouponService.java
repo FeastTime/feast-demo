@@ -10,25 +10,24 @@ import com.feast.demo.menu.vo.DishesCategoryVo;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ggke on 2017/8/26.
  */
-
-@org.springframework.stereotype.Service
+@Service
 public class CouponService {
 
     @Autowired
     private com.feast.demo.menu.service.DishesCategoryService dishesCategoryRemoteService;
 
-    @Resource
+    @Autowired
     private com.feast.demo.coupon.service.CouponService couponRemoteService;
 
-    @Resource
+    @Autowired
     private CategoryMenuService categoryMenuRemoteService;
 
     @Autowired
@@ -90,7 +89,14 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public ArrayList<UserCoupon> queryCouponList(Long userId,Integer flag) {
+    public List<List<UserCoupon>> queryCouponList(Long userId,Integer flag) {
+        System.out.println("llll");
+        System.out.println(couponRemoteService);
+        //couponRemoteService.queryCouponList(userId,flag)
         return couponRemoteService.queryCouponList(userId,flag);
+    }
+
+    public UserCoupon createUserCoupon(UserCoupon userCoupon) {
+        return couponRemoteService.createUserCoupon(userCoupon);
     }
 }

@@ -8,34 +8,31 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.io.BufferedReader;
 import java.util.logging.Logger;
 
 public class LoginInterceptor implements HandlerInterceptor {
+
     Logger logger = Logger.getLogger(this.getClass().getName());
+
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        try{
-            Enumeration<String> parameterNames = httpServletRequest.getParameterNames();
-            String text = parameterNames.nextElement();
-            System.out.println(text);
-            JSONObject jsono = JSON.parseObject(text);
-            String token = jsono.getString("token");
-            System.out.println(token);
-            String userId = jsono.getString("userId");
-            System.out.println(userId);
-            String deviceId = jsono.getString("deviceId");
-            System.out.println(deviceId);
-            boolean b = TokenUtils.isValidToken(token,deviceId,userId);
-            System.out.println(b);
-            return b;
-        }catch (Exception e){
-            e.printStackTrace();
+        String requestURI = httpServletRequest.getRequestURI();
+        System.out.println(requestURI);
+        if(requestURI.contains("/websoket")){
+            System.out.println("xixixi");
+            return true;
         }
-        return false;
+        String text = readJSONString(httpServletRequest);
+        httpServletRequest.setAttribute("json",text);
+        logger.info(text);
+        JSONObject jsono = JSON.parseObject(text);
+        String deviceId = jsono.getString("deviceId");
+        String userId = jsono.getString("userId");
+        String token = jsono.getString("token");
+        boolean b = TokenUtils.isValidToken(token, deviceId, userId);
+        logger.info(b+"");
+        return b;
     }
 
     @Override
@@ -48,8 +45,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     }
 
-
-    /*public String readJSONString(HttpServletRequest request){
+    public String readJSONString(HttpServletRequest request){
         StringBuffer json = new StringBuffer();
         String line = null;
         try {
@@ -62,6 +58,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             System.out.println(e.toString());
         }
         return json.toString();
-    }*/
+    }
 
 }

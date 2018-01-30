@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,12 +31,13 @@ public class TableController {
 
     //修改桌位记录
     @RequestMapping(value = "/setTableStatus",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String setTableStatus(@RequestBody String text){
+    public String setTableStatus(HttpServletRequest servletRequest){
         Map<Object,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = new HashMap<>();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono  = JSON.parseObject(text);
@@ -71,12 +73,13 @@ public class TableController {
 
     //设置桌位基本信息
     @RequestMapping(value = "/setBusinessInfo",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String setBusinessInfo(@RequestBody String text){
+    public String setBusinessInfo(HttpServletRequest servletRequest){
         Map<Object,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = new HashMap<>();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             TableTemplate tableTemplate = JSONObject.parseObject(text,TableTemplate.class);
@@ -95,7 +98,7 @@ public class TableController {
 
     //获取桌位信息
     @RequestMapping(value = "/getBusinessInfo",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String getBusinessInfo(@RequestBody String text){
+    public String getBusinessInfo(HttpServletRequest servletRequest){
         Map<Object,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
@@ -103,6 +106,7 @@ public class TableController {
         Integer recieveTime = null;
         try{
             result = new HashMap<>();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
@@ -125,13 +129,14 @@ public class TableController {
     }
 
     @RequestMapping(value = "/queryPayTableDetail",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String queryPayTableDetail(@RequestBody String text){
+    public String queryPayTableDetail(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         TableInfo tableInfo = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
@@ -151,13 +156,14 @@ public class TableController {
 
     //查询付费桌位列表
     @RequestMapping(value = "/queryPayTableList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String queryPayTableList(@RequestBody String text){
+    public String queryPayTableList(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<TableInfo> tableList = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             JSONObject jsono = JSON.parseObject(text);
             Long storeId = jsono.getLong("storeId");
@@ -176,13 +182,14 @@ public class TableController {
     }
 
     @RequestMapping(value = "/getHistoryTables",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String getHistoryTables(@RequestBody String text){
+    public String getHistoryTables(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<TableInfo> tablesList = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
@@ -206,13 +213,14 @@ public class TableController {
      */
 
     @RequestMapping(value = "/queryMyTableList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String queryMyTableList(@RequestBody String text){
+    public String queryMyTableList(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<TableInfo> tablesList = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono = JSON.parseObject(text);

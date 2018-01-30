@@ -54,4 +54,9 @@ public class TableServiceImpl implements TableService{
     public void updateTableInfo(TableInfo tableInfo) {
         tableInfoDao.save(tableInfo);
     }
+
+    @Transactional(readOnly = false)
+    public TableInfo saveTableInfo(TableInfo tableInfo) {
+        return tableInfoDao.save(tableInfo);
+    }
 }

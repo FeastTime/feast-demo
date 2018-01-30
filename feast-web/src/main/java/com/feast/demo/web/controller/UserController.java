@@ -18,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -204,16 +205,21 @@ public class UserController {
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
+        Long userId = null;
+        Long deviceId = null;
         try{
             result = Maps.newHashMap();
             text = StringUtils.decode(text);
             logger.info(text);
             User user = JSONObject.parseObject(text,User.class);
+            deviceId = user.getDeviceId();
             User user_ = userService.checkWeChatUserBindStatus(user.getOpenId());
             if(user_!=null){
                 resultMsg = "用户已绑定";
+                userId = user_.getUserId();
             }else{
                 userService.saveWeChatUserInfo(user);
+                userId = userService.findUserId(user.getOpenId());
                 resultMsg = "保存用户信息成功";
             }
             resultCode = 0;
@@ -221,8 +227,11 @@ public class UserController {
             e.printStackTrace();
             resultMsg = "保存用户信息失败";
         }
+        result.put("userId",userId);
+        result.put("token",TokenUtils.getToken(deviceId+"",userId+""));
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
+
         return JSON.toJSONString(result);
     }
 
@@ -290,13 +299,14 @@ public class UserController {
      *查询去过的商家
      */
     @RequestMapping(value = "/queryHadEatenStore",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String queryHadEatenStore(@RequestBody String text){
+    public String queryHadEatenStore(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         ArrayList<Store> storeList = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
@@ -321,12 +331,13 @@ public class UserController {
      */
 
     @RequestMapping(value = "/queryUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String queryUserInfo(@RequestBody String text){
+    public String queryUserInfo(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             JSONObject obj = JSONObject.parseObject(text);
             Long userId = obj.getLong("userId");
@@ -346,12 +357,13 @@ public class UserController {
     }
 
     @RequestMapping(value = "/setRelationshipWithStore",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String setRelationshipWithStore(@RequestBody String text){
+    public String setRelationshipWithStore(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
@@ -371,13 +383,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String feedback(@RequestBody String text){
+    public String feedback(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
 
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             System.out.println(text+"9999999999");
@@ -393,4 +406,7 @@ public class UserController {
         result.put("resultMsg",resultMsg);
         return JSON.toJSONString(result);
     }
+
+
+
 }

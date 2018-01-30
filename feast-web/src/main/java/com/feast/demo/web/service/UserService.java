@@ -166,5 +166,9 @@ public class UserService {
     public void saveUserStore(UserStore us) {
         userRemoteService.saveUserStore(us);
     }
+
+    public Long findUserId(String openId) {
+        return userRemoteService.findUserId(openId);
+    }
 }
 

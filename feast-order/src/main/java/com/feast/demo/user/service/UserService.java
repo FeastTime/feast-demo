@@ -27,7 +27,7 @@ public interface UserService {
 
     public User checkWeChatUserBindStatus(String openId);
 
-    public void saveUserPhone(Long userId,String mobileNo);
+    public void saveUserPhone(Long userId, String mobileNo);
 
     public User findById(Long userId);
 
@@ -48,4 +48,6 @@ public interface UserService {
     public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId);
 
     public void saveUserStore(UserStore us);
+
+    public Long findUserId(String openId);
 }

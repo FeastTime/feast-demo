@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,13 @@ public class StoreController {
     private StoreService storeService;
 
     @RequestMapping(value = "/getStoreInfo",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String getStoreInfo(@RequestBody String params){
+    public String getStoreInfo(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
         try{
             result = Maps.newHashMap();
+            String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
             JSONObject jsono = JSON.parseObject(params);
@@ -64,13 +66,14 @@ public class StoreController {
     }
 
     @RequestMapping(value = "/queryHadVisitUser",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String queryHadVisitUser(@RequestBody String text){
+    public String queryHadVisitUser(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Integer resultCode = 1;
         ArrayList<User> userList = null;
         try{
             result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
