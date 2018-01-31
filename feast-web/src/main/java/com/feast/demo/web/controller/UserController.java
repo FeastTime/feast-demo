@@ -208,7 +208,7 @@ public class UserController {
         String resultMsg = "";
         Byte resultCode = 1;
         Long userId = null;
-        Long deviceId = null;
+        String deviceId = null;
         try{
             result = Maps.newHashMap();
             text = StringUtils.decode(text);

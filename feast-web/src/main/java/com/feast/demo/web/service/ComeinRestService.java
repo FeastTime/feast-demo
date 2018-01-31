@@ -85,9 +85,7 @@ public class ComeinRestService {
 //            case 1:
                 //retMessage = userComeinProc(jsonObject);
             case WebSocketEvent.ENTER_STORE:
-//                retMessage = userComeinProc(jsonObject);
-                break;
-
+                return userComeinProc(jsonObject, sender, storeId);
             case WebSocketEvent.SEND_RED_PACKAGE:
                 return sendRedPackage(jsonObject,sender,storeId);
             case 2:
@@ -283,24 +281,21 @@ public class ComeinRestService {
      * @param jsonObj JSONObject
      * @return webSocketMessageBean WebSocketMessageBean
      */
-    private WebSocketMessageBean userComeinProc(JSONObject jsonObj){
-
-        HashMap<String,Object> resultMap = null;
-        Byte resultCode = 1;
-        String resultMsg = "";
-        Integer type = 1;
-        Long storeId = null;
+    private List<WebSocketMessageBean> userComeinProc(JSONObject jsonObj, User user, String storeId){
+        HashMap<String,Object> result = null;
+        String message = "";
+        Long userId = null;
+        Store store = null;
         try{
-            resultMap = Maps.newHashMap();
-            Long userId = jsonObj.getLong("userId");
-            storeId = jsonObj.getLong("storeId");
-
-            UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,storeId);
+            result = Maps.newHashMap();
+            userId = jsonObj.getLong("userId");
+            store = storeService.getStoreInfo(Long.parseLong(storeId));
+            UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,Long.parseLong(storeId));
             Date date = new Date();
             if(us==null){
                 us = new UserStore();
                 us.setCreateTime(date);
-                us.setStoreId(storeId);
+                us.setStoreId(Long.parseLong(storeId));
                 us.setUserId(userId);
                 us.setCount(1l);
                 us.setStatus(3);
@@ -312,21 +307,35 @@ public class ComeinRestService {
                 userService.saveUserStore(us);
             }
 
-            resultCode = 0;
-            resultMsg = "欢迎"+userId + "进店！店小二祝您用餐愉快";
+            message = "欢迎"+user.getNickName() + "进店！店小二祝您用餐愉快";
+            result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
+            result.put("date",new Date());
+            result.put("userId",userId);
+            result.put("message",message);
+            result.put("nickName",store.getStoreName());
+            result.put("userIcon",store.getStoreIcon());
 
+            String backMessage = JSON.toJSONString(result);
+            List list = new ArrayList<WebSocketMessageBean>();
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+            return list;
         }catch (Exception e){
             e.printStackTrace();
-            resultCode = 1;
-            resultMsg = "用户进店失败";
+
+            message = "用户进店失败";
+            result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
+            result.put("date",new Date());
+            result.put("userId",userId);
+            result.put("message",message);
+            result.put("nickName",store.getStoreName());
+            result.put("userIcon",store.getStoreIcon());
+
+            String backMessage = JSON.toJSONString(result);
+            List list = new ArrayList<WebSocketMessageBean>();
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
+            return list;
         }
 
-        resultMap.put("resultCode",resultCode);
-        resultMap.put("type",type);
-        resultMap.put("resultMsg",resultMsg);
-
-        return new WebSocketMessageBean().setMessage(JSON.toJSONString(resultMap)).toStore(storeId + "");
-//        return JSON.toJSONString(resultMap);
     }
 
     /**

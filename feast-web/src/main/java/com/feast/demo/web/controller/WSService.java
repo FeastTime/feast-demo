@@ -2,6 +2,7 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.entity.WsBean;
@@ -16,9 +17,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Logger;
 
 
 /**
@@ -29,8 +33,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class WSService {
 
     private ComeinRestService comeinRestService;
+
     private UserService userService;
+
     private String userId;
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private Session session;
 
@@ -87,12 +95,7 @@ public class WSService {
         }
 
         // 回消息 告诉客户端连接成功
-
-        try {
-            sendMessage("success666success", session);
-            Thread.sleep(500L);
-        } catch (Exception ignored) {
-        }
+        sendMessage("success666success", session);
 
         User user = userService.findById(Long.parseLong(userId));
 
@@ -101,8 +104,23 @@ public class WSService {
         wsBean.setUser(user);
 
         if (!user2Server.containsKey(userId)){
-            System.out.println("haha");
             user2Server.put(userId, wsBean);
+        }
+
+
+        // 恢复用户与商家的关系
+        Set<Long> storeIds = userService.findStoreIdByUserId(Long.parseLong(userId));
+        if(storeIds!=null){
+            for (Long storeId: storeIds) {
+                String storeIdStr = storeId + "";
+                logger.info(storeIdStr);
+                CopyOnWriteArraySet<String> set = user2Store.get(storeIdStr);
+                if (null == set){
+                    set = new CopyOnWriteArraySet();
+                    user2Store.put(storeIdStr, set);
+                }
+                user2Store.get(storeIdStr).add(userId);
+            }
         }
 
     }
@@ -134,20 +152,7 @@ public class WSService {
             setComeInRestService();
         }
 
-        System.out.println("来自客户端的消息:" + message + (null == session));
-
-        // String storeId = null;
-//        HashMap<String,Object> map = new HashMap<>();
-//        map.put("userId",userId);
-//        map.put("message",message);
-//        map.put("type","1");
-      /*  try{
-            storeId = JSON.parseObject(message).getString("storeID");
-        } catch (Exception ignored){}
-
-        if (null == storeId)
-            return;*/
-
+        logger.info("来自客户端的消息:" + message + (null == session));
 
         System.out.println("转之前 -- 来自客户端的消息"+message);
         message = StringUtils.decode(message);
@@ -159,6 +164,8 @@ public class WSService {
 
         String storeId = jsonObject.getString("storeId");
         String userId = jsonObject.getString("userId");
+
+
 
         // 如果是扫码进店, 添加用户与商家关系
         if (type == WebSocketEvent.ENTER_STORE) {
@@ -173,6 +180,11 @@ public class WSService {
                 }
 
                 user2Store.get(storeId).add(userId);
+
+                //查看这条记录是否已经存在，不存在保存到数据库，存在更新访问时间
+                System.out.println(user2Server.get(userId).getUser());
+                comeinRestService.WSInterfaceProc(type,jsonObject,user2Server.get(userId).getUser(),storeId);
+
             }
         }
         // 如果不是扫码进店，处理其他业务

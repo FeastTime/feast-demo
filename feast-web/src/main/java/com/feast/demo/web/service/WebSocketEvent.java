@@ -8,10 +8,10 @@ public class WebSocketEvent {
     // 目前  PRICE_RANK_CHANGE  与 BEFORE_TABLES_LIST 一样的type,PRICE_RANK_CHANGE可能没用
     public static final int WEBSOCKET_CONNECT_SERVER_SUCCESS = 0;  //websocket 连接服务器成功
 
-    // 发送消息
+    // 客户端发送消息
     public static final int SEND_MESSAGE = 1;
 
-    // 收到消息
+    // 服务端向客户端发消息
     public static final int RECEIVED_MESSAGE = 2;
 
     // 发红包

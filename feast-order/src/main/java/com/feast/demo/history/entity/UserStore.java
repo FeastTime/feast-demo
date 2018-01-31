@@ -19,5 +19,5 @@ public class UserStore implements Serializable{
     private Date lastModified;
     private Date createTime;
     private Long count;
-
+    private Integer numberPerTable;
 }

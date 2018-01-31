@@ -6,6 +6,7 @@ import com.feast.demo.user.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ggke on 2017/7/23.
@@ -50,4 +51,6 @@ public interface UserService {
     public void saveUserStore(UserStore us);
 
     public Long findUserId(String openId);
+
+    public Set<Long> findStoreIdByUserId(Long userId);
 }

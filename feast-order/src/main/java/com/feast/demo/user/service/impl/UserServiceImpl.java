@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by ggke on 2017/7/23.
@@ -159,6 +160,10 @@ public class UserServiceImpl implements UserService{
 
     public Long findUserId(String openId) {
         return userDao.findUserId(openId);
+    }
+
+    public Set<Long> findStoreIdByUserId(Long userId) {
+        return userStoreDao.findStoreIdByUserId(userId);
     }
 
 }

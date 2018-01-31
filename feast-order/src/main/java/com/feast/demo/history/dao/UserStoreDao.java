@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by mxb on 2018/1/7.
@@ -28,4 +29,7 @@ public interface UserStoreDao extends PagingAndSortingRepository<UserStore,Long>
     List<UserStore> findByUserIdOrderByLastModifiedDesc(Long userId);
 
     ArrayList<User> findByStoreId(Long storeId);
+
+    @Query("select us.storeId from UserStore us where us.userId = ?1")
+    Set<Long> findStoreIdByUserId(Long userId);
 }

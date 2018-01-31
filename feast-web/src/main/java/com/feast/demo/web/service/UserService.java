@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pinyou on 17-4-11.
@@ -130,15 +131,6 @@ public class UserService {
 
     public User findById(Long userId) { return userRemoteService.findById(userId);}
 
-    public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
-       return userRemoteService.selectHistoryByUserIdAndStoreId(userId,storeId);
-    }
-
-    public void saveHistory(UserStore history) {
-        userRemoteService.saveHistory(history);
-    }
-
-
     public User queryUserInfo(Long userId) {
         return userRemoteService.queryUserInfo(userId);
     }
@@ -169,6 +161,10 @@ public class UserService {
 
     public Long findUserId(String openId) {
         return userRemoteService.findUserId(openId);
+    }
+
+    public Set<Long> findStoreIdByUserId(Long userId) {
+        return userRemoteService.findStoreIdByUserId(userId);
     }
 }
 

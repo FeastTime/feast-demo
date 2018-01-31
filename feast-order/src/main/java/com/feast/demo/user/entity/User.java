@@ -31,7 +31,7 @@ public class User extends TimedEntity implements Serializable{
     /**
      *android设备id
      */
-    private Long deviceId;
+    private String deviceId;
 
 
     /**
