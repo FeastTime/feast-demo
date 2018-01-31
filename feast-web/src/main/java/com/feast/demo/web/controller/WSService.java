@@ -2,7 +2,6 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.entity.WsBean;
@@ -11,13 +10,13 @@ import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.service.WebSocketEvent;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,11 +113,8 @@ public class WSService {
             for (Long storeId: storeIds) {
                 String storeIdStr = storeId + "";
                 logger.info(storeIdStr);
-                CopyOnWriteArraySet<String> set = user2Store.get(storeIdStr);
-                if (null == set){
-                    set = new CopyOnWriteArraySet();
-                    user2Store.put(storeIdStr, set);
-                }
+
+                user2Store.computeIfAbsent(storeIdStr, k -> Sets.newCopyOnWriteArraySet());
                 user2Store.get(storeIdStr).add(userId);
             }
         }
@@ -172,12 +168,7 @@ public class WSService {
 
             if (null != storeId && null != userId){
 
-                CopyOnWriteArraySet<String> set = user2Store.get(storeId);
-
-                if (null == set){
-                    set = new CopyOnWriteArraySet();
-                    user2Store.put(storeId, set);
-                }
+                user2Store.computeIfAbsent(storeId, k -> Sets.newCopyOnWriteArraySet());
 
                 user2Store.get(storeId).add(userId);
 
