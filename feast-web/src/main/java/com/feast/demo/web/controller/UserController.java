@@ -11,6 +11,7 @@ import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.service.DeviceService;
 import com.feast.demo.web.service.UserService;
+import com.feast.demo.web.util.MD5Utils;
 import com.feast.demo.web.util.StringUtils;
 import com.feast.demo.web.util.TokenUtils;
 import com.google.common.collect.Maps;
@@ -111,6 +112,7 @@ public class UserController {
             JSONObject jsono = JSON.parseObject(text);
             String username = jsono.getString("username");
             String password = jsono.getString("password");
+            password = MD5Utils.encryptHMAC(password);
             Long deviceId = jsono.getLong("deviceId");
             Device device = deviceService.findByDeviceId(deviceId);
             if(device != null && device.getStore() != null){

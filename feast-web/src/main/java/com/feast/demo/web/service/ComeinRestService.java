@@ -248,7 +248,7 @@ public class ComeinRestService {
      * @param sender 发送者
      * @return jsonString
      */
-    private List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
+    public List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
 
         String message = jsonObject.getString("message");
 

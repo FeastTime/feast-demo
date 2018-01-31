@@ -177,7 +177,6 @@ public class WSService {
         }
         // 如果不是扫码进店，处理其他业务
         else {
-            System.out.println(comeinRestService);
             try {
                 List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 
