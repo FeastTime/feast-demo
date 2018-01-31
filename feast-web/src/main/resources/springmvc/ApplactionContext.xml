@@ -43,6 +43,7 @@
             <mvc:exclude-mapping path="/request.html"/>
             <mvc:exclude-mapping path="/ws.html"/>
             <mvc:exclude-mapping path="/ws1.html"/>
+            <mvc:exclude-mapping path="/ws2.html"/>
             <mvc:exclude-mapping path="/favicon.ico"/>
             <bean class="com.feast.demo.web.controller.intercepter.LoginInterceptor"></bean>
         </mvc:interceptor>
