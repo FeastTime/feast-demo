@@ -41,6 +41,15 @@ public class WSService {
 
     private Session session;
 
+
+    // 用户与server关系
+    private static Map<String, WsBean> user2Server = Maps.newConcurrentMap();
+
+    // 用户与商户关系
+    private static Map<String, CopyOnWriteArraySet<String>> user2Store = Maps.newConcurrentMap();
+
+    public WSService() {}
+
     private void setComeInRestService() {
 
         String configLocation = "classpath*:/spring*/*.xml";
@@ -48,22 +57,6 @@ public class WSService {
         comeinRestService = context.getBean(ComeinRestService.class);
         userService = context.getBean(UserService.class);
     }
-
-    // 用户与server关系
-    private static Map<String, WsBean> user2Server;
-
-    // 用户与商户关系
-    private static Map<String, CopyOnWriteArraySet<String>> user2Store;
-
-    public WSService() {
-
-        // 用户与服务端连接存储结构
-        user2Server = Maps.newConcurrentMap();
-
-        // 用户与商家关系存储结构
-        user2Store = Maps.newConcurrentMap();
-    }
-
 
     /**
      * 接建立成功调用的方法
