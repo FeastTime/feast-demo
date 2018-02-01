@@ -97,12 +97,13 @@ public class WSService {
         sendMessage("success666success", session);
 
         User user = userService.findById(Long.parseLong(userId));
-
+        System.out.println(user);
         WsBean wsBean = new WsBean();
         wsBean.setWsService(this);
         wsBean.setUser(user);
 
         if (!user2Server.containsKey(userId)){
+            System.out.println("kkkkkoooooo");
             user2Server.put(userId, wsBean);
         }
 
@@ -173,7 +174,7 @@ public class WSService {
                 user2Store.get(storeId).add(userId);
 
                 //查看这条记录是否已经存在，不存在保存到数据库，存在更新访问时间
-                System.out.println(user2Server.get(userId).getUser());
+                System.out.println(user2Server.get(userId).getUser()+"ppppp");
                 comeinRestService.WSInterfaceProc(type,jsonObject,user2Server.get(userId).getUser(),storeId);
 
             }

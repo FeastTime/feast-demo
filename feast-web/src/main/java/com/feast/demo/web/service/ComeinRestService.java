@@ -14,10 +14,7 @@ import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.controller.WSService;
-import com.feast.demo.web.entity.ComeinRestBean;
-import com.feast.demo.web.entity.DeskInfoBean;
-import com.feast.demo.web.entity.UserBean;
-import com.feast.demo.web.entity.WebSocketMessageBean;
+import com.feast.demo.web.entity.*;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,6 +40,7 @@ public class ComeinRestService {
 
     private static Map<String,String> redId2UserId = Maps.newHashMap();
 
+    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 
     private Lock lock = new ReentrantLock();
 
@@ -108,10 +106,28 @@ public class ComeinRestService {
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
                 //break;
+            case WebSocketEvent.SET_NUMBER_OF_USER:
+                return setNumberOfUser(jsonObject,sender,storeId);
         }
 
         List<WebSocketMessageBean> list = new ArrayList<>();
         list.add(new WebSocketMessageBean().setMessage(retMessage).toStore(""));
+
+        return list;
+    }
+
+    private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User sender, String storeId) {
+        Map<String,Object> result = null;
+        List<DinnerInfo> dinnerList = null;
+        String backMessage = "";
+        try{
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        backMessage = JSON.toJSONString(result);
+        List list = new ArrayList<WebSocketMessageBean>();
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
 
         return list;
     }
