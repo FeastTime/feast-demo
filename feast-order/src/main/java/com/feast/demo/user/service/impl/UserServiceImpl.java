@@ -166,4 +166,8 @@ public class UserServiceImpl implements UserService{
         return userStoreDao.findStoreIdByUserId(userId);
     }
 
+    public List<Long> findUserIdByStoreId(Long storeId) {
+        return userDao.findUserIdByStoreId(storeId);
+    }
+
 }

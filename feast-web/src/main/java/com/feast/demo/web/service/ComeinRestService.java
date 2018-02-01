@@ -13,6 +13,7 @@ import com.feast.demo.order.vo.BidRecordVo;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.*;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
@@ -20,6 +21,7 @@ import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import javassist.tools.web.Webserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 /**
  * Created by Administrator on 2017/10/22.
  */
 @Service()
 public class ComeinRestService {
-
-    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private static Map<String,Object> redPackages = Maps.newHashMap();
 
@@ -69,6 +68,7 @@ public class ComeinRestService {
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
 
     // 桌位-用户缓存
+
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
 
@@ -108,8 +108,8 @@ public class ComeinRestService {
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
                 //break;
-            //case WebSocketEvent.SET_NUMBER_OF_USER:
-              // return setNumberOfUser(jsonObject,sender,storeId);
+            case WebSocketEvent.SET_NUMBER_OF_USER:
+                return setNumberOfUser(jsonObject,sender,storeId);
         }
 
         List<WebSocketMessageBean> list = new ArrayList<>();
@@ -118,14 +118,73 @@ public class ComeinRestService {
         return list;
     }
 
-    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsono,User sender,String storeId) {
+    private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User user, String storeId) {
         Map<String,Object> result = null;
+        String backMessage;
+        List<Long> userIds = null;
+        try{
+            result = Maps.newHashMap();
+
+            userIds = userService.findUserIdByStoreId(Long.parseLong(storeId));
+            result = Maps.newHashMap();
+            Integer numberPerTable = jsonObject.getInteger("dinnerCount");
+            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(user.getUserId(), Long.parseLong(storeId));
+
+            if(userStore!=null){
+                userStore.setNumberPerTable(numberPerTable);
+                userService.saveUserStore(userStore);
+            }
+
+            int count = 0;
+            List<DinnerInfo> dinnerInfos = dinnerMap.get(storeId);
+            if(dinnerInfos!=null){
+                for (DinnerInfo dinnerInfo : dinnerInfos) {
+                    if(dinnerInfo.getNumberPerTable() == numberPerTable){
+                        count++;
+                        dinnerInfo.setWaitingCount(dinnerInfo.getWaitingCount()+1);
+                        break;
+                    }
+                }
+                if(count==0){
+
+                    DinnerInfo dinnerInfo = new DinnerInfo();
+                    dinnerInfo.setNumberPerTable(numberPerTable);
+                    dinnerInfo.setWaitingCount(1);
+                    dinnerInfos.add(dinnerInfo);
+                }
+            }else{
+                dinnerInfos = Lists.newArrayList();
+                DinnerInfo dinnerInfo = new DinnerInfo();
+                dinnerInfo.setNumberPerTable(numberPerTable);
+                dinnerInfo.setWaitingCount(1);
+                dinnerInfos.add(dinnerInfo);
+                dinnerMap.put(storeId,dinnerInfos);
+            }
+
+            result.put("dinnerList",dinnerInfos);
+            result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
+            result.put("storeId",storeId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        backMessage = JSON.toJSONString(result);
+
+        List list = new ArrayList<WebSocketMessageBean>();
+
+        for (Long id : userIds) {
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
+        }
+        return list;
+    }
+
+    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsono,User sender,String storeId) {
+        Map<String,Object> result =null;
         String message = "";
         Long userId = null;
-        TableInfo tableInfo = null;
-        CouponTemplate couponTemplate = null;
+        TableInfo tableInfo;
+        CouponTemplate couponTemplate;
         Integer type = 6;
-        String backMessage = "";
+        String backMessage;
         try{
             result = Maps.newHashMap();
             userId = jsono.getLong("userId");
@@ -154,6 +213,8 @@ public class ComeinRestService {
                     result.put("tableInfo",tableInfo);
                     redPackage.remove(0);
                     message = "恭喜您获得一个桌位";
+
+
                 }else if(o instanceof CouponTemplate){
                     Random random = new Random();
                     int i = random.nextInt(redPackage.size());
@@ -215,9 +276,12 @@ public class ComeinRestService {
             redPackage = Lists.newArrayList();
             tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
 
+            Map<String, Object> result = Maps.newHashMap();
+            
             if (null != tableInfo) {
                 tableInfo = tableService.saveTableInfo(tableInfo);
                 redPackage.add(tableInfo);
+                result.put("price",tableInfo.getPrice());
             }
 
 
@@ -235,15 +299,12 @@ public class ComeinRestService {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String dateStr = format.format(new Date());
 
-            Map<String, Object> result = Maps.newHashMap();
-
             result.put("date", dateStr);
             result.put("userId", sender.getUserId());
             result.put("nickname", sender.getUsername());
             result.put("userIcon", sender.getUserIcon());
             result.put("redPackageId", redPackageId);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
-
             String backMessage = JSON.toJSONString(result);
 
             List<WebSocketMessageBean> list = new ArrayList<>();
@@ -254,8 +315,6 @@ public class ComeinRestService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
         return null;
     }
@@ -303,7 +362,7 @@ public class ComeinRestService {
      */
     private List<WebSocketMessageBean> userComeinProc(JSONObject jsonObj, User user, String storeId){
         HashMap<String,Object> result = null;
-        String message = "";
+        String message;
         Long userId = null;
         Store store = null;
         try{
@@ -317,7 +376,7 @@ public class ComeinRestService {
                 us.setCreateTime(date);
                 us.setStoreId(Long.parseLong(storeId));
                 us.setUserId(userId);
-                us.setCount(1l);
+                us.setCount(1L);
                 us.setStatus(3);
                 us.setLastModified(date);
                 userService.saveUserStore(us);

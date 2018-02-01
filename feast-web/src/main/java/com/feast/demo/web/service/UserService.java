@@ -166,5 +166,9 @@ public class UserService {
     public Set<Long> findStoreIdByUserId(Long userId) {
         return userRemoteService.findStoreIdByUserId(userId);
     }
+
+    public List<Long> findUserIdByStoreId(Long storeId) {
+        return userRemoteService.findUserIdByStoreId(storeId);
+    }
 }
 

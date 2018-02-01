@@ -70,4 +70,6 @@ public class User extends TimedEntity implements Serializable{
         customer,//客户
         store//店铺
     }
+
+    private Long storeId;
 }

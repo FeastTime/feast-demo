@@ -53,4 +53,6 @@ public interface UserService {
     public Long findUserId(String openId);
 
     public Set<Long> findStoreIdByUserId(Long userId);
+
+    public List<Long> findUserIdByStoreId(Long storeId);
 }
