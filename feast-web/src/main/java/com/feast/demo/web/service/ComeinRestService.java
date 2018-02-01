@@ -13,9 +13,11 @@ import com.feast.demo.order.vo.BidRecordVo;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
-import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.*;
-import com.feast.demo.web.util.StringUtils;
+import com.feast.demo.web.entity.ComeinRestBean;
+import com.feast.demo.web.entity.DeskInfoBean;
+import com.feast.demo.web.entity.UserBean;
+import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,28 +108,12 @@ public class ComeinRestService {
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
                 //break;
-            case WebSocketEvent.SET_NUMBER_OF_USER:
-                return setNumberOfUser(jsonObject,sender,storeId);
+            //case WebSocketEvent.SET_NUMBER_OF_USER:
+              // return setNumberOfUser(jsonObject,sender,storeId);
         }
 
         List<WebSocketMessageBean> list = new ArrayList<>();
         list.add(new WebSocketMessageBean().setMessage(retMessage).toStore(""));
-
-        return list;
-    }
-
-    private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User sender, String storeId) {
-        Map<String,Object> result = null;
-        List<DinnerInfo> dinnerList = null;
-        String backMessage = "";
-        try{
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        backMessage = JSON.toJSONString(result);
-        List list = new ArrayList<WebSocketMessageBean>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
 
         return list;
     }
@@ -210,66 +196,85 @@ public class ComeinRestService {
         return list;
     }
 
+
     /**
      * 发红包
-     * @param jsono
-     * @return
+     *
+     * @param jsonObject json
+     * @param sender 发送用户
+     * @param storeId 店铺ID
+     * @return 消息列表
      */
-    public List<WebSocketMessageBean> sendRedPackage(JSONObject jsono,User sender,String storeId) {
-        List<Object> redPackage = null;
-        Map<String,Object> result = null;
-        TableInfo tableInfo = null;
-        List<CouponTemplate> couponList = null;
-        String backMessage = "";
-        try{
-            Store storeInfo = storeService.getStoreInfo(Long.parseLong(storeId));
+    private List<WebSocketMessageBean> sendRedPackage(JSONObject jsonObject, User sender, String storeId) {
+
+        List<Object> redPackage;
+        TableInfo tableInfo;
+        List<CouponTemplate> couponList;
+
+        try {
             redPackage = Lists.newArrayList();
-            result = Maps.newHashMap();
-            tableInfo = jsono.getObject("tableInfo",TableInfo.class);
-            tableInfo = tableService.saveTableInfo(tableInfo);
-            redPackage.add(tableInfo);
-            JSONArray couponArray = jsono.getJSONArray("couponInfo");
-            couponList = JSONArray.parseArray(JSON.toJSONString(couponArray),CouponTemplate.class);
+            tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
+
+            if (null != tableInfo) {
+                tableInfo = tableService.saveTableInfo(tableInfo);
+                redPackage.add(tableInfo);
+            }
+
+
+            JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
+            couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
             for (CouponTemplate couponTemplate : couponList) {
                 Long count = couponTemplate.getCouponCount();
                 for (int i = 0; i < count; i++) {
                     redPackage.add(couponTemplate);
                 }
             }
-            String redPackageId = UUID.randomUUID()+"";
-            redPackages.put(redPackageId,redPackage);
-            result.put("resultCode",0);
-            result.put("redPackageId",redPackageId);
-            result.put("storeIcon",storeInfo.getStoreIcon());
-            result.put("storeName",storeInfo.getStoreName());
-            result.put("date",new Date());
-            result.put("type",4);
-        }catch (Exception e){
-            e.printStackTrace();
-            result.put("resultCode",1);
-        }
-        backMessage = JSON.toJSONString(result);
-        List list = new ArrayList<WebSocketMessageBean>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+            String redPackageId = UUID.randomUUID() + "";
+            redPackages.put(redPackageId, redPackage);
 
-        return list;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String dateStr = format.format(new Date());
+
+            Map<String, Object> result = Maps.newHashMap();
+
+            result.put("date", dateStr);
+            result.put("userId", sender.getUserId());
+            result.put("nickname", sender.getUsername());
+            result.put("userIcon", sender.getUserIcon());
+            result.put("redPackageId", redPackageId);
+            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
+
+            String backMessage = JSON.toJSONString(result);
+
+            List<WebSocketMessageBean> list = new ArrayList<>();
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+            return list;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+        return null;
     }
 
 
     /**
      * 聊天
+     *
      * @param jsonObject 发送json
      * @param sender 发送者
      * @return jsonString
      */
-    public List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
+    private List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
 
         String message = jsonObject.getString("message");
 
         if (null == message || message.length() == 0){
             return null;
         }
-
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String dateStr = format.format(new Date());
@@ -285,11 +290,10 @@ public class ComeinRestService {
 
         String backMessage = JSON.toJSONString(map);
 
-        List list = new ArrayList<WebSocketMessageBean>();
+        List<WebSocketMessageBean> list = new ArrayList<>();
         list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
 
         return list;
-
     }
 
     /**
