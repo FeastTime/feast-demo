@@ -127,7 +127,6 @@ public class ComeinRestService {
             result = Maps.newHashMap();
 
             userIds = userService.findUserIdByStoreId(Long.parseLong(storeId));
-            result = Maps.newHashMap();
             Integer numberPerTable = jsonObject.getInteger("dinnerCount");
             UserStore userStore = userService.findUserStoreByUserIdAndStoreId(user.getUserId(), Long.parseLong(storeId));
 
