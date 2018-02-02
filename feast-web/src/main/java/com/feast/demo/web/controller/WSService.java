@@ -73,7 +73,6 @@ public class WSService {
             try {
                 session.close();
             } catch (Exception ignored) {
-                ignored.printStackTrace();
             }
 
             return;
@@ -91,7 +90,7 @@ public class WSService {
         sendMessage("success666success", session);
 
         User user = userService.findById(Long.parseLong(userId));
-        System.out.println(user);
+
         WsBean wsBean = new WsBean();
         wsBean.setWsService(this);
         wsBean.setUser(user);
@@ -167,6 +166,7 @@ public class WSService {
                 user2Store.get(storeId).add(userId);
 
                 //查看这条记录是否已经存在，不存在保存到数据库，存在更新访问时间
+                System.out.println(user2Server.get(userId).getUser());
                 comeinRestService.WSInterfaceProc(type,jsonObject,user2Server.get(userId).getUser(),storeId);
 
             }
@@ -185,6 +185,7 @@ public class WSService {
                                 && null != webSocketMessageBean.getMessage()
                                 && webSocketMessageBean.getMessage().length() > 0){
 
+                            System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
                             sendMessageToUser(webSocketMessageBean.getUserId(), webSocketMessageBean.getMessage());
                         }
                         // 发送消息给店家所有用户
@@ -192,6 +193,7 @@ public class WSService {
                                 && null != webSocketMessageBean.getMessage()
                                 && webSocketMessageBean.getMessage().length() > 0){
 
+                            System.out.println("send to Store : " + webSocketMessageBean.getStoreId()+ "  --    message : " + webSocketMessageBean.getMessage());
                             sendMessageToStore(webSocketMessageBean.getStoreId(), webSocketMessageBean.getMessage());
                         }
                     }

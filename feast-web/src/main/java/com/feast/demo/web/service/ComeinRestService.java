@@ -13,7 +13,6 @@ import com.feast.demo.order.vo.BidRecordVo;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
-import com.feast.demo.web.controller.WSService;
 import com.feast.demo.web.entity.*;
 import com.feast.demo.web.entity.ComeinRestBean;
 import com.feast.demo.web.entity.DeskInfoBean;
@@ -21,7 +20,7 @@ import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import javassist.tools.web.Webserver;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,17 +30,20 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 /**
+ *
  * Created by Administrator on 2017/10/22.
  */
 @Service()
 public class ComeinRestService {
 
-    private static Map<String,Object> redPackages = Maps.newHashMap();
+    private static Map<String, List<Object>> redPackages = Maps.newHashMap();
 
-    private static Map<String,String> redId2UserId = Maps.newHashMap();
+    private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
     private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
+    private static Random random = new Random();
 
     private Lock lock = new ReentrantLock();
 
@@ -68,7 +70,6 @@ public class ComeinRestService {
     private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
 
     // 桌位-用户缓存
-
     private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
     // 桌位-用户缓存
 
@@ -83,7 +84,7 @@ public class ComeinRestService {
         String retMessage = "";
         switch(type){
 //            case 1:
-                //retMessage = userComeinProc(jsonObject);
+            //retMessage = userComeinProc(jsonObject);
             case WebSocketEvent.ENTER_STORE:
                 return userComeinProc(jsonObject, sender, storeId);
             case WebSocketEvent.SEND_RED_PACKAGE:
@@ -98,7 +99,7 @@ public class ComeinRestService {
                 retMessage = userOfferPrice(jsonObject);
                 break;
             case WebSocketEvent.OPEN_RED_PACKAGE:
-                return takeRedPackage(jsonObject,sender,storeId);
+                return takeRedPackage(jsonObject, sender);
 //            case 5:
 //                retMessage = grabDesk(jsonObject);
 //                break;
@@ -107,7 +108,7 @@ public class ComeinRestService {
                 break;
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
-                //break;
+            //break;
             case WebSocketEvent.SET_NUMBER_OF_USER:
                 return setNumberOfUser(jsonObject,sender,storeId);
         }
@@ -139,7 +140,7 @@ public class ComeinRestService {
             List<DinnerInfo> dinnerInfos = dinnerMap.get(storeId);
             if(dinnerInfos!=null){
                 for (DinnerInfo dinnerInfo : dinnerInfos) {
-                    if(dinnerInfo.getNumberPerTable() == numberPerTable){
+                    if(dinnerInfo.getNumberPerTable().intValue() == numberPerTable.intValue()){
                         count++;
                         dinnerInfo.setWaitingCount(dinnerInfo.getWaitingCount()+1);
                         break;
@@ -169,92 +170,117 @@ public class ComeinRestService {
         }
         backMessage = JSON.toJSONString(result);
 
-        List list = new ArrayList<WebSocketMessageBean>();
 
-        for (Long id : userIds) {
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
+        List<WebSocketMessageBean> list = null;
+
+        if (null != userIds){
+
+            list = new ArrayList<>();
+
+            for (Long id : userIds) {
+                list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
+            }
         }
         return list;
     }
 
-    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsono,User sender,String storeId) {
-        Map<String,Object> result =null;
-        String message = "";
-        Long userId = null;
-        TableInfo tableInfo;
-        CouponTemplate couponTemplate;
-        Integer type = 6;
-        String backMessage;
-        try{
-            result = Maps.newHashMap();
-            userId = jsono.getLong("userId");
-            String redPackageId = jsono.getString("redPackageId");
-            List<Object> redPackage = (List<Object>)redPackages.get(redPackageId);
-            System.out.println(redPackage);
+    /**
+     * 拆红包
+     *
+     * @param jsonObject json
+     * @param sender 发送者
+     * @return 返回消息列表
+     */
+    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsonObject, User sender) {
+
+        try {
             lock.lock();
-            String userIds = redId2UserId.get(redPackageId+"");
-            if(userIds!=null&&userIds.contains(userId+",")){
-                message = "您已经抢过这个红包了";
-            }else if(redPackage.size()==0){
+
+            Long userId = sender.getUserId();
+            String userIdStr = userId.toString();
+
+            String redPackageId = jsonObject.getString("redPackageId");
+
+            List<Object> redPackage = redPackages.get(redPackageId);
+            redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
+
+            String message = "";
+            Map<String, Object> result = Maps.newHashMap();
+
+            if (null == redPackages || redPackage.size() == 0) {
+
                 message = "对不起，您来晚了";
-            }else{
-                Object o = redPackage.get(0);
-                if(o instanceof TableInfo){
-                    tableInfo = (TableInfo)o;
+                // 删除缓存数据
+                redPackages.remove(redPackageId);
+                redId2UserId.remove(redPackageId+"");
+
+            } else if (redId2UserId.get(redPackageId+"").contains(userIdStr)) {
+
+                message = "您已经抢过这个红包了";
+
+            } else {
+
+                Object object = redPackage.get(0);
+
+                if (object instanceof TableInfo) {
+
+                    TableInfo tableInfo = (TableInfo) object;
                     tableInfo.setUserId(userId);
                     tableService.saveTableInfo(tableInfo);
-                    String oldUserId = redId2UserId.get("userId");
-                    if(oldUserId!=null&&!oldUserId.equals("")){
-                        redId2UserId.put(redPackageId,oldUserId+userId+",");
 
-                    }else{
-                        redId2UserId.put(redPackageId,userId+",");
-                    }
-                    result.put("tableInfo",tableInfo);
+                    redId2UserId.get(redPackageId+"").add(userIdStr);
+
+                    result.put("tableInfo", tableInfo);
                     redPackage.remove(0);
                     message = "恭喜您获得一个桌位";
 
+                } else if (object instanceof CouponTemplate) {
 
-                }else if(o instanceof CouponTemplate){
-                    Random random = new Random();
                     int i = random.nextInt(redPackage.size());
-                    couponTemplate = (CouponTemplate)redPackage.get(i);
+
+                    CouponTemplate couponTemplate = (CouponTemplate) redPackage.get(i);
+
+                    System.out.println("---------lixiaoqing------------" + couponTemplate.getId());
+
                     couponTemplate = couponService.findCouponTemplateById(couponTemplate.getId());
                     UserCoupon userCoupon = new UserCoupon();
-                    userCoupon.setCouponCode(UUID.randomUUID()+"");
+                    userCoupon.setCouponCode(UUID.randomUUID() + "");
                     userCoupon.setCouponTitle(couponTemplate.getCouponTitle());
                     userCoupon.setCouponPicture(couponTemplate.getCouponPicture());
                     userCoupon.setCouponType(couponTemplate.getCouponType());
                     userCoupon.setStartTime(new Date());
-                    userCoupon.setCouponValidity(new Date(new Date().getTime()+couponTemplate.getCouponValidity()*24*60*60*1000));
+                    userCoupon.setCouponValidity(new Date(new Date().getTime() + couponTemplate.getCouponValidity() * 24 * 60 * 60 * 1000));
                     userCoupon.setStoreId(couponTemplate.getStoreId());
                     userCoupon.setPermissionsDescribed(couponTemplate.getPermissionsDescribed());
                     userCoupon = couponService.saveUserCoupon(userCoupon);
                     userCoupon.setUserId(userId);
                     couponService.saveUserCoupon(userCoupon);
-                    String oldUserId = redId2UserId.get("userId");
-                    if(oldUserId!=null&&!oldUserId.equals("")){
-                        redId2UserId.put(redPackageId,oldUserId+userId+",");
 
-                    }else{
-                        redId2UserId.put(redPackageId,userId+",");
-                    }
-                    result.put("couponInfo",userCoupon);
+                    redId2UserId.get(redPackageId+"").add(userIdStr);
+                    result.put("couponInfo", userCoupon);
                     message = "恭喜您获得一张优惠券";
                     redPackage.remove(i);
                 }
             }
-            result.put("message",message);
-            result.put("type",type);
-            lock.unlock();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        backMessage = JSON.toJSONString(result);
-        List list = new ArrayList<WebSocketMessageBean>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
 
-        return list;
+            // 添加发送者
+            result.put("userId", "system");
+            result.put("message", message);
+            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE_SURPRISED);
+            String backMessage = JSON.toJSONString(result);
+
+            List<WebSocketMessageBean> list = new ArrayList<>();
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userIdStr));
+            return list;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+        return null;
+
     }
 
 
@@ -276,12 +302,9 @@ public class ComeinRestService {
             redPackage = Lists.newArrayList();
             tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
 
-            Map<String, Object> result = Maps.newHashMap();
-            
             if (null != tableInfo) {
                 tableInfo = tableService.saveTableInfo(tableInfo);
                 redPackage.add(tableInfo);
-                result.put("price",tableInfo.getPrice());
             }
 
 
@@ -299,12 +322,15 @@ public class ComeinRestService {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String dateStr = format.format(new Date());
 
+            Map<String, Object> result = Maps.newHashMap();
+
             result.put("date", dateStr);
             result.put("userId", sender.getUserId());
             result.put("nickname", sender.getUsername());
             result.put("userIcon", sender.getUserIcon());
             result.put("redPackageId", redPackageId);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
+
             String backMessage = JSON.toJSONString(result);
 
             List<WebSocketMessageBean> list = new ArrayList<>();
@@ -315,6 +341,8 @@ public class ComeinRestService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
         return null;
     }
