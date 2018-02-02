@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.service.CouponService;
+import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -35,23 +37,33 @@ public class CouponController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StoreService storeService;
+
     //查询优惠券列表信息
     @RequestMapping(value = "/queryCouponList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String queryCouponList(HttpServletRequest servletRequest){
-        Map<String,Object> result = null;
+        Map<String,Object> result = Maps.newHashMap();;
         String resultMsg = "";
         Byte resultCode = 1;
-        List<List<UserCoupon>> couponList = null;
+        Map<Long,List<UserCoupon>> couponMap = null;
+        List<Map<String,Object>> couponList = Lists.newArrayList();
         try{
-            result = Maps.newHashMap();
             String params = (String) servletRequest.getAttribute("json");
             params = StringUtils.decode(params);
             logger.info(params);
-            System.out.println("kkkkk");
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
-            couponList = couponService.queryCouponList(userId,flag);
+            List<Long> storeIds = couponService.findStoreIdByUserId(userId);
+            couponMap = couponService.queryCouponList(userId,flag,storeIds);
+            for (Long storeId : storeIds) {
+                String storeName = storeService.findStoreName(storeId);
+                Map<String,Object> map = Maps.newHashMap();
+                map.put("storeName",storeName);
+                map.put("dataList",couponMap.get(storeId));
+                couponList.add(map);
+            }
             resultCode = 0;
             resultMsg = "查询优惠券列表成功";
         }catch (Exception e){

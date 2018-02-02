@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ggke on 2017/8/26.
@@ -89,11 +90,11 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public List<List<UserCoupon>> queryCouponList(Long userId,Integer flag) {
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
         System.out.println("llll");
         System.out.println(couponRemoteService);
         //couponRemoteService.queryCouponList(userId,flag)
-        return couponRemoteService.queryCouponList(userId,flag);
+        return couponRemoteService.queryCouponList(userId,flag,storeIds);
     }
 
     public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
@@ -102,5 +103,9 @@ public class CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id) {
         return couponRemoteService.findCouponTemplateById(id);
+    }
+
+    public List<Long> findStoreIdByUserId(Long userId) {
+        return couponRemoteService.findStoreIdByUserId(userId);
     }
 }

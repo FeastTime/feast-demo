@@ -7,11 +7,13 @@ import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.coupon.service.CouponService;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ggke on 2017/8/26.
@@ -61,12 +63,11 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findByStoreId(storeId);
     }
 
-    public List<List<UserCoupon>> queryCouponList(Long userId,Integer flag) {
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
         System.out.println("pppp");
-        List<List<UserCoupon>> userCoupons = Lists.newArrayList();
+        Map<Long,List<UserCoupon>> userCoupons = Maps.newHashMap();
         System.out.println("oooo");
-        List<Long> storeIdList = userCouponDao.findStoreIdByUserId(userId);
-        for (Long storeId : storeIdList) {
+        for (Long storeId : storeIds) {
             ArrayList<UserCoupon> couponList = userCouponDao.findByUserIdAndStoreId(userId,storeId);
             ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
             ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
@@ -83,7 +84,7 @@ public class CouponServiceImpl implements CouponService {
             }else{
                 couponList = couponInValidList;
             }
-            userCoupons.add(couponList);
+            userCoupons.put(storeId,couponList);
         }
         System.out.println(userCoupons);
         return userCoupons;
@@ -100,6 +101,10 @@ public class CouponServiceImpl implements CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id) {
         return couponTemplateDao.findOne(id);
+    }
+
+    public List<Long> findStoreIdByUserId(Long userId) {
+        return userCouponDao.findStoreIdByUserId(userId);
     }
 
 }

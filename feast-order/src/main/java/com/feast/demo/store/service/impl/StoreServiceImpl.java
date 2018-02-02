@@ -37,5 +37,9 @@ public class StoreServiceImpl implements StoreService {
         return userStoreDao.findByStoreId(storeId);
     }
 
+    public String findStoreName(Long storeId) {
+        return storeDao.findStoreName(storeId);
+    }
+
 
 }

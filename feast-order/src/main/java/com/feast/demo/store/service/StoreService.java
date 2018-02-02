@@ -16,4 +16,6 @@ public interface StoreService {
     public Store getStoreInfo(Long storeId);
 
     public ArrayList<User> queryHadVisitUser(Long storeId);
+
+    public String findStoreName(Long storeId);
 }

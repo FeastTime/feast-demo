@@ -20,4 +20,8 @@ public class StoreService {
     public ArrayList<User> queryHadVisitUser(Long storeId) {
         return storeRemoteService.queryHadVisitUser(storeId);
     }
+
+    public String findStoreName(Long storeId) {
+        return storeRemoteService.findStoreName(storeId);
+    }
 }
