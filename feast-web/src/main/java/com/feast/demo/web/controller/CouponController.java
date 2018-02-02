@@ -56,16 +56,26 @@ public class CouponController {
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
             List<Long> storeIds = couponService.findStoreIdByUserId(userId);
-            couponMap = couponService.queryCouponList(userId,flag,storeIds);
-            for (Long storeId : storeIds) {
-                String storeName = storeService.findStoreName(storeId);
-                Map<String,Object> map = Maps.newHashMap();
-                map.put("storeName",storeName);
-                map.put("dataList",couponMap.get(storeId));
-                couponList.add(map);
+            if(storeIds!=null){
+                couponMap = couponService.queryCouponList(userId,flag,storeIds);
+                if(couponMap==null&&flag==0){
+                    resultMsg = "您没有可以使用的优惠券";
+                }else if(couponMap==null&&flag==2){
+                    resultMsg = "您没有过期的优惠券";
+                }else{
+                    for (Long storeId : storeIds) {
+                        String storeName = storeService.findStoreName(storeId);
+                        Map<String,Object> map = Maps.newHashMap();
+                        map.put("storeName",storeName);
+                        map.put("dataList",couponMap.get(storeId));
+                        couponList.add(map);
+                    }
+                    resultMsg = "查询优惠券列表成功";
+                }
+            }else{
+                resultMsg = "您没有优惠券";
             }
             resultCode = 0;
-            resultMsg = "查询优惠券列表成功";
         }catch (Exception e){
             e.printStackTrace();
             resultMsg = "查询优惠券列表失败";
