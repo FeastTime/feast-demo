@@ -42,7 +42,8 @@ public class ComeinRestService {
 
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
-    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
+    // 店铺<几人桌<等待人数>>
+    private static Map<String,Map<Integer, Integer>> dinnerMap = Maps.newHashMap();
     private static Random random = new Random();
 
     private Lock lock = new ReentrantLock();
@@ -67,13 +68,13 @@ public class ComeinRestService {
 
     private static long bidTime = 40000L;
     // 所有店铺缓存
-    private static HashMap<String, ArrayList> storeMap= new HashMap<String, ArrayList>();
+    private static HashMap<String, ArrayList<String>> storeMap= new HashMap<>();
 
     // 桌位-用户缓存
-    private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<String, HashMap<String, UserBean>>();
+    private static HashMap<String, HashMap<String, UserBean>> desk_userMap = new HashMap<>();
     // 桌位-用户缓存
 
-    private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<String, DeskInfoBean>();
+    private static HashMap<String, DeskInfoBean> desk_infoMap = new HashMap<>();
 
     /**
      * 对接老马接口入口
@@ -83,32 +84,19 @@ public class ComeinRestService {
 
         String retMessage = "";
         switch(type){
-//            case 1:
-            //retMessage = userComeinProc(jsonObject);
+
             case WebSocketEvent.ENTER_STORE:
-                return userComeinProc(jsonObject, sender, storeId);
+                return userComeInProc(jsonObject, sender, storeId);
+
             case WebSocketEvent.SEND_RED_PACKAGE:
                 return sendRedPackage(jsonObject,sender,storeId);
-            case 2:
-                retMessage = addDeskList(jsonObject);
-                break;
-//            case 3:
-//                retMessage = newDeskNotify(jsonObject);
-//                break;
-            case 4:
-                retMessage = userOfferPrice(jsonObject);
-                break;
+
             case WebSocketEvent.OPEN_RED_PACKAGE:
                 return takeRedPackage(jsonObject, sender);
-//            case 5:
-//                retMessage = grabDesk(jsonObject);
-//                break;
-            case 6:
-                retMessage = deskHistory(jsonObject);
-                break;
+
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
-            //break;
+
             case WebSocketEvent.SET_NUMBER_OF_USER:
                 return setNumberOfUser(jsonObject,sender,storeId);
         }
@@ -119,68 +107,84 @@ public class ComeinRestService {
         return list;
     }
 
+    /**
+     * 设置就餐人数
+     * @param jsonObject JSONObject
+     * @param user 用户
+     * @param storeId 店铺ID
+     * @return 消息列表
+     */
     private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User user, String storeId) {
-        Map<String,Object> result = null;
-        String backMessage;
-        List<Long> userIds = null;
-        try{
-            result = Maps.newHashMap();
 
-            userIds = userService.findUserIdByStoreId(Long.parseLong(storeId));
+        try{
+
             Integer numberPerTable = jsonObject.getInteger("dinnerCount");
+
             UserStore userStore = userService.findUserStoreByUserIdAndStoreId(user.getUserId(), Long.parseLong(storeId));
 
-            if(userStore!=null){
-                userStore.setNumberPerTable(numberPerTable);
-                userService.saveUserStore(userStore);
+            if (userStore == null) {
+                userStore = new UserStore();
+                userStore.setCount(1L);
+                userStore.setCreateTime(new Date());
+                userStore.setLastModified(new Date());
+                userStore.setStatus(3);
+                userStore.setStoreId(Long.parseLong(storeId));
+                userStore.setUserId(user.getUserId());
+            }
+            userStore.setNumberPerTable(numberPerTable);
+
+            userService.saveUserStore(userStore);
+
+            dinnerMap.computeIfAbsent(storeId, k -> Maps.newHashMap());
+
+            Map<Integer, Integer> dinnerInfoMap = dinnerMap.get(storeId);
+
+            if (dinnerInfoMap.containsKey(numberPerTable)){
+
+                dinnerInfoMap.put(numberPerTable, dinnerInfoMap.get(numberPerTable) +1);
+            } else {
+
+                dinnerInfoMap.put(numberPerTable, 1);
             }
 
-            int count = 0;
-            List<DinnerInfo> dinnerInfos = dinnerMap.get(storeId);
-            if(dinnerInfos!=null){
-                for (DinnerInfo dinnerInfo : dinnerInfos) {
-                    if(dinnerInfo.getNumberPerTable().intValue() == numberPerTable.intValue()){
-                        count++;
-                        dinnerInfo.setWaitingCount(dinnerInfo.getWaitingCount()+1);
-                        break;
-                    }
-                }
-                if(count==0){
 
-                    DinnerInfo dinnerInfo = new DinnerInfo();
-                    dinnerInfo.setNumberPerTable(numberPerTable);
-                    dinnerInfo.setWaitingCount(1);
-                    dinnerInfos.add(dinnerInfo);
-                }
-            }else{
-                dinnerInfos = Lists.newArrayList();
-                DinnerInfo dinnerInfo = new DinnerInfo();
-                dinnerInfo.setNumberPerTable(numberPerTable);
-                dinnerInfo.setWaitingCount(1);
-                dinnerInfos.add(dinnerInfo);
-                dinnerMap.put(storeId,dinnerInfos);
+            List<DinnerInfo> dinnerInfoList = new ArrayList<>();
+            DinnerInfo dinnerInfo;
+
+            for (Integer noPerTable : dinnerInfoMap.keySet()) {
+
+                dinnerInfo = new DinnerInfo();
+                dinnerInfo.setNumberPerTable(noPerTable);
+                dinnerInfo.setWaitingCount(dinnerInfoMap.get(noPerTable));
+
+                dinnerInfoList.add(dinnerInfo);
             }
 
-            result.put("dinnerList",dinnerInfos);
+            Map<String,Object> result = Maps.newHashMap();
+
+            result.put("dinnerList",dinnerInfoList);
             result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
             result.put("storeId",storeId);
+            result.put("userId","system");
+            String backMessage = JSON.toJSONString(result);
+
+            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+
+            if (null != waiters){
+
+                List<WebSocketMessageBean> list = new ArrayList<>();
+
+                for (Long id : waiters) {
+                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
+                }
+                return list;
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
-        backMessage = JSON.toJSONString(result);
 
-
-        List<WebSocketMessageBean> list = null;
-
-        if (null != userIds){
-
-            list = new ArrayList<>();
-
-            for (Long id : userIds) {
-                list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
-            }
-        }
-        return list;
+        return null;
     }
 
     /**
@@ -282,7 +286,6 @@ public class ComeinRestService {
 
     }
 
-
     /**
      * 发红包
      *
@@ -341,11 +344,8 @@ public class ComeinRestService {
             e.printStackTrace();
         }
 
-
-
         return null;
     }
-
 
     /**
      * 聊天
@@ -384,18 +384,18 @@ public class ComeinRestService {
 
     /**
      * 用户进店
-     * @param jsonObj JSONObject
+     * @param jsonObject JSONObject
      * @return webSocketMessageBean WebSocketMessageBean
      */
-    private List<WebSocketMessageBean> userComeinProc(JSONObject jsonObj, User user, String storeId){
-        HashMap<String,Object> result = null;
+    private List<WebSocketMessageBean> userComeInProc(JSONObject jsonObject, User user, String storeId){
+
         String message;
-        Long userId = null;
-        Store store = null;
+
+        Long userId = user.getUserId();
+        HashMap<String,Object> result = Maps.newHashMap();
+        Store store = storeService.getStoreInfo(Long.parseLong(storeId));
+
         try{
-            result = Maps.newHashMap();
-            userId = jsonObj.getLong("userId");
-            store = storeService.getStoreInfo(Long.parseLong(storeId));
             UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,Long.parseLong(storeId));
             Date date = new Date();
             if(us==null){
@@ -414,6 +414,7 @@ public class ComeinRestService {
             }
 
             message = "欢迎"+user.getNickName() + "进店！店小二祝您用餐愉快";
+
             result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
             result.put("date",new Date());
             result.put("userId",userId);
@@ -422,34 +423,36 @@ public class ComeinRestService {
             result.put("userIcon",store.getStoreIcon());
 
             String backMessage = JSON.toJSONString(result);
-            List list = new ArrayList<WebSocketMessageBean>();
+            List<WebSocketMessageBean> list = new ArrayList<>();
             list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
             return list;
+
         }catch (Exception e){
             e.printStackTrace();
-
-            message = "用户进店失败";
-            result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
-            result.put("date",new Date());
-            result.put("userId",userId);
-            result.put("message",message);
-            result.put("nickName",store.getStoreName());
-            result.put("userIcon",store.getStoreIcon());
-
-            String backMessage = JSON.toJSONString(result);
-            List list = new ArrayList<WebSocketMessageBean>();
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
-            return list;
         }
 
+        message = "用户进店失败";
+        result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
+        result.put("date",new Date());
+        result.put("userId",userId);
+        result.put("message",message);
+
+        String backMessage = JSON.toJSONString(result);
+        List<WebSocketMessageBean> list = new ArrayList<>();
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
+
+        return list;
     }
 
     /**
      * 老板放桌
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return String
      */
-    public String addDeskList(JSONObject jsonObj){
+    @Deprecated
+    @SuppressWarnings("unused")
+    private String addDeskList(JSONObject jsonObj){
         String maxPerson = jsonObj.getString("maxPerson");
         String minPerson = jsonObj.getString("minPerson");
         String storeID = jsonObj.getString("storeID");
@@ -467,7 +470,7 @@ public class ComeinRestService {
             deskList.add(bid);
             storeMap.put(storeID, deskList);
         }else{
-            ArrayList<String> deskList = new ArrayList<String>();
+            ArrayList<String> deskList = new ArrayList<>();
             deskList.add(bid);
             storeMap.put(storeID, deskList);
         }
@@ -499,7 +502,7 @@ public class ComeinRestService {
         result.put("bid", deskInfoBean.getBid());
         result.put("timeLimit", bidTime);
 
-        String personInfo = deskInfoBean.getMaxPerson() == deskInfoBean.getMinPerson()
+        String personInfo = Objects.equals(deskInfoBean.getMaxPerson(), deskInfoBean.getMinPerson())
                 ? deskInfoBean.getMaxPerson() + "位"
                 : deskInfoBean.getMinPerson() + " - " + deskInfoBean.getMaxPerson() + "位用餐的上宾，";
 
@@ -550,9 +553,11 @@ public class ComeinRestService {
 
     /**
      * 新桌位通知
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return String
      */
+    @Deprecated
+    @SuppressWarnings("unused")
     public String newDeskNotify(JSONObject jsonObj){
 
         Map<String,Object> result = Maps.newHashMap();
@@ -567,9 +572,11 @@ public class ComeinRestService {
 
     /**
      * 用户出价
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return String
      */
+    @Deprecated
+    @SuppressWarnings("unused")
     public String userOfferPrice(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
@@ -639,9 +646,10 @@ public class ComeinRestService {
 
     /**
      * 抢桌位
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return String
      */
+    @SuppressWarnings("unused")
     public String grabDesk(JSONObject jsonObj){
         System.out.println("androidID is:"+jsonObj.getString("androidID"));
         System.out.println("imei is:"+jsonObj.getString("imei"));
@@ -678,10 +686,11 @@ public class ComeinRestService {
 
     /**
      * 历史桌位列表接口
-     * @param jsonObj
-     * @return
+     * @param jsonObj JSONObject
+     * @return String
      */
-    public String deskHistory(JSONObject jsonObj){
+    @SuppressWarnings("unused")
+    private String deskHistory(JSONObject jsonObj){
         Map<String,Object> result = Maps.newHashMap();
         JSONObject json = new JSONObject();
         json.put("storeId",jsonObj.getString("storeID"));
@@ -693,11 +702,12 @@ public class ComeinRestService {
         return JSON.toJSONString(result);
     }
 
+    @SuppressWarnings("unused")
     private Collection<BidRequest> resultFilter(Collection<BidRequest> cbr){
         Iterator it1 = cbr.iterator();
         Iterator it2 = cbr.iterator();
         BigDecimal price = new BigDecimal(0);
-        Collection<BidRequest> tmpCbr = new ArrayList<BidRequest>();
+        Collection<BidRequest> tmpCbr = new ArrayList<>();
         while(it1.hasNext()){
             BidRequest br = (BidRequest) it1.next();
             if(br.getBidPrice().compareTo(price)>0){
