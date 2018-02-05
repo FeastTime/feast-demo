@@ -38,4 +38,6 @@
     <dubbo:reference id="bidRecordService" interface="com.feast.demo.order.service.BidRecordService"/>
 
     <dubbo:reference id="feedbackRemoteService" interface="com.feast.demo.feedback.service.FeedbackService"/>
+
+    <dubbo:reference id="redPackageService" interface="com.feast.demo.redPackage.service.RedPackageService"/>
 </beans>

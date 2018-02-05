@@ -2,6 +2,7 @@ package com.feast.demo.table.service;
 
 
 import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableInfoExpand;
 import com.feast.demo.table.entity.TableTemplate;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public interface TableService {
 
     public ArrayList<TableInfo> getHistoryTables(Long storeId);
 
-    public ArrayList<TableInfo> queryMyTableList(Long userId);
+    public ArrayList<TableInfoExpand> queryMyTableList(Long userId);
 
     public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
 

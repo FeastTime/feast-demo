@@ -12,5 +12,5 @@
     <!-- 使用注解方式暴露接口 -->
     <dubbo:annotation package="com.feast.demo.ad.service" />
     <dubbo:annotation package="com.feast.demo.coupon.service" />
-
+    <dubbo:annotation package="com.feast.demo.redPackage.service" />
 </beans>

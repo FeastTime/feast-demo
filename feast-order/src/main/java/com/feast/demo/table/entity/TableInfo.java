@@ -41,4 +41,5 @@ public class TableInfo implements Serializable{
     private Integer isCome;
 
     private String description;
+
 }

@@ -1,6 +1,5 @@
 package com.feast.demo.coupon.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.coupon.dao.CouponTemplateDao;
 import com.feast.demo.coupon.dao.UserCouponDao;
 import com.feast.demo.coupon.entity.CouponTemplate;
@@ -9,6 +8,7 @@ import com.feast.demo.coupon.service.CouponService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
