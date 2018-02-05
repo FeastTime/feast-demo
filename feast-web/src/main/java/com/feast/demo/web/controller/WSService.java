@@ -7,20 +7,17 @@ import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.entity.WsBean;
 import com.feast.demo.web.service.ComeinRestService;
 import com.feast.demo.web.service.UserService;
-import com.feast.demo.web.service.WebSocketEvent;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 
@@ -45,8 +42,6 @@ public class WSService {
     // 用户与server关系
     private static Map<String, WsBean> user2Server = Maps.newConcurrentMap();
 
-    // 用户与商户关系
-    private static Map<String, CopyOnWriteArraySet<String>> user2Store = Maps.newConcurrentMap();
 
     public WSService() {}
 
@@ -111,6 +106,7 @@ public class WSService {
             }
         }
 
+        comeinRestService.repairRelationship(userId);
     }
 
     /**
@@ -122,10 +118,12 @@ public class WSService {
         // 将连接  从  用户与服务端的关系结构中 删除
         user2Server.remove(this.userId);
 
-        // 将连接  从  用户与商户的关系结构中 删除
-        for (CopyOnWriteArraySet<String> set : user2Store.values()) {
-            set.remove(this.userId);
+        // 启动 Spring Service
+        if(comeinRestService == null) {
+            setComeInRestService();
         }
+
+        comeinRestService.removeRelationship(userId);
     }
 
     /**
@@ -153,56 +151,33 @@ public class WSService {
         String storeId = jsonObject.getString("storeId");
         String userId = jsonObject.getString("userId");
 
-
-
-        // 如果是扫码进店, 添加用户与商家关系
-        if (type == WebSocketEvent.ENTER_STORE) {
-
-            if (null != storeId && null != userId){
-
-                user2Store.computeIfAbsent(storeId, k -> Sets.newCopyOnWriteArraySet());
-
-                user2Store.get(storeId).add(userId);
-
-                //查看这条记录是否已经存在，不存在保存到数据库，存在更新访问时间
-                System.out.println(user2Server.get(userId).getUser());
-                comeinRestService.WSInterfaceProc(type,jsonObject,user2Server.get(userId).getUser(),storeId);
-
-            }
+        if (null == userId){
+            System.out.println("没有userId 无效消息！   " + message);
+            return;
         }
-        // 如果不是扫码进店，处理其他业务
-        else {
-            try {
-                List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 
-                if (null != list){
 
-                    for (WebSocketMessageBean webSocketMessageBean: list) {
+        try {
+            List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 
-                        // 发送消息给单个用户
-                        if (null != webSocketMessageBean.getUserId()
-                                && null != webSocketMessageBean.getMessage()
-                                && webSocketMessageBean.getMessage().length() > 0){
+            if (null != list){
 
-                            System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
-                            sendMessageToUser(webSocketMessageBean.getUserId(), webSocketMessageBean.getMessage());
-                        }
-                        // 发送消息给店家所有用户
-                        else if (null != webSocketMessageBean.getStoreId()
-                                && null != webSocketMessageBean.getMessage()
-                                && webSocketMessageBean.getMessage().length() > 0){
+                for (WebSocketMessageBean webSocketMessageBean: list) {
 
-                            System.out.println("send to Store : " + webSocketMessageBean.getStoreId()+ "  --    message : " + webSocketMessageBean.getMessage());
-                            sendMessageToStore(webSocketMessageBean.getStoreId(), webSocketMessageBean.getMessage());
-                        }
+                    // 发送消息给单个用户
+                    if (null != webSocketMessageBean.getUserId()
+                            && null != webSocketMessageBean.getMessage()
+                            && webSocketMessageBean.getMessage().length() > 0){
+
+                        System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
+                        sendMessageToUser(webSocketMessageBean.getUserId(), webSocketMessageBean.getMessage());
                     }
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -222,24 +197,7 @@ public class WSService {
     }
 
 
-    /**
-     * 对商户下所有用户发送消息
-     *
-     * @param storeId 店铺ID
-     * @param message 消息
-     */
-    private static void sendMessageToStore(String storeId, String message) {
 
-        CopyOnWriteArraySet<String> set = user2Store.get(storeId);
-
-        for (String userId : set) {
-            try {
-                sendMessage(message, user2Server.get(userId).getWsService().session);
-            } catch (Exception e) {
-                System.out.println("发送消息异常");
-            }
-        }
-    }
 
     /**
      *发生错误时调用
