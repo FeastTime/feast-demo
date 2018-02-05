@@ -7,7 +7,7 @@ public class WebSocketMessageBean {
 
     private String message;
     private String userId;
-    private String storeId;
+
 
     public String getMessage() {
         return message;
@@ -17,9 +17,6 @@ public class WebSocketMessageBean {
         return userId;
     }
 
-    public String getStoreId() {
-        return storeId;
-    }
 
     public WebSocketMessageBean setMessage(String message){
         this.message = message;
@@ -28,14 +25,9 @@ public class WebSocketMessageBean {
 
     public WebSocketMessageBean toUser(String userId){
         this.userId = userId;
-        this.storeId = null;
         return this;
     }
 
-    public WebSocketMessageBean toStore(String storeId){
-        this.storeId = storeId;
-        this.userId = null;
-        return this;
-    }
+
 
 }

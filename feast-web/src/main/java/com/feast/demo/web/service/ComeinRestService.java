@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -38,8 +39,13 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service()
 public class ComeinRestService {
 
+    // 用户与商户关系
+    private static Map<String, CopyOnWriteArraySet<String>> user2Store = Maps.newConcurrentMap();
+
+    // 红包
     private static Map<String, List<Object>> redPackages = Maps.newHashMap();
 
+    // 红包与用户关系
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
     // 店铺<几人桌<等待人数>>
@@ -86,7 +92,7 @@ public class ComeinRestService {
         switch(type){
 
             case WebSocketEvent.ENTER_STORE:
-                return userComeInProc(jsonObject, sender, storeId);
+                return userComeInProc(sender, storeId);
 
             case WebSocketEvent.SEND_RED_PACKAGE:
                 return sendRedPackage(jsonObject,sender,storeId);
@@ -101,10 +107,7 @@ public class ComeinRestService {
                 return setNumberOfUser(jsonObject,sender,storeId);
         }
 
-        List<WebSocketMessageBean> list = new ArrayList<>();
-        list.add(new WebSocketMessageBean().setMessage(retMessage).toStore(""));
-
-        return list;
+        return null;
     }
 
     /**
@@ -336,7 +339,15 @@ public class ComeinRestService {
             String backMessage = JSON.toJSONString(result);
 
             List<WebSocketMessageBean> list = new ArrayList<>();
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+            CopyOnWriteArraySet<String> set = user2Store.get(storeId);
+
+            if (null != set){
+
+                for (String receiverId : set) {
+                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+                }
+            }
 
             return list;
 
@@ -377,54 +388,80 @@ public class ComeinRestService {
         String backMessage = JSON.toJSONString(map);
 
         List<WebSocketMessageBean> list = new ArrayList<>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+        CopyOnWriteArraySet<String> set = user2Store.get(storeId);
+
+        if (null != set){
+
+            for (String receiverId : set) {
+                list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+            }
+        }
 
         return list;
     }
 
+
     /**
      * 用户进店
-     * @param jsonObject JSONObject
-     * @return webSocketMessageBean WebSocketMessageBean
+     * @param user 用户信息
+     * @param storeId 店铺id
+     * @return 消息列表
      */
-    private List<WebSocketMessageBean> userComeInProc(JSONObject jsonObject, User user, String storeId){
-
-        String message;
+    private List<WebSocketMessageBean> userComeInProc(User user, String storeId){
 
         Long userId = user.getUserId();
+
+        if (null == storeId || null == userId){
+            return null;
+        }
+
+        // 添加用户与商家关系
+        user2Store.computeIfAbsent(storeId, k -> Sets.newCopyOnWriteArraySet());
+        user2Store.get(storeId).add(userId+"");
+
         HashMap<String,Object> result = Maps.newHashMap();
-        Store store = storeService.getStoreInfo(Long.parseLong(storeId));
 
         try{
-            UserStore us = userService.findUserStoreByUserIdAndStoreId(userId,Long.parseLong(storeId));
+            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(userId,Long.parseLong(storeId));
+
             Date date = new Date();
-            if(us==null){
-                us = new UserStore();
-                us.setCreateTime(date);
-                us.setStoreId(Long.parseLong(storeId));
-                us.setUserId(userId);
-                us.setCount(1L);
-                us.setStatus(3);
-                us.setLastModified(date);
-                userService.saveUserStore(us);
-            }else{
-                us.setLastModified(date);
-                us.setCount(us.getCount()+1);
-                userService.saveUserStore(us);
+
+            if (userStore == null) {
+                userStore = new UserStore();
+                userStore.setCreateTime(date);
+                userStore.setStoreId(Long.parseLong(storeId));
+                userStore.setUserId(userId);
+                userStore.setCount(1L);
+            } else {
+                userStore.setCount(userStore.getCount() + 1);
             }
 
-            message = "欢迎"+user.getNickName() + "进店！店小二祝您用餐愉快";
+            userStore.setStatus(3);
+            userStore.setLastModified(date);
+
+            userService.saveUserStore(userStore);
+
+            Store store = storeService.getStoreInfo(Long.parseLong(storeId));
 
             result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
             result.put("date",new Date());
             result.put("userId",userId);
-            result.put("message",message);
+            result.put("message","欢迎"+user.getNickName() + "进店！店小二祝您用餐愉快");
             result.put("nickName",store.getStoreName());
             result.put("userIcon",store.getStoreIcon());
 
             String backMessage = JSON.toJSONString(result);
             List<WebSocketMessageBean> list = new ArrayList<>();
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toStore(storeId));
+
+            CopyOnWriteArraySet<String> set = user2Store.get(storeId);
+
+            if (null != set){
+
+                for (String receiverId : set) {
+                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+                }
+            }
 
             return list;
 
@@ -432,11 +469,10 @@ public class ComeinRestService {
             e.printStackTrace();
         }
 
-        message = "用户进店失败";
         result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
         result.put("date",new Date());
         result.put("userId",userId);
-        result.put("message",message);
+        result.put("message","用户进店失败");
 
         String backMessage = JSON.toJSONString(result);
         List<WebSocketMessageBean> list = new ArrayList<>();
@@ -722,6 +758,32 @@ public class ComeinRestService {
             System.out.println(tmpCbr.size());
         }
         return tmpCbr;
+    }
+
+    /**
+     * 恢复用户与商家的关系
+     *
+     * @param userId 用户ID
+     */
+    public void repairRelationship(String userId){
+
+        // 恢复用户与商家的关系
+        Set<Long> storeIds = userService.findStoreIdByUserId(Long.parseLong(userId));
+        if(storeIds!=null){
+            for (Long storeId: storeIds) {
+                String storeIdStr = storeId + "";
+
+                user2Store.computeIfAbsent(storeIdStr, k -> Sets.newCopyOnWriteArraySet());
+                user2Store.get(storeIdStr).add(userId);
+            }
+        }
+    }
+
+    public void removeRelationship(String userId){
+        // 将连接  从  用户与商户的关系结构中 删除
+        for (CopyOnWriteArraySet<String> set : user2Store.values()) {
+            set.remove(userId);
+        }
     }
 
 }
