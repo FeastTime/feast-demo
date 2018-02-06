@@ -1,14 +1,16 @@
 package com.feast.demo.web.entity;
 
-import java.math.BigDecimal;
 
 /**
+ *
  * Created by Administrator on 2017/10/27.
  */
 public class UserBean {
+
     private String userID;
     private String name;
     private long price;
+    private int numberPerTable;
 //    private long highPrice;
 
     public String getUserID() {
@@ -35,11 +37,11 @@ public class UserBean {
         this.price = price;
     }
 
-//    public long getHighPrice() {
-//        return highPrice;
-//    }
-//
-//    public void setHighPrice(long highPrice) {
-//        this.highPrice = highPrice;
-//    }
+    public int getNumberPerTable() {
+        return numberPerTable;
+    }
+
+    public void setNumberPerTable(int numberPerTable) {
+        this.numberPerTable = numberPerTable;
+    }
 }
