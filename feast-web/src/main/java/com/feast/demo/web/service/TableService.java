@@ -1,6 +1,7 @@
 package com.feast.demo.web.service;
 
 import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableInfoExpand;
 import com.feast.demo.table.entity.TableTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ public class TableService {
         return tableRemoteService.getHistoryTables(storeId);
     }
 
-    public ArrayList<TableInfo> queryMyTableList(Long userId) {
+    public ArrayList<TableInfoExpand> queryMyTableList(Long userId) {
         return tableRemoteService.queryMyTableList(userId);
     }
 

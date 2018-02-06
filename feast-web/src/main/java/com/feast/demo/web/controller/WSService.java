@@ -9,6 +9,7 @@ import com.feast.demo.web.service.ComeinRestService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.websocket.*;
@@ -16,6 +17,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -90,6 +92,18 @@ public class WSService {
 
         if (!user2Server.containsKey(userId)){
             user2Server.put(userId, wsBean);
+        }
+
+
+        // 恢复用户与商家的关系
+        Set<Long> storeIds = userService.findStoreIdByUserId(Long.parseLong(userId));
+        if(storeIds!=null){
+            for (Long storeId: storeIds) {
+                String storeIdStr = storeId + "";
+                logger.info(storeIdStr);
+                user2Store.computeIfAbsent(storeIdStr, k -> Sets.newCopyOnWriteArraySet());
+                user2Store.get(storeIdStr).add(userId);
+            }
         }
 
         comeinRestService.repairRelationship(userId);

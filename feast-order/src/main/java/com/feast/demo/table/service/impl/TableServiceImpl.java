@@ -1,15 +1,20 @@
 package com.feast.demo.table.service.impl;
 
+import com.feast.demo.store.dao.StoreDao;
 import com.feast.demo.table.dao.TableInfoDao;
 import com.feast.demo.table.dao.TableTemplateDao;
 import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableInfoExpand;
 import com.feast.demo.table.entity.TableTemplate;
 import com.feast.demo.table.service.TableService;
+import com.google.common.collect.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service()
 public class TableServiceImpl implements TableService{
@@ -19,6 +24,9 @@ public class TableServiceImpl implements TableService{
 
     @Autowired
     private TableTemplateDao tableTemplateDao;
+
+    @Autowired
+    private StoreDao storeDao;
 
     public void setBusinessInfo(TableTemplate tableTemplate) {
         tableTemplateDao.save(tableTemplate);
@@ -42,8 +50,17 @@ public class TableServiceImpl implements TableService{
         return tableInfoDao.findByStoreId(storeId);
     }
 
-    public ArrayList<TableInfo> queryMyTableList(Long userId) {
-        return tableInfoDao.findByUserId(userId);
+    public ArrayList<TableInfoExpand> queryMyTableList(Long userId) {
+        ArrayList<TableInfo> lists = tableInfoDao.findByUserId(userId);
+        ArrayList<TableInfoExpand> tableInfoLists = Lists.newArrayList();
+        for (TableInfo tableInfo : lists) {
+            String storeName = storeDao.findStoreName(tableInfo.getStoreId());
+            TableInfoExpand tableInfoExpand = new TableInfoExpand();
+            tableInfoExpand.setStoreName(storeName);
+            BeanUtils.copyProperties(tableInfo,tableInfoExpand);
+            tableInfoLists.add(tableInfoExpand);
+        }
+        return tableInfoLists;
     }
 
     public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId) {

@@ -3,6 +3,7 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.table.entity.TableInfoExpand;
 import com.feast.demo.table.entity.TableTemplate;
 import com.feast.demo.web.service.TableService;
 import com.feast.demo.web.util.StringUtils;
@@ -217,7 +218,7 @@ public class TableController {
         Map<String,Object> result = null;
         String resultMsg = "";
         Byte resultCode = 1;
-        ArrayList<TableInfo> tablesList = null;
+        ArrayList<TableInfoExpand> tablesList = null;
         try{
             result = Maps.newHashMap();
             String text = (String) servletRequest.getAttribute("json");

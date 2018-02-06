@@ -12,6 +12,7 @@ import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.*;
 import com.feast.demo.web.entity.UserBean;
 import com.feast.demo.web.entity.WebSocketMessageBean;
+import com.feast.demo.web.util.CouponIdCreator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -38,6 +39,8 @@ public class ComeinRestService {
 
     // 红包与用户关系
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
+
+    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 
     // 店铺<几人桌<等待人数>>
     // private static Map<String,Map<Integer, Integer>> dinnerMap = Maps.newHashMap();
@@ -257,7 +260,7 @@ public class ComeinRestService {
 
                     couponTemplate = couponService.findCouponTemplateById(couponTemplate.getId());
                     UserCoupon userCoupon = new UserCoupon();
-                    userCoupon.setCouponCode(UUID.randomUUID() + "");
+                    userCoupon.setCouponCode(CouponIdCreator.nextId());
                     userCoupon.setCouponTitle(couponTemplate.getCouponTitle());
                     userCoupon.setCouponPicture(couponTemplate.getCouponPicture());
                     userCoupon.setCouponType(couponTemplate.getCouponType());
