@@ -40,7 +40,7 @@ public class ComeinRestService {
     // 红包与用户关系
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
-    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
+//    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 
     // 店铺<几人桌<等待人数>>
     // private static Map<String,Map<Integer, Integer>> dinnerMap = Maps.newHashMap();
@@ -79,6 +79,7 @@ public class ComeinRestService {
 
     /**
      * 长连接消息处理入口
+     *
      * @param type 消息类型
      * @param jsonObject JSONObject
      * @param sender 发送者
@@ -414,6 +415,7 @@ public class ComeinRestService {
 
     /**
      * 用户进店
+     *
      * @param user 用户信息
      * @param storeId 店铺id
      * @return 消息列表
@@ -524,6 +526,7 @@ public class ComeinRestService {
 
     /**
      * 用户离店
+     *
      * @param userId 用户ID
      */
     public void removeRelationship(String userId){
