@@ -101,8 +101,8 @@ public class WSService {
             for (Long storeId: storeIds) {
                 String storeIdStr = storeId + "";
                 logger.info(storeIdStr);
-                user2Store.computeIfAbsent(storeIdStr, k -> Sets.newCopyOnWriteArraySet());
-                user2Store.get(storeIdStr).add(userId);
+                //user2Store.computeIfAbsent(storeIdStr, k -> Sets.newCopyOnWriteArraySet());
+                //user2Store.get(storeIdStr).add(userId);
             }
         }
 

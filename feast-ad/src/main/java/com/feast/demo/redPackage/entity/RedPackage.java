@@ -20,4 +20,6 @@ public class RedPackage implements Serializable{
 
     private Integer isUse;
 
+    private Integer autoSendTime;
+
 }

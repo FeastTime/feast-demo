@@ -49,18 +49,22 @@ public class TableController {
             Integer delayTime = jsono.getInteger("delayTime");
             //operateType==1延时，operateType==2到店
             TableInfo tableInfo = tableService.findTableInfoByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
-            if(operateType==1){
-                //修改预留时间
-                tableInfo.setRecieveTime(tableInfo.getRecieveTime()+delayTime);
-                tableService.updateTableInfo(tableInfo);
-                resultMsg = "延时成功";
-                resultCode = 0;
-            }else if(operateType==2){
-                //修改是否到店标识
-                tableInfo.setIsCome(1);
-                tableService.updateTableInfo(tableInfo);
-                resultMsg = "已经到店";
-                resultCode = 0;
+            if(tableInfo!=null){
+                if(operateType==1){
+                    //修改预留时间
+                    tableInfo.setRecieveTime(tableInfo.getRecieveTime()+delayTime);
+                    tableService.updateTableInfo(tableInfo);
+                    resultMsg = "延时成功";
+                    resultCode = 0;
+                }else if(operateType==2){
+                    //修改是否到店标识
+                    tableInfo.setIsCome(2);
+                    tableService.updateTableInfo(tableInfo);
+                    resultMsg = "已经到店";
+                    resultCode = 0;
+                }
+            }else{
+                resultMsg = "桌位不存在";
             }
 
         }catch (Exception e){

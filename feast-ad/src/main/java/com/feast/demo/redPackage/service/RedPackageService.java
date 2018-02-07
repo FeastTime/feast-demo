@@ -12,4 +12,6 @@ public interface RedPackageService {
     public void setRedPackageIsUse(Long redPackageId, Long storeId);
 
     public List<RedPackage> queryRedPackageList(Long storeId);
+
+    public void setRedPackageAutoSendTime(Integer time,Long storeId);
 }

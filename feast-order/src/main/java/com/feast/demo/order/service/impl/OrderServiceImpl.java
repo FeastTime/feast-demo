@@ -1,6 +1,5 @@
 package com.feast.demo.order.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.feast.demo.order.dao.OrderDao;
 import com.feast.demo.order.dao.OrderDetailDao;
 import com.feast.demo.order.entity.OrderDetail;
@@ -9,6 +8,7 @@ import com.feast.demo.order.service.OrderService;
 import com.feast.demo.order.vo.OrderDetailVo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;

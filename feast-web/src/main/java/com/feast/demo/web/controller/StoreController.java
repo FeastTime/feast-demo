@@ -172,5 +172,31 @@ public class StoreController {
         result.put("resultMsg",resultMsg);
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping(value = "/setRedPackageAutoSendTime",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String setRedPackageAutoSendTime(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        try{
+            result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long storeId = obj.getLong("storeId");
+            Integer time = obj.getInteger("time");
+            storeService.setRedPackageAutoSendTime(time,storeId);
+            resultCode = 0;
+            resultMsg = "设置红包自动发送周期成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "设置红包自动发送周期失败";
+        }
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
 }
 
