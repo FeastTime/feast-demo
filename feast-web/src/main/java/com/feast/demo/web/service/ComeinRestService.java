@@ -121,55 +121,50 @@ public class ComeinRestService {
     private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User user, String storeId) {
 
         String userId = user.getUserId().toString();
-        try{
 
-            Integer numberPerTable = jsonObject.getInteger("dinnerCount");
-
-            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(user.getUserId(), Long.parseLong(storeId));
-
-            if (userStore == null) {
-                userStore = new UserStore();
-                userStore.setCount(1L);
-                userStore.setCreateTime(new Date());
-                userStore.setLastModified(new Date());
-                userStore.setStatus(3);
-                userStore.setStoreId(Long.parseLong(storeId));
-                userStore.setUserId(user.getUserId());
-            }
-
-            userStore.setNumberPerTable(numberPerTable);
-            userService.saveUserStore(userStore);
-
-            user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
-
-            Map<String,Object> result = Maps.newHashMap();
-
-            result.put("dinnerList",getDinnerList(storeId));
-            result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
-            result.put("storeId",storeId);
-            result.put("userId","system");
-
-            String backMessage = JSON.toJSONString(result);
-
-            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
-
-            if (null != waiters){
-
-                List<WebSocketMessageBean> list = new ArrayList<>();
-
-                for (Long id : waiters) {
-                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id+""));
-                }
-                return list;
-            }
-
-        }catch (Exception e){
-            e.printStackTrace();
+        if (userId.length() == 0) {
+            return null;
         }
 
-        return null;
+        Integer numberPerTable = jsonObject.getInteger("dinnerCount");
+
+        user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
+
+        return getDinnerListMessage(storeId);
     }
 
+
+    /**
+     * 获取 就餐人数返回消息
+     *
+     * @param storeId 商家ID
+     * @return 消息列表
+     */
+    private List<WebSocketMessageBean> getDinnerListMessage(String storeId){
+
+        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+
+        if (null == waiters) {
+            return null;
+        }
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        result.put("dinnerList",getDinnerList(storeId));
+        result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
+        result.put("storeId",storeId);
+        result.put("userId","system");
+
+        String backMessage = JSON.toJSONString(result);
+
+        List<WebSocketMessageBean> list = new ArrayList<>();
+
+        for (Long id : waiters) {
+            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id + ""));
+        }
+
+        return list;
+    }
     /**
      * 获取店铺食客人数列表
      *
@@ -422,27 +417,27 @@ public class ComeinRestService {
      * @param storeId 店铺id
      * @return 消息列表
      */
-    private List<WebSocketMessageBean> userComeInProc(User user, String storeId){
+    private List<WebSocketMessageBean> userComeInProc(User user, String storeId) {
 
         Long userId = user.getUserId();
 
-        if (null == storeId || null == userId){
+        if (null == storeId || null == userId) {
             return null;
         }
 
-        // 添加用户与商家关系-->db
-        user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
-
+        // 添加用户与商家关系 -> cache
         UserBean userBean = new UserBean();
         userBean.setUserID(userId.toString());
         userBean.setNumberPerTable(0);
 
-        user2Store.get(storeId).put(userId+"", new UserBean());
+        user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
+        user2Store.get(storeId).put(userId + "", userBean);
 
-        HashMap<String,Object> result = Maps.newHashMap();
+        HashMap<String, Object> result = Maps.newHashMap();
 
-        try{
-            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(userId,Long.parseLong(storeId));
+        // 添加用户与商家关系 -> db
+        try {
+            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(userId, Long.parseLong(storeId));
 
             Date date = new Date();
 
@@ -452,6 +447,7 @@ public class ComeinRestService {
                 userStore.setStoreId(Long.parseLong(storeId));
                 userStore.setUserId(userId);
                 userStore.setCount(1L);
+
             } else {
                 userStore.setCount(userStore.getCount() + 1);
             }
@@ -463,39 +459,47 @@ public class ComeinRestService {
 
             Store store = storeService.getStoreInfo(Long.parseLong(storeId));
 
-            result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
-            result.put("date",new Date());
-            result.put("userId",userId);
-            result.put("message","欢迎"+user.getNickName() + "进店！店小二祝您用餐愉快");
-            result.put("nickName",store.getStoreName());
-            result.put("userIcon",store.getStoreIcon());
+            result.put("type", WebSocketEvent.RECEIVED_MESSAGE);
+            result.put("date", new Date());
+            result.put("userId", userId);
+            result.put("message", "欢迎" + user.getNickName() + "进店！店小二祝您用餐愉快");
+            result.put("nickName", store.getStoreName());
+            result.put("userIcon", store.getStoreIcon());
 
             String backMessage = JSON.toJSONString(result);
             List<WebSocketMessageBean> list = new ArrayList<>();
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
-            if (null != map){
+            if (null != map) {
 
                 for (String receiverId : map.keySet()) {
                     list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
                 }
             }
 
+            // 添加消息通知商家信息变更
+            List<WebSocketMessageBean> dinnerListMessage = getDinnerListMessage(storeId);
+
+            if (null != dinnerListMessage) {
+
+                list.addAll(dinnerListMessage);
+            }
+
             return list;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        result.put("type",WebSocketEvent.RECEIVED_MESSAGE);
-        result.put("date",new Date());
-        result.put("userId",userId);
-        result.put("message","用户进店失败");
+        result.put("type", WebSocketEvent.RECEIVED_MESSAGE);
+        result.put("date", new Date());
+        result.put("userId", userId);
+        result.put("message", "用户进店失败");
 
         String backMessage = JSON.toJSONString(result);
         List<WebSocketMessageBean> list = new ArrayList<>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId+""));
+        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId + ""));
 
         return list;
     }
@@ -512,30 +516,48 @@ public class ComeinRestService {
 
         if(storeIds!=null){
 
+            String storeIdStr;
+            UserBean userBean;
+
             for (Long storeId: storeIds) {
 
-                String storeIdStr = storeId + "";
-
-                user2Store.computeIfAbsent(storeIdStr, k -> Maps.newHashMap());
-                UserBean userBean = new UserBean();
+                storeIdStr = storeId + "";
+                userBean = new UserBean();
                 userBean.setUserID(userId);
                 userBean.setNumberPerTable(0);
+
+                user2Store.computeIfAbsent(storeIdStr, k -> Maps.newHashMap());
                 user2Store.get(storeIdStr).put(userId, userBean);
             }
         }
     }
-
 
     /**
      * 用户离店
      *
      * @param userId 用户ID
      */
-    public void removeRelationship(String userId){
-        // 将连接  从  用户与商户的关系结构中 删除
-        for (HashMap map : user2Store.values()) {
-            map.remove(userId);
+    public List<WebSocketMessageBean> removeRelationship(String userId){
+
+        List<WebSocketMessageBean> allDinnerListMessage = new ArrayList<>();
+        List<WebSocketMessageBean> dinnerListMessage;
+
+        for (String storeId : user2Store.keySet()) {
+
+            // 将连接  从  用户与商户的关系结构中 删除
+            user2Store.get(storeId).remove(userId);
+
+            // 通知商家用户离店
+            dinnerListMessage = getDinnerListMessage(storeId);
+
+            if (null != dinnerListMessage){
+
+                allDinnerListMessage.addAll(dinnerListMessage);
+            }
+
         }
+
+        return allDinnerListMessage;
     }
 
 
