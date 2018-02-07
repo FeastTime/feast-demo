@@ -1,6 +1,7 @@
 package com.feast.demo.redPackage.dao;
 
 import com.feast.demo.redPackage.entity.RedPackage;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -12,4 +13,8 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     List<RedPackage> findByStoreIdFilterRedPackageId(Long storeId,Long redPackageId);
 
     List<RedPackage> findByStoreId(Long storeId);
+
+    @Modifying
+    @Query("update RedPackage rp set rp.autoSendTime = ?1 where rp.storeId = ?2")
+    void updateByStoreId(Integer time,Long storeId);
 }

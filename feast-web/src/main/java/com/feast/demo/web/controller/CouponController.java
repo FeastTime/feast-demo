@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
-import com.feast.demo.user.entity.User;
 import com.feast.demo.web.service.CouponService;
 import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.service.UserService;
@@ -12,12 +11,10 @@ import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.logging.Logger;
@@ -31,11 +28,8 @@ public class CouponController {
 
     Logger logger = Logger.getLogger(this.getClass().getName());
 
-    @Resource
-    private CouponService couponService;
-
     @Autowired
-    private UserService userService;
+    private CouponService couponService;
 
     @Autowired
     private StoreService storeService;

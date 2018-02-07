@@ -6,6 +6,7 @@ import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.redPackage.service.RedPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -44,5 +45,10 @@ public class RedPackageServiceImpl implements RedPackageService {
     public List<RedPackage> queryRedPackageList(Long storeId) {
         List<RedPackage> redPackages = redPackageDao.findByStoreId(storeId);
         return redPackages;
+    }
+
+    @Transactional(readOnly = false)
+    public void setRedPackageAutoSendTime( Integer time,Long storeId) {
+        redPackageDao.updateByStoreId(time,storeId);
     }
 }

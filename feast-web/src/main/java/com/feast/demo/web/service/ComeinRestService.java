@@ -40,6 +40,7 @@ public class ComeinRestService {
     // 红包与用户关系
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
+    //private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 //    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 
     // 店铺<几人桌<等待人数>>
@@ -245,6 +246,7 @@ public class ComeinRestService {
 
                     TableInfo tableInfo = (TableInfo) object;
                     tableInfo.setUserId(userId);
+                    tableInfo.setIsCome(1);
                     tableService.saveTableInfo(tableInfo);
 
                     redId2UserId.get(redPackageId+"").add(userIdStr);

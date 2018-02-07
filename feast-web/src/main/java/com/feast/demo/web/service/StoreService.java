@@ -43,4 +43,8 @@ public class StoreService {
     public List<RedPackage> queryRedPackageList(Long storeId) {
         return redPackageService.queryRedPackageList(storeId);
     }
+
+    public void setRedPackageAutoSendTime( Integer time,Long storeId) {
+        redPackageService.setRedPackageAutoSendTime(time,storeId);
+    }
 }
