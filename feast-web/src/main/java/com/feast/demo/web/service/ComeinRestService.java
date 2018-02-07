@@ -414,7 +414,7 @@ public class ComeinRestService {
 
 
     /**
-     * 用户进店
+     * 用户扫码进店
      *
      * @param user 用户信息
      * @param storeId 店铺id
@@ -428,7 +428,7 @@ public class ComeinRestService {
             return null;
         }
 
-        // 添加用户与商家关系
+        // 添加用户与商家关系-->db
         user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
 
         UserBean userBean = new UserBean();
