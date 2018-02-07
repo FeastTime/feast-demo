@@ -108,7 +108,15 @@ public class WSService {
             setComeInRestService();
         }
 
-        comeinRestService.removeRelationship(userId);
+        List<WebSocketMessageBean> messageList = comeinRestService.removeRelationship(userId);
+
+        if (null != messageList){
+
+            for (WebSocketMessageBean webSocketMessageBean : messageList) {
+
+                sendMessageToUser(webSocketMessageBean);
+            }
+        }
     }
 
     /**
@@ -148,15 +156,7 @@ public class WSService {
             if (null != list){
 
                 for (WebSocketMessageBean webSocketMessageBean: list) {
-
-                    // 发送消息给单个用户
-                    if (null != webSocketMessageBean.getUserId()
-                            && null != webSocketMessageBean.getMessage()
-                            && webSocketMessageBean.getMessage().length() > 0){
-
-                        System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
-                        sendMessageToUser(webSocketMessageBean.getUserId(), webSocketMessageBean.getMessage());
-                    }
+                    sendMessageToUser(webSocketMessageBean);
                 }
             }
 
@@ -169,20 +169,26 @@ public class WSService {
     /**
      * 对用户发送消息
      *
-     * @param userId 用户ID
-     * @param message 消息
+     * @param webSocketMessageBean WebSocketMessageBean
      */
-    private static void sendMessageToUser(String userId, String message) {
+    private static void sendMessageToUser(WebSocketMessageBean webSocketMessageBean) {
+
+        if (null == webSocketMessageBean
+                || null == webSocketMessageBean.getMessage()
+                || 0 == webSocketMessageBean.getMessage().length()
+                || null == webSocketMessageBean.getUserId()
+                || 0 == webSocketMessageBean.getUserId().length()){
+
+            return;
+        }
 
         try {
-            sendMessage(message, user2Server.get(userId).getWsService().session);
+            System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
+            sendMessage(webSocketMessageBean.getMessage(), user2Server.get(webSocketMessageBean.getUserId()).getWsService().session);
         } catch (Exception e) {
             System.out.println("发送消息异常");
         }
     }
-
-
-
 
     /**
      *发生错误时调用
