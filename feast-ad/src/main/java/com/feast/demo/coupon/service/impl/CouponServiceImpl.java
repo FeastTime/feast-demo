@@ -55,20 +55,18 @@ public class CouponServiceImpl implements CouponService {
         return userCouponDao.findByStoreIdAndIsUse(storeId,2);
     }
 
-    public UserCoupon useCoupon(Long storeId, Long userId, String couponCode) {
-        return userCouponDao.findByStoreIdAndUserIdAndCouponCode(storeId,userId,couponCode);
+    public UserCoupon useCoupon(Long storeId,  String couponCode) {
+        return userCouponDao.findByStoreIdAndCouponCode(storeId,couponCode);
     }
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId) {
         return couponTemplateDao.findByStoreId(storeId);
     }
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
-        System.out.println("pppp");
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse) {
         Map<Long,List<UserCoupon>> userCoupons = Maps.newHashMap();
-        System.out.println("oooo");
         for (Long storeId : storeIds) {
-            ArrayList<UserCoupon> couponList = userCouponDao.findByUserIdAndStoreId(userId,storeId);
+            ArrayList<UserCoupon> couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,isUse);
             ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
             ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
             Long date = new Date().getTime();

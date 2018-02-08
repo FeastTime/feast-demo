@@ -49,14 +49,19 @@ public class CouponController {
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
+            Integer isUse = jsono.getInteger("isUse");
             List<Long> storeIds = couponService.findStoreIdByUserId(userId);
             if(storeIds!=null){
-                couponMap = couponService.queryCouponList(userId,flag,storeIds);
-                if(couponMap==null&&flag==0){
-                    resultMsg = "您没有可以使用的优惠券";
-                }else if(couponMap==null&&flag==2){
-                    resultMsg = "您没有过期的优惠券";
-                }else{
+                couponMap = couponService.queryCouponList(userId,flag,storeIds,isUse);
+                if(couponMap==null&&flag==0&&isUse==1){
+                    resultMsg = "您没有未过期已经使用的优惠券";
+                }else if(couponMap==null&&flag==2&&isUse==1){
+                    resultMsg = "您没有已过期已经使用优惠券";
+                }else if(couponMap==null&&flag==2&&isUse==2){
+                    resultMsg = "您没有未过期还未使用优惠券";
+                }else if(couponMap==null&&flag==2&&isUse==2){
+                    resultMsg = "您没有已过期还未使用优惠券";
+                }else if(couponMap!=null){
                     for (Long storeId : storeIds) {
                         String storeName = storeService.findStoreName(storeId);
                         Map<String,Object> map = Maps.newHashMap();
@@ -141,14 +146,13 @@ public class CouponController {
             logger.info(params);
             JSONObject jsono  = JSON.parseObject(params);
             Long storeId = jsono.getLong("storeId");
-            Long userId = jsono.getLong("userId");
             String couponCode = jsono.getString("couponCode");
-            UserCoupon userCoupon = couponService.useCoupon(storeId,userId,couponCode);
+            UserCoupon userCoupon = couponService.useCoupon(storeId,couponCode);
             if(userCoupon==null){
                 resultMsg = "优惠券不存在";
             }else{
                 if(userCoupon.getCouponValidity().getTime()<new Date().getTime()){
-                    resultMsg = "优惠券已经过期";
+                                resultMsg = "优惠券已经过期";
                 }else if(userCoupon.getIsUse()==1){
                     resultMsg = "优惠券已经使用过";
                 }else{

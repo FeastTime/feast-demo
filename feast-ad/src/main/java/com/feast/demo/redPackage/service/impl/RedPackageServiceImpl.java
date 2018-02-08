@@ -51,4 +51,8 @@ public class RedPackageServiceImpl implements RedPackageService {
     public void setRedPackageAutoSendTime( Integer time,Long storeId) {
         redPackageDao.updateByStoreId(time,storeId);
     }
+
+    public List<RedPackage> findRedPackageByIsUse(Integer isUse) {
+        return redPackageDao.findByIsUse(isUse);
+    }
 }

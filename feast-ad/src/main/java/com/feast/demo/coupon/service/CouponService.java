@@ -23,11 +23,11 @@ public interface CouponService {
 
     public ArrayList<UserCoupon> getUsedCoupon(Long storeId);
 
-    public UserCoupon useCoupon(Long storeId, Long userId, String couponCode);
+    public UserCoupon useCoupon(Long storeId, String couponCode);
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId);
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds);
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse);
 
     public Iterable<CouponTemplate> findAllCouponTemplate();
 

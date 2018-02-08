@@ -79,8 +79,8 @@ public class CouponService {
         return couponRemoteService.getUsedCoupon(storeId);
     }
 
-    public UserCoupon useCoupon(Long storeId, Long userId, String couponCode) {
-        return couponRemoteService.useCoupon(storeId,userId,couponCode);
+    public UserCoupon useCoupon(Long storeId, String couponCode) {
+        return couponRemoteService.useCoupon(storeId,couponCode);
     }
     public void updateUserCoupon(UserCoupon userCoupon) {
         couponRemoteService.updateUserCoupon(userCoupon);
@@ -90,11 +90,10 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
-        System.out.println("llll");
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse) {
         System.out.println(couponRemoteService);
         //couponRemoteService.queryCouponList(userId,flag)
-        return couponRemoteService.queryCouponList(userId,flag,storeIds);
+        return couponRemoteService.queryCouponList(userId,flag,storeIds,isUse);
     }
 
     public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
