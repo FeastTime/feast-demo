@@ -47,4 +47,8 @@ public class StoreService {
     public void setRedPackageAutoSendTime( Integer time,Long storeId) {
         redPackageService.setRedPackageAutoSendTime(time,storeId);
     }
+
+    public List<RedPackage> findRedPackageByIsUse(Integer isUse) {
+        return redPackageService.findRedPackageByIsUse(isUse);
+    }
 }

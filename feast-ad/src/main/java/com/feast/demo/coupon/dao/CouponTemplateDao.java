@@ -13,5 +13,6 @@ import java.util.ArrayList;
 public interface CouponTemplateDao extends PagingAndSortingRepository<CouponTemplate,Long>,CouponDaoCustom  {
 
 
+    @Query("select ct from CouponTemplate ct order by ct.lastModified desc")
     ArrayList<CouponTemplate> findByStoreId(Long storeId);
 }
