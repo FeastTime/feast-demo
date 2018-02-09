@@ -7,6 +7,7 @@ import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
@@ -19,6 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -73,16 +75,16 @@ public class ComeinRestService {
     private Lock lock = new ReentrantLock();
 
     @Autowired
-    private CouponService couponService;
+    private static CouponService couponService;
 
     @Autowired
     private TableService tableService;
 
     @Autowired
-    private UserService userService;
+    private static UserService userService;
 
     @Autowired
-    private StoreService storeService;
+    private static StoreService storeService;
 
 //    @Autowired
 //    private BidRecordService bidRecordService;
@@ -121,7 +123,7 @@ public class ComeinRestService {
                 return sendRedPackage(jsonObject,sender,storeId);
 
             case WebSocketEvent.OPEN_RED_PACKAGE:
-                return takeRedPackage(jsonObject, sender);
+                return takeRedPackage(jsonObject, sender, storeId);
 
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
@@ -229,7 +231,7 @@ public class ComeinRestService {
      * @param sender 发送者
      * @return 返回消息列表
      */
-    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsonObject, User sender) {
+    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsonObject, User sender,String storeId) {
 
         try {
             lock.lock();
@@ -258,24 +260,43 @@ public class ComeinRestService {
 
             } else {
 
-                Object object = redPackage.get(0);
+                Object lastObject = redPackage.get(redPackage.size() - 1);
 
-                if (object instanceof TableInfo) {
+                boolean hasGetTable = false;
 
-                    TableInfo tableInfo = (TableInfo) object;
-                    tableInfo.setUserId(userId);
-                    tableInfo.setIsCome(1);
-                    tableService.saveTableInfo(tableInfo);
+                if (lastObject instanceof TableInfo) {
 
-                    redId2UserId.get(redPackageId+"").add(userIdStr);
+                    TableInfo tableInfo = (TableInfo) lastObject;
+                    String[] supportSeatNumbers = tableInfo.getSuportSeatNumber().split(",");
 
-                    result.put("tableInfo", tableInfo);
-                    redPackage.remove(0);
-                    message = "恭喜您获得一个桌位";
+                    for (String supportSeatNumber : supportSeatNumbers) {
 
-                } else if (object instanceof CouponTemplate) {
+                        if(Integer.parseInt(supportSeatNumber)==user2Store.get(storeId).get(userIdStr).getNumberPerTable()){
 
-                    int i = random.nextInt(redPackage.size());
+                            tableInfo.setUserId(userId);
+                            tableInfo.setIsCome(1);
+                            tableService.saveTableInfo(tableInfo);
+
+                            redId2UserId.get(redPackageId+"").add(userIdStr);
+
+                            result.put("tableInfo", tableInfo);
+                            redPackage.remove(0);
+                            message = "恭喜您获得一个桌位";
+                            hasGetTable = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hasGetTable) {
+
+                    int randomSize = redPackage.size();
+
+                    if (lastObject instanceof TableInfo){
+                        randomSize-- ;
+                    }
+
+                    int i = random.nextInt(randomSize);
 
                     CouponTemplate couponTemplate = (CouponTemplate) redPackage.get(i);
 
@@ -333,30 +354,57 @@ public class ComeinRestService {
         List<Object> redPackage;
         TableInfo tableInfo;
         List<CouponTemplate> couponList;
-
+        String backMessage;
         try {
-            redPackage = Lists.newArrayList();
-            tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
+            List<WebSocketMessageBean> list = new ArrayList<>();
 
+            redPackage = Lists.newArrayList();
+
+            //添加优惠券
+            JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
+            couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String dateStr = format.format(new Date());
+            for (CouponTemplate couponTemplate : couponList) {
+                Long count = couponTemplate.getCouponCount();
+                CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
+                if(couponTemplate_.getCouponCount()<count){
+                    // 提示商家优惠券不足
+                    Map<String,Object> storeResult = Maps.newHashMap();
+                    storeResult.put("type",WebSocketEvent.POPUP_MESSAGE);
+                    storeResult.put("storeId",storeId);
+                    storeResult.put("userId",sender.getUserId());
+                    storeResult.put("title","库存不足");
+                    storeResult.put("message",couponTemplate_.getCouponTitle()+"存量不足");
+                    storeResult.put("promptInformation","请及时到\"优惠券管理\"补充");
+                    storeResult.put("time",dateStr);
+                    backMessage = JSON.toJSONString(storeResult);
+                    HashMap<String, UserBean> userMap = user2Store.get(storeId);
+                    for (String userId : userMap.keySet()) {
+                        UserBean userBean = userMap.get(userId);
+                        if(userBean.getUserType()==UserBean.STORE){
+                            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId));
+                        }
+                    }
+
+                }else{
+                    for (int i = 0; i < count; i++) {
+                        redPackage.add(couponTemplate);
+                    }
+                    couponTemplate_.setCouponCount(couponTemplate_.getCouponCount()-count);
+                    couponService.createCouponTemplate(couponTemplate_);
+                }
+            }
+
+            //添加桌位
+            tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
             if (null != tableInfo) {
                 tableInfo = tableService.saveTableInfo(tableInfo);
                 redPackage.add(tableInfo);
             }
 
-
-            JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
-            couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
-            for (CouponTemplate couponTemplate : couponList) {
-                Long count = couponTemplate.getCouponCount();
-                for (int i = 0; i < count; i++) {
-                    redPackage.add(couponTemplate);
-                }
-            }
             String redPackageId = UUID.randomUUID() + "";
             redPackages.put(redPackageId, redPackage);
-
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String dateStr = format.format(new Date());
 
             Map<String, Object> result = Maps.newHashMap();
 
@@ -367,9 +415,7 @@ public class ComeinRestService {
             result.put("redPackageId", redPackageId);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
 
-            String backMessage = JSON.toJSONString(result);
-
-            List<WebSocketMessageBean> list = new ArrayList<>();
+            backMessage = JSON.toJSONString(result);
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
@@ -495,6 +541,7 @@ public class ComeinRestService {
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
+
             if (null != map) {
 
                 for (String receiverId : map.keySet()) {
@@ -557,58 +604,6 @@ public class ComeinRestService {
     }
 
 
-//    public void autoSendRedPackage(){
-//        List<RedPackage> redPackages;
-//
-//        try {
-//            redPackages = storeService.findRedPackageByIsUse(2);
-//            for (RedPackage redPackage : redPackages) {
-//                Long id = redPackage.getRedPackageId();
-//            }
-//
-//            for (CouponTemplate couponTemplate : couponList) {
-//                Long count = couponTemplate.getCouponCount();
-//                for (int i = 0; i < count; i++) {
-//                    redPackage.add(couponTemplate);
-//                }
-//            }
-//
-//            String redPackageId = UUID.randomUUID() + "";
-//            redPackages.put(redPackageId, redPackage);
-//
-//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//            String dateStr = format.format(new Date());
-//
-//            Map<String, Object> result = Maps.newHashMap();
-//
-//            result.put("date", dateStr);
-//            result.put("userId", sender.getUserId());
-//            result.put("nickname", sender.getUsername());
-//            result.put("userIcon", sender.getUserIcon());
-//            result.put("redPackageId", redPackageId);
-//            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
-//
-//            String backMessage = JSON.toJSONString(result);
-//
-//            List<WebSocketMessageBean> list = new ArrayList<>();
-//
-//            HashMap<String, UserBean> map = user2Store.get(storeId);
-//
-//            if (null != map){
-//
-//                for (String receiverId : map.keySet()) {
-//                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
-//                }
-//            }
-//
-//            return list;
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
     /**
      * 用户离店
      *
@@ -642,6 +637,8 @@ public class ComeinRestService {
 
     private static void autoSender(){
 
+        List<Object> redPackage  = Lists.newArrayList();
+
         long nowTime = new Date().getTime();
 
         List<Long> storeIds = new ArrayList<>();
@@ -654,27 +651,80 @@ public class ComeinRestService {
         }
 
         // 查询开启的红包  storeIds
-        List<RedPackage> redPackages = null;
+        List<RedPackage> redPackages_ = storeService.findRedPackageByStoreIdAndIsUse(storeIds,2);
 
-        if (null == redPackages){
+        if (null == redPackages_){
             return;
         }
 
-        for (RedPackage redPackage : redPackages) {
+        for (RedPackage redPackage_ : redPackages_) {
 
-            redPackageSendTime.putIfAbsent(redPackage.getRedPackageId(), 0L);
+            redPackageSendTime.putIfAbsent(redPackage_.getRedPackageId(), 0L);
 
             // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   发红包
-            if ((nowTime - redPackage.getRedPackageId()) > redPackage.getAutoSendTime()*60*1000 ){
+            if ((nowTime - redPackageSendTime.get(redPackage_.getRedPackageId())) > redPackage_.getAutoSendTime()*60*1000 ){
 
                 // 发红包1创建红包，
-
-
-                String backMessage = null;
+                Long id = redPackage_.getRedPackageId();
+                String userIds = "";
+                List<RedPackageCouponTemplate> redPackageCouponTemplates = storeService.findRedPackageCouponTemplateByRedPackageId(id);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String dateStr = format.format(new Date());
+                for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
+                    Long couponTemplateId = redPackageCouponTemplate.getCouponTemplateId();
+                    Integer couponCount = redPackageCouponTemplate.getCouponCount();
+                    CouponTemplate couponTemplate = couponService.findCouponTemplateById(couponTemplateId);
+                    if(couponTemplate.getCouponCount()<couponCount){
+                        // 提示商家优惠券不足
+                        Map<String,Object> storeResult = Maps.newHashMap();
+                        storeResult.put("type",WebSocketEvent.POPUP_MESSAGE);
+                        storeResult.put("storeId",redPackage_.getStoreId());
+                        Set<String> ids = user2Store.get(redPackage_.getStoreId()+"").keySet();
+                        int count = 1;
+                        for (String id_ : ids) {
+                            if(count==ids.size()){
+                                userIds=userIds+id_;
+                            }else{
+                                userIds+=id_+",";
+                                count++;
+                            }
+                        }
+                        storeResult.put("userId",userIds);
+                        storeResult.put("title","库存不足");
+                        storeResult.put("message",couponTemplate.getCouponTitle()+"存量不足");
+                        storeResult.put("promptInformation","请及时到\"优惠券管理\"补充");
+                        storeResult.put("time",dateStr);
+                        String backMessage = JSON.toJSONString(storeResult);
+                        HashMap<String, UserBean> userMap = user2Store.get(redPackage_.getStoreId()+"");
+                        for (String userId : userMap.keySet()) {
+                            UserBean userBean = userMap.get(userId);
+                            if(userBean.getUserType()==UserBean.STORE){
+                                webSocketMessageQueue.offer(new WebSocketMessageBean().setMessage(backMessage).toUser(userId));
+                            }
+                        }
+                    }else{
+                        for (int i = 0; i < couponCount; i++) {
+                            redPackage.add(couponTemplate);
+                        }
+                        couponTemplate.setCouponCount(couponTemplate.getCouponCount()-couponCount);
+                        couponService.createCouponTemplate(couponTemplate);
+                    }
+                }
+                String redPackageId = UUID.randomUUID() + "";
+                redPackages.put(redPackageId, redPackage);
+                String backMessage;
                 //发送消息
-
-                HashMap<String, UserBean> map = user2Store.get(redPackage.getStoreId());
-
+                Map<String,Object> result = Maps.newHashMap();
+                result.put("date", dateStr);
+                result.put("userId", "system");
+                String username = userService.findUsernameById(userIds.split(",")[0]);
+                String userIcon = userService.findUserIconById(userIds.split(",")[0]);
+                result.put("nickname", username);
+                result.put("userIcon", userIcon);
+                result.put("redPackageId", redPackageId);
+                result.put("type", WebSocketEvent.AUTO_SEND_RED_PACKAGE);
+                HashMap<String, UserBean> map = user2Store.get(redPackage_.getStoreId()+"");
+                backMessage = JSON.toJSONString(result);
                 if (null != map){
 
                     for (String receiverId : map.keySet()) {
@@ -683,7 +733,7 @@ public class ComeinRestService {
                 }
 
 
-                redPackageSendTime.put(redPackage.getRedPackageId(), nowTime);
+                redPackageSendTime.put(redPackage_.getRedPackageId(), nowTime);
 
             }
         }

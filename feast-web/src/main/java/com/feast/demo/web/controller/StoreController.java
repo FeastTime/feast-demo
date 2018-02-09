@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
@@ -109,21 +110,21 @@ public class StoreController {
         Map<String,Object> result = null;
         String resultMsg = "";
         Integer resultCode = 1;
-        List<Long> couponTemplateIds = null;
+        List<RedPackageCouponTemplate> redPackageCouponTemplates = null;
         try{
             result = Maps.newHashMap();
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
-            JSONArray couponTemplateIdArray = obj.getJSONArray("couponTemplateIds");
-            couponTemplateIds = JSONArray.parseArray(JSON.toJSONString(couponTemplateIdArray),Long.class);
+            JSONArray couponTemplateIdArray = obj.getJSONArray("couponTemplateIdsAndCount");
+            redPackageCouponTemplates = JSONArray.parseArray(JSON.toJSONString(couponTemplateIdArray),RedPackageCouponTemplate.class);
             Long storeId = obj.getLong("storeId");
             String redPackageName = obj.getString("redPackageName");
             RedPackage redPackage = new RedPackage();
             redPackage.setStoreId(storeId);
             redPackage.setRedPackageName(redPackageName);
-            storeService.createRedPackage(redPackage,couponTemplateIds);
+            storeService.createRedPackage(redPackage,redPackageCouponTemplates);
             resultCode = 0;
             resultMsg = "创建红包成功";
         }catch (Exception e){

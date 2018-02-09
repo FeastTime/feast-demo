@@ -153,7 +153,7 @@ public class MD5Utils {
     public static void main(String[] args) throws Exception {
         String key = MD5Utils.init();
         System.out.println("Mac密钥:\n" + key);
-        String word = "123456";
+        String word = "6666";
         System.out.println(encryptHMAC(word));
     }
 }

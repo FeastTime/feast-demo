@@ -1,4 +1,5 @@
 package com.feast.demo.redPackage.service.impl;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.dao.RedPackageCouponTemplateDao;
 import com.feast.demo.redPackage.dao.RedPackageDao;
 import com.feast.demo.redPackage.entity.RedPackage;
@@ -20,13 +21,11 @@ public class RedPackageServiceImpl implements RedPackageService {
     private RedPackageCouponTemplateDao redPackageCouponTemplateDao;
 
 
-    public void createRedPackage(RedPackage redPackage, List<Long> couponTemplateIds) {
+    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplates) {
         redPackage = redPackageDao.save(redPackage);
         Long redPackageId = redPackage.getRedPackageId();
-        for (Long couponTemplateId : couponTemplateIds) {
-            RedPackageCouponTemplate redPackageCouponTemplate = new RedPackageCouponTemplate();
+        for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
             redPackageCouponTemplate.setRedPackageId(redPackageId);
-            redPackageCouponTemplate.setCouponTemplateId(couponTemplateId);
             redPackageCouponTemplateDao.save(redPackageCouponTemplate);
         }
     }
@@ -52,7 +51,16 @@ public class RedPackageServiceImpl implements RedPackageService {
         redPackageDao.updateByStoreId(time,storeId);
     }
 
-    public List<RedPackage> findRedPackageByIsUse(Integer isUse) {
-        return redPackageDao.findByIsUse(isUse);
+    public List<RedPackage> findRedPackageByStoreIds(List<Long> storeIds) {
+        return redPackageDao.findByStoreIdIn(storeIds);
     }
+
+    public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
+        return redPackageCouponTemplateDao.findByRedPackageId(id);
+    }
+
+    public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse) {
+        return redPackageDao.findByIsUseAndStoreIdIn(isUse,storeIds);
+    }
+
 }

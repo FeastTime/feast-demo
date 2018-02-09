@@ -1,7 +1,9 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSONArray;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.redPackage.service.RedPackageService;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
@@ -32,9 +34,7 @@ public class StoreService {
         return storeRemoteService.findStoreName(storeId);
     }
 
-    public void createRedPackage(RedPackage redPackage, List<Long> couponTemplateIds) {
-        redPackageService.createRedPackage(redPackage,couponTemplateIds);
-    }
+
 
     public void setRedPackageIsUse(Long redPackageId, Long storeId) {
         redPackageService.setRedPackageIsUse(redPackageId,storeId);
@@ -48,7 +48,16 @@ public class StoreService {
         redPackageService.setRedPackageAutoSendTime(time,storeId);
     }
 
-    public List<RedPackage> findRedPackageByIsUse(Integer isUse) {
-        return redPackageService.findRedPackageByIsUse(isUse);
+
+    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplates) {
+        redPackageService.createRedPackage(redPackage, redPackageCouponTemplates);
+    }
+
+    public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
+        return redPackageService.findRedPackageCouponTemplateByRedPackageId(id);
+    }
+
+    public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse) {
+        return redPackageService.findRedPackageByStoreIdAndIsUse(storeIds,isUse);
     }
 }

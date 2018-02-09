@@ -45,6 +45,7 @@ public class WSService {
     private static Queue<WebSocketMessageBean> webSocketMessageQueue = new PriorityQueue<>();
 
     private static Thread sendMessageThread;
+
     private static boolean isSendMessageThreadRunning;
 
     public WSService() {

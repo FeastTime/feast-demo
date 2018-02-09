@@ -18,5 +18,12 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     @Query("update RedPackage rp set rp.autoSendTime = ?1 where rp.storeId = ?2")
     void updateByStoreId(Integer time,Long storeId);
 
-    List<RedPackage> findByIsUse(Integer isUse);
+    List<RedPackage> findByStoreIdIn(List<Long> storeIds);
+
+    List<RedPackage> findRedPackageByStoreId(String storeId);
+
+    RedPackage findByStoreIdAndIsUse(String storeId, Integer isUse);
+
+    @Query()
+    List<RedPackage> findByIsUseAndStoreIdIn(Integer isUse, List<Long> storeIds);
 }

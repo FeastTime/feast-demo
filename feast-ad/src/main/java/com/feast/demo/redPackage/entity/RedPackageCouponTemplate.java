@@ -18,4 +18,6 @@ public class RedPackageCouponTemplate implements Serializable {
     private Long redPackageId;
 
     private Long couponTemplateId;
+
+    private Integer couponCount;
 }

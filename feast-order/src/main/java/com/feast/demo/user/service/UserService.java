@@ -55,4 +55,8 @@ public interface UserService {
     public Set<Long> findStoreIdByUserId(Long userId);
 
     public List<Long> findUserIdByStoreId(Long storeId);
+
+    public String findUsernameById(String id_);
+
+    public String findUserIconById(String id_);
 }

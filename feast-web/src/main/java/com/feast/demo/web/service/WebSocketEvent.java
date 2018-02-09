@@ -35,7 +35,11 @@ public class WebSocketEvent {
     // 扫码进店
     public static final int ENTER_STORE = 9;
 
+    //弹窗提醒
+    public static final int POPUP_MESSAGE = 10;
 
+    //定时发送红包
+    public static final int AUTO_SEND_RED_PACKAGE = 21;
 
 
 

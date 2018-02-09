@@ -7,6 +7,10 @@ package com.feast.demo.web.entity;
  */
 public class UserBean {
 
+    public static final int STORE = 2;
+
+    public static final int CUSTOMER = 2;
+
     private String userID;
     private String name;
     private long price;
