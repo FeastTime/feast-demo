@@ -101,6 +101,8 @@ public class WSService {
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") String userId) {
 
+        System.out.println("onOpen"  + this.userId);
+
         // 如果用户ID为空， 关闭连接
         if(userId == null || "".equals(userId)){
 
@@ -143,6 +145,7 @@ public class WSService {
     @OnClose
     public void onClose() {
 
+        System.out.println("onClose"  + this.userId);
         // 将连接  从  用户与服务端的关系结构中 删除
         user2Server.remove(this.userId);
 
@@ -220,15 +223,20 @@ public class WSService {
                 || null == webSocketMessageBean.getMessage()
                 || 0 == webSocketMessageBean.getMessage().length()
                 || null == webSocketMessageBean.getUserId()
-                || 0 == webSocketMessageBean.getUserId().length()){
+                || 0 == webSocketMessageBean.getUserId().length()
+                || null == user2Server.get(webSocketMessageBean.getUserId())
+                || null == user2Server.get(webSocketMessageBean.getUserId()).getWsService()
+                || null == user2Server.get(webSocketMessageBean.getUserId()).getWsService().session){
 
             return;
         }
 
         try {
             System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
+
             sendMessage(webSocketMessageBean.getMessage(), user2Server.get(webSocketMessageBean.getUserId()).getWsService().session);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("发送消息异常");
         }
     }
