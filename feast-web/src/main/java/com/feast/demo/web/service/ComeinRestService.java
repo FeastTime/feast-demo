@@ -41,6 +41,28 @@ public class ComeinRestService {
     // 红包与用户关系
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
+    // 需要发送的消息队列
+    private static Queue<WebSocketMessageBean> webSocketMessageQueue;
+
+    private static Timer timer = null;
+
+    public synchronized static void setWebSocketMessageQueue(Queue<WebSocketMessageBean> webSocketMessageQueue) {
+        ComeinRestService.webSocketMessageQueue = webSocketMessageQueue;
+
+        if (null == timer){
+            timer = new Timer();
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+
+                    autoSender();
+                }
+            }, 0, 30 * 1000);
+        }
+
+    }
+
     //private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 //    private static Map<String,List<DinnerInfo>> dinnerMap = Maps.newHashMap();
 
@@ -430,6 +452,7 @@ public class ComeinRestService {
         UserBean userBean = new UserBean();
         userBean.setUserID(userId.toString());
         userBean.setNumberPerTable(0);
+        userBean.setUserType(user.getUserType().equals(User.UserType.customer) ? 1 : 2);
 
         user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
         user2Store.get(storeId).put(userId + "", userBean);
@@ -614,6 +637,58 @@ public class ComeinRestService {
         return allDinnerListMessage;
     }
 
+    // 存放最后一次发放时间
+    private static Map<Long, Long> redPackageSendTime = new HashMap<>();
+
+    private static void autoSender(){
+
+        long nowTime = new Date().getTime();
+
+        List<Long> storeIds = new ArrayList<>();
+
+        for (String storeId : user2Store.keySet()) {
+
+            if (null != storeId && storeId.length()>0){
+                storeIds.add(Long.parseLong(storeId));
+            }
+        }
+
+        // 查询开启的红包  storeIds
+        List<RedPackage> redPackages = null;
+
+        if (null == redPackages){
+            return;
+        }
+
+        for (RedPackage redPackage : redPackages) {
+
+            redPackageSendTime.putIfAbsent(redPackage.getRedPackageId(), 0L);
+
+            // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   发红包
+            if ((nowTime - redPackage.getRedPackageId()) > redPackage.getAutoSendTime()*60*1000 ){
+
+                // 发红包1创建红包，
+
+
+                String backMessage = null;
+                //发送消息
+
+                HashMap<String, UserBean> map = user2Store.get(redPackage.getStoreId());
+
+                if (null != map){
+
+                    for (String receiverId : map.keySet()) {
+                        webSocketMessageQueue.offer(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+                    }
+                }
+
+
+                redPackageSendTime.put(redPackage.getRedPackageId(), nowTime);
+
+            }
+        }
+
+    }
 
 //    /**
 //     * 老板放桌

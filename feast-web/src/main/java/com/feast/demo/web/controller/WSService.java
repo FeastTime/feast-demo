@@ -16,6 +16,8 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 
@@ -39,13 +41,53 @@ public class WSService {
     // 用户与server关系
     private static Map<String, WsBean> user2Server = Maps.newConcurrentMap();
 
-    public WSService() {}
+    // 需要发送的消息队列
+    private static Queue<WebSocketMessageBean> webSocketMessageQueue = new PriorityQueue<>();
+
+    private static Thread sendMessageThread;
+    private static boolean isSendMessageThreadRunning;
+
+    public WSService() {
+        sendMessageFromQueue();
+    }
+
+    private synchronized static void sendMessageFromQueue(){
+
+        if (null == sendMessageThread){
+
+            sendMessageThread = new Thread(() -> {
+
+                WebSocketMessageBean webSocketMessageBean;
+                isSendMessageThreadRunning = true;
+
+                while(isSendMessageThreadRunning){
+
+                    webSocketMessageBean = webSocketMessageQueue.poll();
+
+                    if(webSocketMessageBean == null){
+
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        sendMessageToUser(webSocketMessageBean);
+                    }
+                }
+            });
+
+            sendMessageThread.start();
+        }
+    }
 
     private void setComeInRestService() {
 
         String configLocation = "classpath*:/spring*/*.xml";
         ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
+
+        ComeinRestService.setWebSocketMessageQueue(webSocketMessageQueue);
         userService = context.getBean(UserService.class);
     }
 

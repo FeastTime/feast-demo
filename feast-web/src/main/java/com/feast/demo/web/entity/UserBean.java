@@ -11,6 +11,8 @@ public class UserBean {
     private String name;
     private long price;
     private int numberPerTable;
+    // 用户类型 1 普通用户, 2 商户
+    private int userType;
 //    private long highPrice;
 
     public String getUserID() {
@@ -43,5 +45,13 @@ public class UserBean {
 
     public void setNumberPerTable(int numberPerTable) {
         this.numberPerTable = numberPerTable;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
 }
