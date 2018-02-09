@@ -49,18 +49,15 @@ public class CouponController {
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
-            Integer isUse = jsono.getInteger("isUse");
             List<Long> storeIds = couponService.findStoreIdByUserId(userId);
             if(storeIds!=null){
-                couponMap = couponService.queryCouponList(userId,flag,storeIds,isUse);
-                if(couponMap==null&&flag==0&&isUse==1){
-                    resultMsg = "您没有未过期已经使用的优惠券";
-                }else if(couponMap==null&&flag==2&&isUse==1){
-                    resultMsg = "您没有已过期已经使用优惠券";
-                }else if(couponMap==null&&flag==2&&isUse==2){
-                    resultMsg = "您没有未过期还未使用优惠券";
-                }else if(couponMap==null&&flag==2&&isUse==2){
-                    resultMsg = "您没有已过期还未使用优惠券";
+
+                couponMap = couponService.queryCouponList(userId,flag,storeIds);
+
+                if(couponMap==null&&flag==0){
+                    resultMsg = "您没有未过期未使用的优惠券";
+                }else if(couponMap==null&&flag==2){
+                    resultMsg = "您没有已过期未使用优惠券";
                 }else if(couponMap!=null){
                     for (Long storeId : storeIds) {
                         String storeName = storeService.findStoreName(storeId);
@@ -152,7 +149,7 @@ public class CouponController {
                 resultMsg = "优惠券不存在";
             }else{
                 if(userCoupon.getCouponValidity().getTime()<new Date().getTime()){
-                                resultMsg = "优惠券已经过期";
+                    resultMsg = "优惠券已经过期";
                 }else if(userCoupon.getIsUse()==1){
                     resultMsg = "优惠券已经使用过";
                 }else{
@@ -161,6 +158,7 @@ public class CouponController {
                     isSuccess = 0;
                     resultMsg = "优惠券可用";
                 }
+                result.put("coupon",userCoupon);
             }
             resultCode = 0;
         }catch (Exception e){

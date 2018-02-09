@@ -63,10 +63,17 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findByStoreId(storeId);
     }
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse) {
+
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
         Map<Long,List<UserCoupon>> userCoupons = Maps.newHashMap();
         for (Long storeId : storeIds) {
-            ArrayList<UserCoupon> couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,isUse);
+            ArrayList<UserCoupon> couponList = null;
+            if(flag==1||flag==3){
+                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,2);
+            }else if(flag==2){
+                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,1);
+            }
+
             ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
             ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
             Long date = new Date().getTime();
@@ -77,9 +84,9 @@ public class CouponServiceImpl implements CouponService {
                     couponInValidList.add(userCoupon);
                 }
             }
-            if(flag==0){
+            if(flag==1){
                 couponList = couponValidList;
-            }else{
+            }else if(flag==3){
                 couponList = couponInValidList;
             }
             userCoupons.put(storeId,couponList);

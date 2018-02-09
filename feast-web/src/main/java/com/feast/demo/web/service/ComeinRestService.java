@@ -534,58 +534,58 @@ public class ComeinRestService {
     }
 
 
-    /*public void autoSendRedPackage(){
-        List<RedPackage> redPackages;
-
-        try {
-            redPackages = storeService.findRedPackageByIsUse(2);
-            for (RedPackage redPackage : redPackages) {
-                Long id = redPackage.getRedPackageId();
-            }
-
-            for (CouponTemplate couponTemplate : couponList) {
-                Long count = couponTemplate.getCouponCount();
-                for (int i = 0; i < count; i++) {
-                    redPackage.add(couponTemplate);
-                }
-            }
-
-            String redPackageId = UUID.randomUUID() + "";
-            redPackages.put(redPackageId, redPackage);
-
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            String dateStr = format.format(new Date());
-
-            Map<String, Object> result = Maps.newHashMap();
-
-            result.put("date", dateStr);
-            result.put("userId", sender.getUserId());
-            result.put("nickname", sender.getUsername());
-            result.put("userIcon", sender.getUserIcon());
-            result.put("redPackageId", redPackageId);
-            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
-
-            String backMessage = JSON.toJSONString(result);
-
-            List<WebSocketMessageBean> list = new ArrayList<>();
-
-            HashMap<String, UserBean> map = user2Store.get(storeId);
-
-            if (null != map){
-
-                for (String receiverId : map.keySet()) {
-                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
-                }
-            }
-
-            return list;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }*/
+//    public void autoSendRedPackage(){
+//        List<RedPackage> redPackages;
+//
+//        try {
+//            redPackages = storeService.findRedPackageByIsUse(2);
+//            for (RedPackage redPackage : redPackages) {
+//                Long id = redPackage.getRedPackageId();
+//            }
+//
+//            for (CouponTemplate couponTemplate : couponList) {
+//                Long count = couponTemplate.getCouponCount();
+//                for (int i = 0; i < count; i++) {
+//                    redPackage.add(couponTemplate);
+//                }
+//            }
+//
+//            String redPackageId = UUID.randomUUID() + "";
+//            redPackages.put(redPackageId, redPackage);
+//
+//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//            String dateStr = format.format(new Date());
+//
+//            Map<String, Object> result = Maps.newHashMap();
+//
+//            result.put("date", dateStr);
+//            result.put("userId", sender.getUserId());
+//            result.put("nickname", sender.getUsername());
+//            result.put("userIcon", sender.getUserIcon());
+//            result.put("redPackageId", redPackageId);
+//            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
+//
+//            String backMessage = JSON.toJSONString(result);
+//
+//            List<WebSocketMessageBean> list = new ArrayList<>();
+//
+//            HashMap<String, UserBean> map = user2Store.get(storeId);
+//
+//            if (null != map){
+//
+//                for (String receiverId : map.keySet()) {
+//                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+//                }
+//            }
+//
+//            return list;
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
     /**
      * 用户离店
      *

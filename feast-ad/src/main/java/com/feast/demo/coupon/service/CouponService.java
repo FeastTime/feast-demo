@@ -27,7 +27,7 @@ public interface CouponService {
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId);
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse);
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds);
 
     public Iterable<CouponTemplate> findAllCouponTemplate();
 
@@ -35,5 +35,6 @@ public interface CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id);
 
-    List<Long> findStoreIdByUserId(Long userId);
+    public List<Long> findStoreIdByUserId(Long userId);
+
 }

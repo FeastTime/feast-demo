@@ -90,10 +90,8 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds,Integer isUse) {
-        System.out.println(couponRemoteService);
-        //couponRemoteService.queryCouponList(userId,flag)
-        return couponRemoteService.queryCouponList(userId,flag,storeIds,isUse);
+    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
+        return couponRemoteService.queryCouponList(userId,flag,storeIds);
     }
 
     public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
@@ -107,4 +105,5 @@ public class CouponService {
     public List<Long> findStoreIdByUserId(Long userId) {
         return couponRemoteService.findStoreIdByUserId(userId);
     }
+
 }
