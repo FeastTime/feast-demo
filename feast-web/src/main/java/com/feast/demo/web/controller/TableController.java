@@ -237,6 +237,7 @@ public class TableController {
             e.printStackTrace();
             resultMsg = "查询已得到桌位列表失败";
         }
+
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
         result.put("tablesList",tablesList);

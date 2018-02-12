@@ -5,7 +5,6 @@ import com.feast.demo.coupon.dao.UserCouponDao;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.coupon.service.CouponService;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +59,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId) {
-        return couponTemplateDao.findByStoreId(storeId);
+        return couponTemplateDao.findByStoreIdAndCount(storeId);
     }
 
 
@@ -68,30 +67,17 @@ public class CouponServiceImpl implements CouponService {
         Map<Long,List<UserCoupon>> userCoupons = Maps.newHashMap();
         for (Long storeId : storeIds) {
             ArrayList<UserCoupon> couponList = null;
-            if(flag==1||flag==3){
-                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,2);
-            }else if(flag==2){
-                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,1);
-            }
-
-            ArrayList<UserCoupon> couponValidList = Lists.newArrayList();
-            ArrayList<UserCoupon> couponInValidList = Lists.newArrayList();
-            Long date = new Date().getTime();
-            for (UserCoupon userCoupon:couponList) {
-                if(userCoupon.getCouponValidity().getTime()>date){
-                    couponValidList.add(userCoupon);
-                }else{
-                    couponInValidList.add(userCoupon);
-                }
-            }
+            //1:未使用(未使用 && 未过期)
             if(flag==1){
-                couponList = couponValidList;
+                couponList = userCouponDao.findIsUseAndCouponValidity(userId,storeId,UserCoupon.ISUSE_UNUSED,new Date());
+            }else if(flag==2){
+                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,UserCoupon.ISUSE_USED);
+            //3:已过期(未使用 && 过期)
             }else if(flag==3){
-                couponList = couponInValidList;
+                couponList = userCouponDao.findIsUseAndCouponInValidity(userId,storeId,UserCoupon.ISUSE_UNUSED,new Date());
             }
             userCoupons.put(storeId,couponList);
         }
-        System.out.println(userCoupons);
         return userCoupons;
     }
 

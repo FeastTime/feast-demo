@@ -11,6 +11,12 @@ import java.util.Date;
 @Entity
 public class UserCoupon implements Serializable{
 
+
+
+    public static final int ISUSE_UNUSED = 1;
+
+    public static final int ISUSE_USED = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long couponId;
@@ -36,4 +42,6 @@ public class UserCoupon implements Serializable{
     private Date useTime;
 
     private Integer couponType;
+
+
 }

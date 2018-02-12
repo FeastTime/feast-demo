@@ -88,7 +88,7 @@ public class WSService {
         ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
         comeinRestService = context.getBean(ComeinRestService.class);
 
-        ComeinRestService.setWebSocketMessageQueue(webSocketMessageQueue);
+        comeinRestService.setWebSocketMessageQueue(webSocketMessageQueue);
         userService = context.getBean(UserService.class);
     }
 
@@ -197,6 +197,10 @@ public class WSService {
 
 
         try {
+            System.out.println(type);
+            System.out.println(jsonObject);
+            System.out.println(user2Server.get(userId));
+            System.out.println(storeId);
             List<WebSocketMessageBean> list = comeinRestService.WSInterfaceProc(type, jsonObject, user2Server.get(userId).getUser(), storeId);
 
             if (null != list){

@@ -7,6 +7,7 @@ import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.table.entity.TableInfoExpand;
 import com.feast.demo.table.entity.TableTemplate;
 import com.feast.demo.table.service.TableService;
+import com.feast.demo.user.dao.UserDao;
 import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class TableServiceImpl implements TableService{
     @Autowired
     private StoreDao storeDao;
 
+    @Autowired
+    private UserDao userDao;
+
     public void setBusinessInfo(TableTemplate tableTemplate) {
         tableTemplateDao.save(tableTemplate);
     }
@@ -47,7 +51,17 @@ public class TableServiceImpl implements TableService{
 
 
     public ArrayList<TableInfo> getHistoryTables(Long storeId) {
-        return tableInfoDao.findByStoreId(storeId);
+        ArrayList<TableInfo> tableInfos = tableInfoDao.findByStoreId(storeId);
+        for (TableInfo tableInfo : tableInfos) {
+            if(tableInfo.getUserPhone()==null||tableInfo.getUserPhone().equals("")){
+                Long userId = tableInfo.getUserId();
+                if(userId!=null){
+                    String userPhone = userDao.findMobileNoByUserId(userId);
+                    tableInfo.setUserPhone(userPhone);
+                }
+            }
+        }
+        return tableInfos;
     }
 
     public ArrayList<TableInfoExpand> queryMyTableList(Long userId) {
@@ -76,4 +90,5 @@ public class TableServiceImpl implements TableService{
     public TableInfo saveTableInfo(TableInfo tableInfo) {
         return tableInfoDao.save(tableInfo);
     }
+
 }

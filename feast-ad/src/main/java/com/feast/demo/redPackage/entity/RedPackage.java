@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @Entity
@@ -22,4 +23,5 @@ public class RedPackage implements Serializable{
 
     private Integer autoSendTime;
 
+    private Date createTime;
 }

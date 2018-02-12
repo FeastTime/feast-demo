@@ -150,10 +150,10 @@ public class CouponController {
             }else{
                 if(userCoupon.getCouponValidity().getTime()<new Date().getTime()){
                     resultMsg = "优惠券已经过期";
-                }else if(userCoupon.getIsUse()==1){
+                }else if(userCoupon.getIsUse()==UserCoupon.ISUSE_USED){
                     resultMsg = "优惠券已经使用过";
                 }else{
-                    userCoupon.setIsUse(1);
+                    userCoupon.setIsUse(UserCoupon.ISUSE_UNUSED);
                     couponService.updateUserCoupon(userCoupon);
                     isSuccess = 0;
                     resultMsg = "优惠券可用";

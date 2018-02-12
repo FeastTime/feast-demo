@@ -50,4 +50,5 @@ public class TableService {
     public TableInfo saveTableInfo(TableInfo tableInfo) {
         return tableRemoteService.saveTableInfo(tableInfo);
     }
+
 }

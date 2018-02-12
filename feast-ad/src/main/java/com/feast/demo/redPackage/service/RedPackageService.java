@@ -9,15 +9,13 @@ import java.util.List;
 
 public interface RedPackageService {
 
-    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplates);
+    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds);
 
     public void setRedPackageIsUse(Long redPackageId, Long storeId);
 
     public List<RedPackage> queryRedPackageList(Long storeId);
 
     public void setRedPackageAutoSendTime(Integer time,Long storeId);
-
-    public List<RedPackage> findRedPackageByStoreIds(List<Long> storeIds);
 
     public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id);
 

@@ -42,4 +42,39 @@ public class TableInfo implements Serializable{
 
     private String description;
 
+    // 剩余 秒
+    @Transient
+    private Long  expirationTime;
+
+    public void setTaketableTime(Date taketableTime) {
+
+        this.taketableTime = taketableTime;
+
+        setExpirationTimeValue();
+    }
+
+    public void setRecieveTime(Integer recieveTime) {
+
+        this.recieveTime = recieveTime;
+
+        setExpirationTimeValue();
+    }
+
+    /**
+     * 设置剩余时间
+     */
+    private void setExpirationTimeValue(){
+
+        if (null != taketableTime && null != recieveTime){
+
+            long lastTime = taketableTime.getTime() + recieveTime * 60 * 1000;
+
+            this.expirationTime = (lastTime - new Date().getTime()) / 1000;
+
+            if (lastTime < 0)
+                this.expirationTime = 0L;
+        }
+    }
+
+
 }

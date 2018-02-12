@@ -12,6 +12,7 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     @Query("select rp from RedPackage rp where rp.storeId=?1 and rp.redPackageId <> ?2")
     List<RedPackage> findByStoreIdFilterRedPackageId(Long storeId,Long redPackageId);
 
+
     List<RedPackage> findByStoreId(Long storeId);
 
     @Modifying
@@ -20,10 +21,10 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
 
     List<RedPackage> findByStoreIdIn(List<Long> storeIds);
 
-    List<RedPackage> findRedPackageByStoreId(String storeId);
-
     RedPackage findByStoreIdAndIsUse(String storeId, Integer isUse);
 
     @Query()
     List<RedPackage> findByIsUseAndStoreIdIn(Integer isUse, List<Long> storeIds);
+
+    List<RedPackage> findByStoreIdOrderByCreateTimeDesc(Long storeId);
 }

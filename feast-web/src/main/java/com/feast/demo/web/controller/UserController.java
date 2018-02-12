@@ -10,6 +10,7 @@ import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.service.DeviceService;
+import com.feast.demo.web.service.StoreService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.MD5Utils;
 import com.feast.demo.web.util.StringUtils;
@@ -41,6 +42,9 @@ public class UserController {
 
     @Resource
     private FeedbackService feedbackService;
+
+    @Resource
+    private StoreService storeService;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String register(@RequestBody String text) {
@@ -117,6 +121,8 @@ public class UserController {
             Device device = deviceService.findByDeviceId(deviceId);
             if(device != null && device.getStore() != null){
                 result.put("storeId",device.getStore().getStoreId());
+                String storeName = storeService.findStoreName(device.getStore().getStoreId());
+                result.put("storeName",storeName);
             }else{
                 result.put("storeId",null);
             }

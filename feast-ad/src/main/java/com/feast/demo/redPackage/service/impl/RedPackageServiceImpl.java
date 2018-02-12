@@ -1,5 +1,4 @@
 package com.feast.demo.redPackage.service.impl;
-import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.dao.RedPackageCouponTemplateDao;
 import com.feast.demo.redPackage.dao.RedPackageDao;
 import com.feast.demo.redPackage.entity.RedPackage;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,10 +21,12 @@ public class RedPackageServiceImpl implements RedPackageService {
     private RedPackageCouponTemplateDao redPackageCouponTemplateDao;
 
 
-    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplates) {
+    public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds) {
+        redPackage.setCreateTime(new Date());
         redPackage = redPackageDao.save(redPackage);
         Long redPackageId = redPackage.getRedPackageId();
-        for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
+        System.out.println(redPackageId);
+        for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplateIds) {
             redPackageCouponTemplate.setRedPackageId(redPackageId);
             redPackageCouponTemplateDao.save(redPackageCouponTemplate);
         }
@@ -42,7 +44,7 @@ public class RedPackageServiceImpl implements RedPackageService {
     }
 
     public List<RedPackage> queryRedPackageList(Long storeId) {
-        List<RedPackage> redPackages = redPackageDao.findByStoreId(storeId);
+        List<RedPackage> redPackages = redPackageDao.findByStoreIdOrderByCreateTimeDesc(storeId);
         return redPackages;
     }
 

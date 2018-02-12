@@ -190,10 +190,10 @@ public class TokenUtils {
      */
     public static void main(String[] args) {
 
-        String token = getToken("999", "18");
+        String token = getToken("355301077459561", "10007");
         System.out.println("获取  token  ：  " + token);
 
-        boolean result = isValidToken(token, "999", "18");
+        boolean result = isValidToken(token, "355301077459561", "10007");
         System.out.println("验证结果  ：  " + result);
     }
 

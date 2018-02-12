@@ -171,11 +171,11 @@ public class UserService {
         return userRemoteService.findUserIdByStoreId(storeId);
     }
 
-    public String findUsernameById(String id_) {
+    public String findUsernameById(Long id_) {
         return userRemoteService.findUsernameById(id_);
     }
 
-    public String findUserIconById(String id_) {
+    public String findUserIconById(Long id_) {
         return userRemoteService.findUserIconById(id_);
     }
 }

@@ -32,6 +32,9 @@ public class LoginInterceptor implements HandlerInterceptor {
         String token = jsono.getString("token");
         boolean b = TokenUtils.isValidToken(token, deviceId, userId);
         logger.info(b+"");
+        if(!b){
+            httpServletResponse.getWriter().write("{\"resultCode\":\"201\",\"resultMsg\":\"token invalid!\"}");
+        }
         return b;
     }
 
