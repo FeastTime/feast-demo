@@ -123,7 +123,7 @@ public class WSService {
         }
 
         // 回消息 告诉客户端连接成功
-        sendMessage("success666success", session);
+        sendMessage("success666success");
 
         User user = userService.findById(Long.parseLong(userId));
 
@@ -238,7 +238,9 @@ public class WSService {
         try {
             System.out.println("send to user : " + webSocketMessageBean.getUserId() + "  --    message : " + webSocketMessageBean.getMessage());
 
-            sendMessage(webSocketMessageBean.getMessage(), user2Server.get(webSocketMessageBean.getUserId()).getWsService().session);
+//            sendMessage(webSocketMessageBean.getMessage(), user2Server.get(webSocketMessageBean.getUserId()).getWsService().session);
+
+            user2Server.get(webSocketMessageBean.getUserId()).getWsService().sendMessage(webSocketMessageBean.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("发送消息异常");
@@ -262,7 +264,7 @@ public class WSService {
      *
      *@param message 消息
      */
-    private static void sendMessage(String message, Session session) {
+    private synchronized void sendMessage(String message) {
 
         //  同步发送消息
         // session.getBasicRemote().sendText(message);

@@ -294,6 +294,16 @@ public class ComeinRestService {
                             result.put("tableInfo", tableInfo);
                             redPackage.remove(0);
                             message = "恭喜您获得一个桌位";
+                            broadcastMessage = createChatMessage(sender,broadcastMessage);
+
+                            HashMap<String, UserBean> map = user2Store.get(storeId);
+
+                            if (null != map){
+
+                                for (String receiverId : map.keySet()) {
+                                    list.add(new WebSocketMessageBean().setMessage(broadcastMessage).toUser(receiverId));
+                                }
+                            }
                             hasGetTable = true;
                             break;
                         }
