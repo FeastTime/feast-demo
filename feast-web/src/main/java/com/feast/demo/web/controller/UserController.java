@@ -110,57 +110,83 @@ public class UserController {
      */
     @RequestMapping(value = "/storeLogin",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String storeLogin(@RequestBody String text) {
-        Map<String,Object> result = null;
-        String resultMsg = "";
-        Byte resultCode = 1;//0:成功，1:失败,2:未注册
-        try{
-            result = Maps.newHashMap();
+
+        User user;
+        Map<String,Object> result = Maps.newHashMap();
+
+        // 返回码 ： 0:成功，1:失败,2:未注册
+
+        try {
+
             text = StringUtils.decode(text);
             logger.info(text);
-            JSONObject jsono = JSON.parseObject(text);
-            String username = jsono.getString("username");
-            String password = jsono.getString("password");
+            JSONObject json = JSON.parseObject(text);
+            String username = json.getString("username");
+            String password = json.getString("password");
             password = MD5Utils.encryptHMAC(password);
-            Long deviceId = jsono.getLong("deviceId");
+            Long deviceId = json.getLong("deviceId");
             Device device = deviceService.findByDeviceId(deviceId);
-            if(device != null && device.getStore() != null){
-                result.put("storeId",device.getStore().getStoreId());
+
+            if (device != null && device.getStore() != null) {
+
+                result.put("storeId", device.getStore().getStoreId());
                 String storeName = storeService.findStoreName(device.getStore().getStoreId());
-                result.put("storeName",storeName);
-            }else{
-                result.put("storeId",null);
+                result.put("storeName", storeName);
+
+            } else {
+
+                result.put("storeId", null);
             }
-            if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
-                resultMsg = "参数错误";
-            }else{
+
+            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+
+                result.put("resultCode", 1);
+                result.put("resultMsg", "参数错误");
+
+                return JSON.toJSONString(result);
+
+            } else {
+
                 //用户登录
-                User user = userService.storeLogin(username,password);
-                if(user == null){
-                    if(userService.findByUsername(username) != null){
-                        resultMsg = "账号或密码错误";
-                    }else{
-                        //没有注册
-                        resultMsg = "未注册用户";
-                        resultCode = 2;
-                    }
-                }else {
-                    LoginMemory.set(user.getUsername() + "", user);
-                    resultMsg = "欢迎您登录成功!";
-                    result.put("token", TokenUtils.getToken(deviceId+"",user.getUserId()+""));
-                    result.put("userType",user.getUserType());
-                    result.put("userId",user.getUserId());
-                    resultCode = 0;
+                user = userService.storeLogin(username, password);
+
+                if (user == null) {
+
+                    result.put("resultMsg", "账号或密码错误");
+                    result.put("resultCode", 2);
+
+                    return JSON.toJSONString(result);
                 }
+
+                LoginMemory.set(user.getUsername() + "", user);
+
+                result.put("token", TokenUtils.getToken(deviceId + "", user.getUserId() + ""));
+                result.put("userType", user.getUserType());
+                result.put("userId", user.getUserId());
             }
-        }catch (Exception e){
+
+        } catch (Exception e) {
+
             e.printStackTrace();
+            result.put("resultCode",1);
+            result.put("resultMsg","服务端异常");
+
+            return JSON.toJSONString(result);
         }
 
-        result.put("resultCode",resultCode);
-        result.put("resultMsg",resultMsg);
+        if (!getRYToken(user, result)) {
 
+            return JSON.toJSONString(result);
+        }
+
+
+        result.put("resultMsg", "欢迎您登录成功!");
+        result.put("resultCode", 0);
         return JSON.toJSONString(result);
+
     }
+
+
 
     @RequestMapping(value = "/registe",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String registe(@RequestBody String text){
@@ -217,7 +243,7 @@ public class UserController {
 
         Map<String,Object> result = Maps.newHashMap();
 
-        Long userId;
+//        Long userId;
 
         User user = JSONObject.parseObject(text,User.class);
 
@@ -238,12 +264,12 @@ public class UserController {
 
             if(user_ != null) {
 
-                userId = user_.getUserId();
+                user.setUserId(user_.getUserId());
 
             } else {
 
                 userService.saveWeChatUserInfo(user);
-                userId = userService.findUserId(user.getOpenId());
+                user.setUserId(userService.findUserId(user.getOpenId()));
             }
 
         } catch (Exception e) {
@@ -255,31 +281,16 @@ public class UserController {
         }
 
         // 注册融云获取token
-        try{
 
-            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        if (!getRYToken(user, result)) {
 
-            TokenResult userGetTokenResult = rongCloud.user.getToken(userId+"", user.getNickName(), user.getUserIcon());
-
-            if (null != userGetTokenResult){
-
-                System.out.println("getToken:  " + userGetTokenResult.toString());
-                result.put("imToken",userGetTokenResult.toString());
-            }
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            result.put("resultMsg", "获取融云token失败失败");
-            result.put("resultCode",3);
             return JSON.toJSONString(result);
         }
 
         result.put("resultMsg", "保存成功");
         result.put("resultCode",0);
-
-        result.put("userId",userId);
-        result.put("token",TokenUtils.getToken(user.getDeviceId(),userId+""));
+        result.put("userId",user.getUserId());
+        result.put("token",TokenUtils.getToken(user.getDeviceId(),user.getUserId() + ""));
 
         return JSON.toJSONString(result);
     }
@@ -454,6 +465,40 @@ public class UserController {
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
         return JSON.toJSONString(result);
+    }
+
+
+
+    /**
+     * 获取添加融云token
+     *
+     * @param user 用户信息
+     * @param result 结果信息
+     * @return boolean
+     */
+    private boolean getRYToken(User user, Map<String, Object> result) {
+        // 注册融云获取token
+        try {
+
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
+            TokenResult userGetTokenResult = rongCloud.user.getToken(user.getUserId()+"", user.getNickName(), user.getUserIcon());
+
+            if (null != userGetTokenResult) {
+
+                System.out.println("getToken:  " + userGetTokenResult.toString());
+                result.put("imToken", userGetTokenResult.toString());
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            result.put("resultMsg", "获取融云token失败失败");
+            result.put("resultCode", 3);
+            return false;
+        }
+
+        return true;
     }
 
 
