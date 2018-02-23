@@ -16,6 +16,9 @@ import com.feast.demo.web.util.MD5Utils;
 import com.feast.demo.web.util.StringUtils;
 import com.feast.demo.web.util.TokenUtils;
 import com.google.common.collect.Maps;
+import io.rong.RYConfig;
+import io.rong.RongCloud;
+import io.rong.models.TokenResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
+ *
  * Created by ggke on 2017/4/10.
  */
 
@@ -32,7 +36,7 @@ import java.util.logging.Logger;
 @RequestMapping(value = "/user")
 public class UserController {
 
-    Logger logger = Logger.getLogger(this.getClass().getName());
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Resource
     private UserService userService;
@@ -62,8 +66,8 @@ public class UserController {
         System.out.println("转之后"+text);
         User user = JSONObject.parseObject(text,User.class);
 
-        String resultMsg = "";
-        Integer success = 1;//0:成功，1:失败,2:未注册
+        String resultMsg;
+        int success = 1;//0:成功，1:失败,2:未注册
 //        Device device = deviceService.findByDeviceId(user.getDeviceId());
 //        if(device != null && device.getStore() != null){
 //            result.put("storeId",device.getStore().getStoreId());
@@ -210,35 +214,72 @@ public class UserController {
      */
     @RequestMapping(value="/saveWeChatUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String saveWeChatUserInfo(@RequestBody String text){
-        Map<String,Object> result = null;
-        String resultMsg = "";
-        Byte resultCode = 1;
-        Long userId = null;
-        String deviceId = null;
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        Long userId;
+
+        User user = JSONObject.parseObject(text,User.class);
+
+        if(null == user){
+
+            result.put("resultMsg", "收到User信息转json失败");
+            result.put("resultCode",1);
+            return JSON.toJSONString(result);
+        }
+
+        //  保存用户信息
         try{
-            result = Maps.newHashMap();
+
             text = StringUtils.decode(text);
             logger.info(text);
-            User user = JSONObject.parseObject(text,User.class);
-            deviceId = user.getDeviceId();
+
             User user_ = userService.checkWeChatUserBindStatus(user.getOpenId());
-            if(user_!=null){
-                resultMsg = "用户已绑定";
+
+            if(user_ != null) {
+
                 userId = user_.getUserId();
-            }else{
+
+            } else {
+
                 userService.saveWeChatUserInfo(user);
                 userId = userService.findUserId(user.getOpenId());
-                resultMsg = "保存用户信息成功";
             }
-            resultCode = 0;
-        }catch(Exception e){
+
+        } catch (Exception e) {
+
             e.printStackTrace();
-            resultMsg = "保存用户信息失败";
+            result.put("resultMsg", "保存用户信息失败");
+            result.put("resultCode",2);
+            return JSON.toJSONString(result);
         }
+
+        // 注册融云获取token
+        try{
+
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
+            TokenResult userGetTokenResult = rongCloud.user.getToken(userId+"", user.getNickName(), user.getUserIcon());
+
+            if (null != userGetTokenResult){
+
+                System.out.println("getToken:  " + userGetTokenResult.toString());
+                result.put("imToken",userGetTokenResult.toString());
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            result.put("resultMsg", "获取融云token失败失败");
+            result.put("resultCode",3);
+            return JSON.toJSONString(result);
+        }
+
+        result.put("resultMsg", "保存成功");
+        result.put("resultCode",0);
+
         result.put("userId",userId);
-        result.put("token",TokenUtils.getToken(deviceId+"",userId+""));
-        result.put("resultCode",resultCode);
-        result.put("resultMsg",resultMsg);
+        result.put("token",TokenUtils.getToken(user.getDeviceId(),userId+""));
 
         return JSON.toJSONString(result);
     }
