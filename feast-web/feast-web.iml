@@ -103,8 +103,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax:javaee-api:7.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sun.mail:javax.mail:1.5.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.activation:activation:1.1" level="project" />
-<<<<<<< HEAD
-=======
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.2.4" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: io.rong:rongyun:1.4">
@@ -115,6 +113,5 @@
         <SOURCES />
       </library>
     </orderEntry>
->>>>>>> 3f12fcd384ceb18387d4638be209c3b5164add4f
   </component>
 </module>
