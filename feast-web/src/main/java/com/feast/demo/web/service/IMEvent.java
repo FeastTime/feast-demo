@@ -16,7 +16,7 @@ public class IMEvent {
     public static final String RECEIVED_RED_PACKAGE = "CM:receivedRedPackage";
 
     // 打开红包
-    public static final String OPEN_RED_PACKAGE = "CM:openRedPacket";
+    public static final String OPEN_RED_PACKAGE = "CM:openRedPackage";
 
     // 获得红包奖励
     public static final String RECEIVED_RED_PACKAGE_SURPRISED = "CM:receivedRedPackageSurprised";
