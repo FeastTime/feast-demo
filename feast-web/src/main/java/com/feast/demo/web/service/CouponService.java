@@ -91,6 +91,7 @@ public class CouponService {
     }
 
     public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
+        System.out.println("couponRemoteService   : " + couponRemoteService);
         return couponRemoteService.queryCouponList(userId,flag,storeIds);
     }
 

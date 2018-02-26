@@ -37,7 +37,10 @@ public class CouponController {
     //查询优惠券列表信息
     @RequestMapping(value = "/queryCouponList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String queryCouponList(HttpServletRequest servletRequest){
-        Map<String,Object> result = Maps.newHashMap();;
+
+        logger.info("查询优惠券列表信息");
+        System.out.println("查询优惠券列表信息");
+        Map<String,Object> result = Maps.newHashMap();
         String resultMsg = "";
         Byte resultCode = 1;
         Map<Long,List<UserCoupon>> couponMap = null;

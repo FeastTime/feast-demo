@@ -548,7 +548,7 @@ public class ComeinRestService {
         UserBean userBean = new UserBean();
         userBean.setUserID(userId.toString());
         userBean.setNumberPerTable(0);
-        userBean.setUserType(user.getUserType().equals(User.UserType.customer) ? 1 : 2);
+        userBean.setUserType(1);
 
         user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
         user2Store.get(storeId).put(userId + "", userBean);

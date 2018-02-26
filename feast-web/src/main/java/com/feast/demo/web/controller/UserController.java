@@ -186,8 +186,6 @@ public class UserController {
 
     }
 
-
-
     @RequestMapping(value = "/registe",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String registe(@RequestBody String text){
         Map<Object,Object> result = Maps.newHashMap();
@@ -484,10 +482,10 @@ public class UserController {
 
             TokenResult userGetTokenResult = rongCloud.user.getToken(user.getUserId()+"", user.getNickName(), user.getUserIcon());
 
-            if (null != userGetTokenResult) {
+            if (null != userGetTokenResult && null != userGetTokenResult.getToken()) {
 
                 System.out.println("getToken:  " + userGetTokenResult.toString());
-                result.put("imToken", userGetTokenResult.toString());
+                result.put("imToken", userGetTokenResult.getToken());
             }
 
         } catch (Exception e) {
