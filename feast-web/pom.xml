@@ -212,6 +212,24 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>com.google.code.gson</groupId>-->
+            <!--<artifactId>gson</artifactId>-->
+            <!--<version>2.2.4</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash;本地包引用&ndash;&gt;-->
+        <!--&lt;!&ndash;融云&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>io.rong</groupId>-->
+            <!--<artifactId>rongyun</artifactId>-->
+            <!--<version>1.4</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${basedir}/src/main/lib/commons-codec-1.4.jar</systemPath>-->
+        <!--</dependency>-->
+
+
     </dependencies>
 
     <build>
