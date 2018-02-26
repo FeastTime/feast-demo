@@ -6,6 +6,7 @@ package com.feast.demo.web.service;
  */
 public class IMEvent {
 
+    // 聊天消息
     public static final String CHAT_TEXT = "CM:chatText";
 
     // 发红包
