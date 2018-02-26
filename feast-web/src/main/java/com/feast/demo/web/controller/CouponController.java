@@ -43,7 +43,8 @@ public class CouponController {
         Map<String,Object> result = Maps.newHashMap();
         String resultMsg = "";
         Byte resultCode = 1;
-        Map<Long,List<UserCoupon>> couponMap = null;
+
+        HashMap<Long,ArrayList<UserCoupon>> couponMap = null;
         List<Map<String,Object>> couponList = Lists.newArrayList();
         try{
             String params = (String) servletRequest.getAttribute("json");
@@ -52,7 +53,7 @@ public class CouponController {
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
-            List<Long> storeIds = couponService.findStoreIdByUserId(userId);
+            ArrayList<Long> storeIds = couponService.findStoreIdByUserId(userId);
             if(storeIds!=null){
 
                 couponMap = couponService.queryCouponList(userId,flag,storeIds);

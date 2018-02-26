@@ -9,10 +9,7 @@ import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by ggke on 2017/8/26.
@@ -63,9 +60,13 @@ public class CouponServiceImpl implements CouponService {
     }
 
 
-    public Map<Long, List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
-        Map<Long, List<UserCoupon>> userCoupons = Maps.newHashMap();
+
+    public HashMap<Long,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag, ArrayList<Long> storeIds) {
+
+        HashMap<Long,ArrayList<UserCoupon>> userCoupons = Maps.newHashMap();
+
         for (Long storeId : storeIds) {
+
             ArrayList<UserCoupon> couponList = null;
             //1:未使用(未使用 && 未过期)
             if (flag == 1) {
@@ -94,7 +95,7 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findOne(id);
     }
 
-    public List<Long> findStoreIdByUserId(Long userId) {
+    public ArrayList<Long> findStoreIdByUserId(Long userId) {
         return userCouponDao.findStoreIdByUserId(userId);
     }
 

@@ -2,12 +2,12 @@ package com.feast.demo.coupon.service;
 
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
-
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.HashMap;
+
 
 /**
+ *
  * Created by ggke on 2017/8/26.
  */
 
@@ -27,7 +27,7 @@ public interface CouponService {
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId);
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds);
+    public HashMap<Long,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag, ArrayList<Long> storeIds);
 
     public Iterable<CouponTemplate> findAllCouponTemplate();
 
@@ -35,6 +35,6 @@ public interface CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id);
 
-    public List<Long> findStoreIdByUserId(Long userId);
+    public ArrayList<Long> findStoreIdByUserId(Long userId);
 
 }

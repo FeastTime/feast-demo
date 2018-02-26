@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
+ *
  * Created by ggke on 2017/8/26.
  */
 @Service
@@ -90,13 +91,22 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
+    public HashMap<Long,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag, ArrayList<Long> storeIds) {
         System.out.println("couponRemoteService   : " + couponRemoteService);
-        System.out.println(userId);
-        System.out.println(flag);
-        System.out.println(storeIds);
+//        System.out.println(userId);
+//        System.out.println(flag);
+//        System.out.println(storeIds);
+//
+////        return couponRemoteService.queryCouponList(userId,flag,storeIds);
+//        Long a = 10003L;
+//        Integer b = new Integer(1);
+//        ArrayList c = new ArrayList<Long>();
+//        c.add(1L);
+//        System.out.println("调用");
+//        System.out.println(couponRemoteService.queryMyCouponList(a, b, c));
+//        System.out.println("调用-end");
 
-        return couponRemoteService.queryCouponList(userId,flag,storeIds);
+        return couponRemoteService.queryCouponList(userId, flag, storeIds);
     }
 
     public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
@@ -107,7 +117,7 @@ public class CouponService {
         return couponRemoteService.findCouponTemplateById(id);
     }
 
-    public List<Long> findStoreIdByUserId(Long userId) {
+    public ArrayList<Long> findStoreIdByUserId(Long userId) {
         return couponRemoteService.findStoreIdByUserId(userId);
     }
 
