@@ -2,7 +2,6 @@ package com.feast.demo.hibernate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.Index;
 

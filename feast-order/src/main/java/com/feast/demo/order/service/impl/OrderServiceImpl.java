@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by ggke on 2017/3/31.
@@ -27,8 +27,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDetailDao orderDetailDao;
 
-    public List<OrderInfo> findAll() {
-        return (List<OrderInfo>) orderDao.findAll();
+    public ArrayList<OrderInfo> findAll() {
+        return (ArrayList<OrderInfo>) orderDao.findAll();
     }
 
 
@@ -83,16 +83,16 @@ public class OrderServiceImpl implements OrderService {
         return "From OrderService.OK!";
     }
 
-    public List<OrderInfo> findByOrderId(Long orderID) {
+    public ArrayList<OrderInfo> findByOrderId(Long orderID) {
         if(orderID == null){
             return null;
         }
         return orderDao.findByOrderId(orderID);
     }
 
-    public List<OrderDetailVo> findVoByOrderId(Long orderId) {
-        List<?> result = orderDao.findOrderDetailVoByOrderId(orderId);
-        List<OrderDetailVo> list = Lists.newArrayList();
+    public ArrayList<OrderDetailVo> findVoByOrderId(Long orderId) {
+        ArrayList<?> result = orderDao.findOrderDetailVoByOrderId(orderId);
+        ArrayList<OrderDetailVo> list = Lists.newArrayList();
         for(Object o:result){
             OrderDetailVo vo = convertOrderDetailVo((Object[]) o);//查询结果set到vo上
             list.add(vo);

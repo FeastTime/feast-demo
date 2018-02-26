@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -107,7 +106,7 @@ public class UserServiceImpl implements UserService{
         userStoreDao.save(history);
     }
 
-    public List<User> selectVisitUser(Long storeId) {
+    public ArrayList<User> selectVisitUser(Long storeId) {
         return userStoreDao.selectVisitUser(storeId);
     }
 
@@ -127,12 +126,12 @@ public class UserServiceImpl implements UserService{
         return userDao.findByUsernameAndPassword(username,password);
     }
 
-    public List<User> findByUsername(String username) {
+    public ArrayList<User> findByUsername(String username) {
         return userDao.findByUsername(username);
     }
 
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
-        List<UserStore> userStoreList = null;
+        ArrayList<UserStore> userStoreList = null;
         if(order==1){
             userStoreList = userStoreDao.findByUserIdOrderByCount(userId);
         }else if(order==2){
@@ -140,7 +139,7 @@ public class UserServiceImpl implements UserService{
         }else{
             userStoreList = userStoreDao.findByUserIdOrderByLastModifiedDesc(userId);
         }
-        List<Long> storeIdList = Lists.newArrayList();
+        ArrayList<Long> storeIdList = Lists.newArrayList();
         for (UserStore userStore:userStoreList) {
             if(!storeIdList.contains(userStore.getStoreId())){
                 storeIdList.add(userStore.getStoreId());
@@ -166,7 +165,7 @@ public class UserServiceImpl implements UserService{
         return userStoreDao.findStoreIdByUserId(userId);
     }
 
-    public List<Long> findUserIdByStoreId(Long storeId) {
+    public ArrayList<Long> findUserIdByStoreId(Long storeId) {
         return userDao.findUserIdByStoreId(storeId);
     }
 

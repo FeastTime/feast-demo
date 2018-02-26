@@ -1,7 +1,6 @@
 package com.feast.demo.table.dao;
 
 import com.feast.demo.table.entity.TableInfo;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.ArrayList;

@@ -2,7 +2,8 @@ package com.feast.demo.order.dao;
 
 import com.feast.demo.order.entity.OrderInfo;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Created by ggke on 2017/6/25.
@@ -10,8 +11,8 @@ import java.util.List;
  */
 public interface OrderDaoCustom {
 
-    List<OrderInfo> findAll2();
+    ArrayList<OrderInfo> findAll2();
 
-    List<?> findOrderDetailVoByOrderId(Long orderId);
+    ArrayList<?> findOrderDetailVoByOrderId(Long orderId);
 
 }

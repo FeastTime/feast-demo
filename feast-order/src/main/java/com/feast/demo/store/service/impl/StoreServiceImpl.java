@@ -24,11 +24,6 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     private UserStoreDao userStoreDao;
 
-
-    public Store findById(Long id) {
-        return storeDao.findOne(id);
-    }
-
     public Store getStoreInfo(Long storeId) {
         return storeDao.findOne(storeId);
     }

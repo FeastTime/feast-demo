@@ -63,20 +63,20 @@ public class CouponServiceImpl implements CouponService {
     }
 
 
-    public Map<Long,List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
-        Map<Long,List<UserCoupon>> userCoupons = Maps.newHashMap();
+    public Map<Long, List<UserCoupon>> queryCouponList(Long userId, Integer flag, List<Long> storeIds) {
+        Map<Long, List<UserCoupon>> userCoupons = Maps.newHashMap();
         for (Long storeId : storeIds) {
             ArrayList<UserCoupon> couponList = null;
             //1:未使用(未使用 && 未过期)
-            if(flag==1){
-                couponList = userCouponDao.findIsUseAndCouponValidity(userId,storeId,UserCoupon.ISUSE_UNUSED,new Date());
-            }else if(flag==2){
-                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId,storeId,UserCoupon.ISUSE_USED);
-            //3:已过期(未使用 && 过期)
-            }else if(flag==3){
-                couponList = userCouponDao.findIsUseAndCouponInValidity(userId,storeId,UserCoupon.ISUSE_UNUSED,new Date());
+            if (flag == 1) {
+                couponList = userCouponDao.findIsUseAndCouponValidity(userId, storeId, UserCoupon.ISUSE_UNUSED, new Date());
+            } else if (flag == 2) {
+                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId, storeId, UserCoupon.ISUSE_USED);
+                //3:已过期(未使用 && 过期)
+            } else if (flag == 3) {
+                couponList = userCouponDao.findIsUseAndCouponInValidity(userId, storeId, UserCoupon.ISUSE_UNUSED, new Date());
             }
-            userCoupons.put(storeId,couponList);
+            userCoupons.put(storeId, couponList);
         }
         return userCoupons;
     }

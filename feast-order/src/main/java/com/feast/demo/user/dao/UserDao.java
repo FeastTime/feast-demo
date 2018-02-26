@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,7 +25,7 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
 
     User findByUsernameAndPassword(String username, String password);
 
-    List<User> findByUsername(String username);
+    ArrayList<User> findByUsername(String username);
 
     User findByOpenId(String openId);
 
@@ -33,7 +33,7 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     Long findUserId(String openId);
 
     @Query("select u.userId from User u where u.storeId = ?1")
-    List<Long> findUserIdByStoreId(Long storeId);
+    ArrayList<Long> findUserIdByStoreId(Long storeId);
 
     @Query("select u.nickName from User u where u.userId = ?1")
     String findUsernameByUserId(Long id_);

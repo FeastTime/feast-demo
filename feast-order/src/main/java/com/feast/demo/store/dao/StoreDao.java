@@ -5,14 +5,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ggke on 2017/8/1.
  */
 public interface StoreDao extends PagingAndSortingRepository<Store,Long> {
 
-    ArrayList<Store> findByStoreIdIn(List<Long> storeIdList);
+    ArrayList<Store> findByStoreIdIn(ArrayList<Long> storeIdList);
 
     @Query("select s.storeName from Store s where s.storeId = ?1")
     String findStoreName(Long storeId);

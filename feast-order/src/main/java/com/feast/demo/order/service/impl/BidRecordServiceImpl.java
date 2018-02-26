@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by matao on 2017/11/5.
@@ -20,15 +20,15 @@ public class BidRecordServiceImpl implements BidRecordService {
     @Autowired
     private BidRecordDao bidRecordDao;
 
-    public List<BidRecordVo> findBidRecordByStoreId(JSONObject jsonObj) {
+    public ArrayList<BidRecordVo> findBidRecordByStoreId(JSONObject jsonObj) {
         String storeId = jsonObj.getString("storeId");
         String pageNo = jsonObj.getString("pageNo");
         String pageNum = jsonObj.getString("pageNum");
         if (StringUtils.isNotEmpty(storeId) && StringUtils.isNotEmpty(pageNo) && StringUtils.isNotEmpty(pageNum)) {
             int pageNoInt = Integer.parseInt(pageNo);
             int pageNumInt = Integer.parseInt(pageNum);
-            List<?> result = bidRecordDao.findBidRecordByStoreId(storeId, pageNoInt, pageNumInt);
-            List<BidRecordVo> list = Lists.newArrayList();
+            ArrayList<?> result = bidRecordDao.findBidRecordByStoreId(storeId, pageNoInt, pageNumInt);
+            ArrayList<BidRecordVo> list = Lists.newArrayList();
             for (Object o : result) {
                 BidRecordVo vo = convertBidRecordVo((Object[]) o);//查询结果set到vo上
                 list.add(vo);

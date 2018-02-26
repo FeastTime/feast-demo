@@ -1,7 +1,6 @@
 package com.feast.demo.device.dao;
 
 import com.feast.demo.device.entity.Device;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**

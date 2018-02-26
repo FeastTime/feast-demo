@@ -6,7 +6,6 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Time;
 
 /**
  * Created by ggke on 2017/8/9.

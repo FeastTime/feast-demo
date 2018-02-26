@@ -5,7 +5,6 @@ import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,7 +41,7 @@ public interface UserService {
 
     public User storeLogin(String username, String password);
 
-    public List<User> findByUsername(String username);
+    public ArrayList<User> findByUsername(String username);
 
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order);
 
@@ -54,7 +53,7 @@ public interface UserService {
 
     public Set<Long> findStoreIdByUserId(Long userId);
 
-    public List<Long> findUserIdByStoreId(Long storeId);
+    public ArrayList<Long> findUserIdByStoreId(Long storeId);
 
     public String findUsernameById(Long id_);
 

@@ -1,6 +1,5 @@
 package com.feast.demo.device.service.impl;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import org.springframework.stereotype.Service;
 import com.feast.demo.device.dao.DeviceDao;
 import com.feast.demo.device.entity.Device;

@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -18,15 +18,15 @@ public class OrderDaoImpl implements OrderDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<OrderInfo> findAll2(){
+    public ArrayList<OrderInfo> findAll2(){
         StringBuilder sb = new StringBuilder();
         sb.append("select a from OrderInfo a");
         TypedQuery<OrderInfo> query = em.createQuery( sb.toString(), OrderInfo.class);
-        List<OrderInfo> list = query.getResultList();
+        ArrayList<OrderInfo> list = (ArrayList<OrderInfo>)query.getResultList();
         return list;
     }
 
-    public List<?> findOrderDetailVoByOrderId(Long orderId) {
+    public ArrayList<?> findOrderDetailVoByOrderId(Long orderId) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select s.name,detail.dishname,detail.originalprice,orderInfo.status from OrderInfo orderInfo,OrderDetail detail,Store s where detail.orderid=orderInfo.id and s.id=orderInfo.storeid ");
@@ -37,6 +37,6 @@ public class OrderDaoImpl implements OrderDaoCustom{
             query.setParameter(key,params.get(key));
         }
 
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 }

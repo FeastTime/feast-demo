@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -17,7 +17,7 @@ public class BidRecordDaoImpl implements BidRecordDaoCustom {
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<?> findBidRecordByStoreId(String storeId, int pageNo, int pageNum) {
+    public ArrayList<?> findBidRecordByStoreId(String storeId, int pageNo, int pageNum) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> params = Maps.newHashMap();
         sb.append("select bidrecordid,storeid,mobileno,bid,maxprice,recordtime,stt");
@@ -36,7 +36,7 @@ public class BidRecordDaoImpl implements BidRecordDaoCustom {
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 
     public String addBidRecord(String storeId, String mobileNo, String bid, String maxPrice, String stt) {

@@ -5,9 +5,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Date;
-import java.sql.Timestamp;
 
 /**
  * Created by wangpp on 2017/7/30.

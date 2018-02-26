@@ -10,9 +10,6 @@ import java.util.ArrayList;
  */
 public interface StoreService {
 
-    public Store findById(Long id);
-
-
     public Store getStoreInfo(Long storeId);
 
     public ArrayList<User> queryHadVisitUser(Long storeId);
