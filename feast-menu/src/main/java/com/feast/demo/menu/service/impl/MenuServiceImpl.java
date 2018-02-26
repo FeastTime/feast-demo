@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by matao on 2017/8/6.
@@ -27,7 +25,7 @@ public class MenuServiceImpl implements MenuService {
     public MenuVo findMenuDetailByDishId(JSONObject jsonObj) {
         String dishId = jsonObj.getString("dishId");
         if (StringUtils.isNotEmpty(dishId)) {
-            List<?> result = menuDao.findMenuDetailByDishId(dishId);
+            ArrayList<?> result = menuDao.findMenuDetailByDishId(dishId);
             Object o = result.get(0);
             return convertMenuVo((Object[]) o);//查询结果set到vo上
         }else {
@@ -44,7 +42,7 @@ public class MenuServiceImpl implements MenuService {
         return null;
     }
 
-    public List<MenuVo> findMenuByCategoryIdAndStoreId(JSONObject jsonObj) {
+    public ArrayList<MenuVo> findMenuByCategoryIdAndStoreId(JSONObject jsonObj) {
         String categoryId = jsonObj.getString("categoryId");
         String storeId = jsonObj.getString("storeId");
         String pageNo = jsonObj.getString("pageNo");
@@ -53,8 +51,8 @@ public class MenuServiceImpl implements MenuService {
                 && StringUtils.isNotEmpty(pageNo) && StringUtils.isNotEmpty(pageNum)) {
             int pageNoInt = Integer.parseInt(pageNo);
             int pageNumInt = Integer.parseInt(pageNum);
-            List<?> result = menuDao.findMenuByCategoryIdAndStoreId(categoryId, storeId, pageNoInt, pageNumInt);
-            List<MenuVo> list = Lists.newArrayList();
+            ArrayList<?> result = menuDao.findMenuByCategoryIdAndStoreId(categoryId, storeId, pageNoInt, pageNumInt);
+            ArrayList<MenuVo> list = Lists.newArrayList();
             for(Object o:result){
                 MenuVo vo = convertMenuVo1((Object[]) o);//查询结果set到vo上
                 list.add(vo);
@@ -65,7 +63,7 @@ public class MenuServiceImpl implements MenuService {
         }
     }
 
-    public List<MenuVo> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj) {
+    public ArrayList<MenuVo> findRecommendPrdByStoreIdAndHomeFlag(JSONObject jsonObj) {
         String isHomePage = jsonObj.getString("isHomePage");
         String storeId = jsonObj.getString("storeId");
         String mobileNo = jsonObj.getString("mobileNo");
@@ -79,21 +77,21 @@ public class MenuServiceImpl implements MenuService {
             if (StringUtils.isNotEmpty(categoryIdStr)) {
                 categoryIdStr = "'"+categoryIdStr.replaceAll(",","','")+"'";
             }
-            List<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIdStr);
-            List<MenuVo> list = Lists.newArrayList();
+            ArrayList<?> result = menuDao.findRecommendPrdByStoreIdAndHomeFlag(storeId, isHomePage,categoryIdStr);
+            ArrayList<MenuVo> list = Lists.newArrayList();
 
             for(Object o:result){
                 MenuVo vo = convertMenuVo1((Object[]) o);//查询结果set到vo上
                 list.add(vo);
             }
-            return utilTools.randomList((ArrayList) list).subList(0, 4);
+            return (ArrayList<MenuVo>)utilTools.randomList((ArrayList) list).subList(0, 4);
         }else {
             return null;
         }
     }
 
-    public List<Menu> findByIds(Iterable<String> ids) {
-        return (List<Menu>) menuDao.findAll(ids);
+    public ArrayList<Menu> findByIds(Iterable<String> ids) {
+        return (ArrayList<Menu>) menuDao.findAll(ids);
     }
 
     private MenuVo convertMenuVo(Object[] o){

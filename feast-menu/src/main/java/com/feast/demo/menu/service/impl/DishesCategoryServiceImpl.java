@@ -9,7 +9,7 @@ import com.feast.demo.menu.vo.DishesCategoryVo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by matao on 2017/8/12.
@@ -19,11 +19,11 @@ public class DishesCategoryServiceImpl implements DishesCategoryService {
     @Autowired
     private DishesCategoryDao dishesCategoryDao;
 
-    public List<DishesCategoryVo> findDishesCategoryByStoreId(JSONObject jsonObj) {
+    public ArrayList<DishesCategoryVo> findDishesCategoryByStoreId(JSONObject jsonObj) {
         String storeId = jsonObj.getString("storeId");
         if(StringUtils.isNotEmpty(storeId)){
-            List<?> result = dishesCategoryDao.findDishesCategoryByStoreId(storeId);
-            List<DishesCategoryVo> list = Lists.newArrayList();
+            ArrayList<?> result = dishesCategoryDao.findDishesCategoryByStoreId(storeId);
+            ArrayList<DishesCategoryVo> list = Lists.newArrayList();
             for(Object o:result){
                 DishesCategoryVo vo = convertDishesCategoryVo((Object[]) o);//查询结果set到vo上
                 list.add(vo);

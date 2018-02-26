@@ -1,10 +1,10 @@
 package com.feast.demo.menu.dao;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by matao on 2017/8/19.
  */
 public interface DishesCategoryDaoCustom {
-    public List<?> findDishesCategoryByStoreId(String storeId);
+    public ArrayList<?> findDishesCategoryByStoreId(String storeId);
 }

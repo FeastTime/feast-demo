@@ -6,7 +6,7 @@ import com.feast.demo.menu.entity.CategoryMenu;
 import com.feast.demo.menu.service.CategoryMenuService;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by ggke on 2017/9/13.
@@ -18,7 +18,7 @@ public class CategoryMenuServiceImpl implements CategoryMenuService{
     @Resource
     private CategoryMenuDao categoryMenuDao;
 
-    public List<CategoryMenu> findByCategoryId(String categoryId){
+    public ArrayList<CategoryMenu> findByCategoryId(String categoryId){
         return categoryMenuDao.findByCategoryId(categoryId);
     }
 }

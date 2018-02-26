@@ -1,7 +1,6 @@
 package com.feast.demo.menu.dao;
 
 import com.alibaba.dubbo.common.utils.StringUtils;
-import com.feast.demo.menu.vo.MenuVo;
 import com.google.common.collect.Maps;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<?> findMenuDetailByDishId(String dishId){
+    public ArrayList<?> findMenuDetailByDishId(String dishId){
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag,");
@@ -36,7 +36,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 
     public String getMenuCountByCategoryIdAndStoreId(String categoryId, String storeId){
@@ -56,7 +56,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         return query.getSingleResult().toString();
     }
 
-    public List<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum) {
+    public ArrayList<?> findMenuByCategoryIdAndStoreId(String categoryId, String storeId, int pageNo, int pageNum) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag,");
@@ -80,7 +80,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 
     public String getCategoryIdStrByStoreId(String storeId) throws Exception{
@@ -97,7 +97,7 @@ public class MenuDaoImpl implements MenuDaoCustom{
         return query.getSingleResult().toString();
     }
 
-    public List<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, String categoryIdStr) {
+    public ArrayList<?> findRecommendPrdByStoreIdAndHomeFlag(String storeId, String isHomePage, String categoryIdStr) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select m.dishid,m.dishno,m.dishname,m.dishimgurl,m.tvurl,m.materialflag,");
@@ -121,6 +121,6 @@ public class MenuDaoImpl implements MenuDaoCustom{
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 }

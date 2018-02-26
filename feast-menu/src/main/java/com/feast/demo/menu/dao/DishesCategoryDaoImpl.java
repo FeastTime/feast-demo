@@ -1,14 +1,11 @@
 package com.feast.demo.menu.dao;
 
-import com.feast.demo.menu.entity.DishesCategory;
 import com.google.common.collect.Maps;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -18,7 +15,7 @@ public class DishesCategoryDaoImpl implements DishesCategoryDaoCustom {
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<?> findDishesCategoryByStoreId(String storeId) {
+    public ArrayList<?> findDishesCategoryByStoreId(String storeId) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select categoryid,categoryname from DishesCategory ");
@@ -28,7 +25,7 @@ public class DishesCategoryDaoImpl implements DishesCategoryDaoCustom {
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 
 
