@@ -17,10 +17,15 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
+
         String requestURI = httpServletRequest.getRequestURI();
         System.out.println(requestURI);
-        if(requestURI.contains("/websocket")){
-            System.out.println("xixixi");
+
+        if(requestURI.contains("/websocket")
+                || requestURI.contains("/im/message")){
+
+            System.out.println("放过路径  ： " + requestURI);
+
             return true;
         }
 
