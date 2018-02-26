@@ -9,7 +9,7 @@ import com.feast.demo.menu.vo.IngredientsVo;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by matao on 2017/8/27.
@@ -19,11 +19,11 @@ public class IngredientsServiceImpl implements IngredientsService {
     @Autowired
     private IngredientsDao ingredientsDao;
 
-    public List<IngredientsVo> findIngredientsByDishId(JSONObject jsonObj) {
+    public ArrayList<IngredientsVo> findIngredientsByDishId(JSONObject jsonObj) {
         String dishId = jsonObj.getString("dishId");
         if(StringUtils.isNotEmpty(dishId)){
-            List<?> result = ingredientsDao.findIngredientsByDishId(dishId);
-            List<IngredientsVo> list = Lists.newArrayList();
+            ArrayList<?> result = ingredientsDao.findIngredientsByDishId(dishId);
+            ArrayList<IngredientsVo> list = Lists.newArrayList();
             for(Object o:result){
                 IngredientsVo vo = convertIngredientsVo((Object[]) o);//查询结果set到vo上
                 list.add(vo);

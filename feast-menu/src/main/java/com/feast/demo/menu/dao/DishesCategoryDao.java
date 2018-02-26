@@ -1,7 +1,6 @@
 package com.feast.demo.menu.dao;
 
 import com.feast.demo.menu.entity.DishesCategory;
-import com.feast.demo.menu.entity.Menu;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**

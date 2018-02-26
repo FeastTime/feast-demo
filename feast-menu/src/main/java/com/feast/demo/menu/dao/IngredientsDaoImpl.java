@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -15,7 +15,7 @@ public class IngredientsDaoImpl implements IngredientsDaoCustom {
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<?> findIngredientsByDishId(String dishId) {
+    public ArrayList<?> findIngredientsByDishId(String dishId) {
         StringBuilder sb = new StringBuilder();
         Map<String,Object> params = Maps.newHashMap();
         sb.append("select ingredientname,number,weight,calories from Ingredients ");
@@ -25,7 +25,7 @@ public class IngredientsDaoImpl implements IngredientsDaoCustom {
         for(String key:params.keySet()){
             query.setParameter(key,params.get(key));
         }
-        return query.getResultList();
+        return (ArrayList<?>)query.getResultList();
     }
 
 
