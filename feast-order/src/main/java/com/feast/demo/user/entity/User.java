@@ -2,12 +2,11 @@ package com.feast.demo.user.entity;
 
 import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
+ *
  * Created by ggke on 2017/7/23.
  */
 
@@ -19,8 +18,6 @@ public class User extends TimedEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-
-
 
     /**
      * 密码
@@ -45,16 +42,14 @@ public class User extends TimedEntity implements Serializable{
     private String username;
 
     /**
-     * 用户类型，默认是客户
+     * 用户类型，默认是 : 1客户 , 2商家
      */
-    @Enumerated(EnumType.STRING)
-    private UserType userType= UserType.customer;
+    private int userType= 1;
 
     /**
      * 微信用户唯一标识
      */
     private String openId;
-
 
     /**
      * 昵称
@@ -66,10 +61,6 @@ public class User extends TimedEntity implements Serializable{
      */
     private String userIcon;
 
-    public enum UserType{
-        customer,//客户
-        store//店铺
-    }
 
     private Long storeId;
 }

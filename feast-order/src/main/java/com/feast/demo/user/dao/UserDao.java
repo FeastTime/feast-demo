@@ -9,6 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.List;
 
 /**
+ *
  * Created by ggke on 2017/7/23.
  */
 public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoCustom {

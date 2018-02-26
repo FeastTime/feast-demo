@@ -23,18 +23,30 @@ public class LoginInterceptor implements HandlerInterceptor {
             System.out.println("xixixi");
             return true;
         }
+
         String text = readJSONString(httpServletRequest);
         httpServletRequest.setAttribute("json",text);
-        logger.info(text);
+        logger.info("收到内容 ： " + text);
         JSONObject jsono = JSON.parseObject(text);
+
+        if (null == jsono) {
+            httpServletResponse.getWriter().write("{\"resultCode\":\"201\",\"resultMsg\":\"token invalid!\"}");
+            return false;
+        }
+
         String deviceId = jsono.getString("deviceId");
         String userId = jsono.getString("userId");
         String token = jsono.getString("token");
         boolean b = TokenUtils.isValidToken(token, deviceId, userId);
         logger.info(b+"");
-        if(!b){
+
+        if (!b) {
             httpServletResponse.getWriter().write("{\"resultCode\":\"201\",\"resultMsg\":\"token invalid!\"}");
+            return false;
         }
+
+
+        logger.info("TokenUtils" + b);
         return b;
     }
 
