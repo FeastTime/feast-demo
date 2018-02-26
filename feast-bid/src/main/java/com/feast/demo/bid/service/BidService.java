@@ -5,10 +5,12 @@ import com.feast.demo.bid.core.BidResponse;
 import com.feast.demo.bid.core.BidResult;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
 
 /**
+ *
  * Created by ggke on 2017/10/24.
  */
 public interface BidService {
@@ -19,7 +21,7 @@ public interface BidService {
 
     public BidResponse pushBidRequest(BidRequest bidRequest);
 
-    public List<BidResult> getAllBidResult();
+    public ArrayList<BidResult> getAllBidResult();
 
     public Integer getBidResultSize();
 
