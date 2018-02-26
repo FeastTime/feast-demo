@@ -3,14 +3,14 @@ package com.feast.demo.cache;
 import com.feast.demo.bid.core.BidResult;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
+ *
  * Created by ggke on 2017/10/24.
  */
 public class CacheManager {
@@ -35,12 +35,16 @@ public class CacheManager {
         bidResultQueue.add(e);
     }
 
-    public static List<BidResult> getAllBidResult(){
-        List<BidResult> list = Lists.newArrayList();
+    public static ArrayList<BidResult> getAllBidResult(){
+
+        ArrayList<BidResult> list = Lists.newArrayList();
+
         while(bidResultQueue.size()>0){
             list.add(bidResultQueue.poll());
         }
-       System.out.println(list.size());
+
+        System.out.println(list.size());
+
         return list;
     }
 

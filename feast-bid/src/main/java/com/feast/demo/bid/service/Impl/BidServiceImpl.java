@@ -5,10 +5,9 @@ import com.feast.demo.bid.service.BidService;
 import com.feast.demo.cache.CacheManager;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -90,7 +89,7 @@ public class BidServiceImpl implements BidService, InitializingBean,BidHandle {
         return BidDispatcher.joinBid(bidRequest.getBidActivityId(),bidRequest);
     }
 
-    public List<BidResult> getAllBidResult() {
+    public ArrayList<BidResult> getAllBidResult() {
         return CacheManager.getAllBidResult();
     }
 
