@@ -1,11 +1,8 @@
 package com.feast.demo.ad;
 
-import com.feast.demo.ad.entity.Advertisement;
 import com.feast.demo.ad.service.AdService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +21,7 @@ public class App
 //            System.out.println(ad);
 //        }
         System.out.println("start serivce.");
+
         while(true){
             try {
                 TimeUnit.SECONDS.sleep(60l);

@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -56,10 +57,15 @@ public class AdvertisementDaoImpl implements AdvertisementDaoCustom{
         for(String key: params.keySet()) {
             query.setParameter(key, params.get(key));
         }
-        ArrayList list = (ArrayList<Advertisement>)query.getResultList();
+
+        List list = (List<Advertisement>)query.getResultList();
+
         if(list.size()==0){
             return null;
         }
-        return  list;
+        ArrayList<Advertisement> result = new ArrayList<Advertisement>();
+
+        result.addAll(list);
+        return  result;
     }
 }
