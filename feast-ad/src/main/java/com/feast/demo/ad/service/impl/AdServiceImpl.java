@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -28,8 +29,8 @@ public class AdServiceImpl implements AdService {
     @Autowired
     private AdvertisementDao advertisementDao;
 
-    public List<Advertisement> findAll(){
-        return (List<Advertisement>) advertisementDao.findAll2();
+    public ArrayList<Advertisement> findAll(){
+        return (ArrayList<Advertisement>) advertisementDao.findAll2();
     }
 
     @Transactional(readOnly = false)
@@ -64,8 +65,8 @@ public class AdServiceImpl implements AdService {
      * @param num
      * @return
      */
-    public List<TAd> getAdList(Integer num) {
-        List<TAd> list = Lists.newArrayList();
+    public ArrayList<TAd> getAdList(Integer num) {
+        ArrayList<TAd> list = Lists.newArrayList();
         if (num == null || num <= 0) {
             return list;
         }
@@ -109,8 +110,8 @@ public class AdServiceImpl implements AdService {
         return url.equals("")?null:url+"."+type;
     }
 
-    public List<String> getAdArray(Integer num,String width,String height){
-        List<String> result = Lists.newArrayList();
+    public ArrayList<String> getAdArray(Integer num,String width,String height){
+        ArrayList<String> result = Lists.newArrayList();
         if(num<1){
             return result;
         }
@@ -132,7 +133,7 @@ public class AdServiceImpl implements AdService {
      * @param height
      * @return
      */
-    public List<Advertisement> findByTypeAndSize(String type, Integer width, Integer height) {
+    public ArrayList<Advertisement> findByTypeAndSize(String type, Integer width, Integer height) {
         return advertisementDao.findByTypeAndSize(type,width,height);
     }
 
@@ -147,7 +148,7 @@ public class AdServiceImpl implements AdService {
         return advertisementDao.findPageByTypeAndSize(type,width,height,pageable);
     }
 
-    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand) {
+    public ArrayList<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand) {
         return advertisementDao.findBySizeUseNativeSql(width,height,num,isRand);
     }
 

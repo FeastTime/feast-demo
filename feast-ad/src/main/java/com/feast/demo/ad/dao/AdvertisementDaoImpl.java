@@ -9,21 +9,23 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
 
 /**
+ *
  * Created by ggke on 2017/6/25.
  */
 public class AdvertisementDaoImpl implements AdvertisementDaoCustom{
     @PersistenceContext(unitName = "entityManagerFactory")
     private EntityManager em;
 
-    public List<Advertisement> findAll2(){
+    public ArrayList<Advertisement> findAll2(){
         StringBuilder sb = new StringBuilder();
         sb.append("select a from Advertisement a");
         TypedQuery<Advertisement> query = em.createQuery( sb.toString(), Advertisement.class);
-        List<Advertisement> list = query.getResultList();
+        ArrayList<Advertisement> list = (ArrayList<Advertisement>)query.getResultList();
         return list;
     }
 
@@ -37,7 +39,7 @@ public class AdvertisementDaoImpl implements AdvertisementDaoCustom{
         return new PageImpl<Advertisement>(query.getResultList(),pageable, (Long) countQuery.getSingleResult());
     }
 
-    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand){
+    public ArrayList<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand){
         StringBuilder sql = new StringBuilder();
         sql.append("select * from advertisement a where a.width=:width and a.height=:height ");
         HashMap<String , Object> params = new HashMap<String , Object>();
@@ -54,10 +56,10 @@ public class AdvertisementDaoImpl implements AdvertisementDaoCustom{
         for(String key: params.keySet()) {
             query.setParameter(key, params.get(key));
         }
-        List list = query.getResultList();
+        ArrayList list = (ArrayList<Advertisement>)query.getResultList();
         if(list.size()==0){
             return null;
         }
-        return (List<Advertisement>) list;
+        return  list;
     }
 }

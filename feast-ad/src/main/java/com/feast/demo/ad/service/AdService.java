@@ -6,14 +6,16 @@ import com.feast.demo.ad.entity.TAd;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 /**
+ *
  * Created by pinyou on 17-4-11.
  */
 public interface AdService {
 
-    public List<Advertisement> findAll();
+    public ArrayList<Advertisement> findAll();
 
     public void save(Advertisement advertisement);
 
@@ -23,17 +25,17 @@ public interface AdService {
 
     public String transferString(String msg);
 
-    public List<TAd> getAdList(Integer num);
+    public ArrayList<TAd> getAdList(Integer num);
 
     public String getRemoteUrl(AdTargetType type, Integer width, Integer height);
 
-    public List<String> getAdArray(Integer num,String width,String height);
+    public ArrayList<String> getAdArray(Integer num,String width,String height);
 
     public Page<Advertisement> findByPage(Pageable pageable);
 
-    public List<Advertisement> findByTypeAndSize(String type,Integer width,Integer height);
+    public ArrayList<Advertisement> findByTypeAndSize(String type,Integer width,Integer height);
 
     public Page<Advertisement> findPageByTypeAndSize(String type, Integer width, Integer height,Integer pageNo,Integer pageNum);
 
-    public List<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand);
+    public ArrayList<Advertisement> findBySizeUseNativeSql(Integer width,Integer height,Integer num,boolean isRand);
 }
