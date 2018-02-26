@@ -16,9 +16,35 @@ public class ImController {
     @RequestMapping(value = "/message",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text) {
 
-        String message = text;
+
+        if (null == text || text.length() == 0) {
+            return "";
+        }
+
+        String message = getURLDecoderString(text);
 
         logger.info(message);
+
+        return "";
+    }
+
+
+    /**
+     * url 解码
+     * @param inputStr 输入字符串
+     * @return 解码后字符串
+     */
+    private String getURLDecoderString(String inputStr) {
+
+        try {
+
+            return java.net.URLDecoder.decode(inputStr, "UTF-8");
+
+        } catch (Exception e) {
+
+            logger.info("url 解码 失败！");
+            e.printStackTrace();
+        }
 
         return "";
     }
