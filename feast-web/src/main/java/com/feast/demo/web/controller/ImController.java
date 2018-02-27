@@ -1,9 +1,13 @@
 package com.feast.demo.web.controller;
 
+import com.feast.demo.web.service.IMEvent;
+import com.feast.demo.web.util.URLParser;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -25,12 +29,20 @@ public class ImController {
 
         logger.info(message);
 
+        Map<String, String> map =  URLParser.urlSplit(message);
+
+        if(map.get("").equals(IMEvent.ENTER_STORE)){
+
+            // 进店操作
+        }
+
         return "";
     }
 
 
     /**
      * url 解码
+     *
      * @param inputStr 输入字符串
      * @return 解码后字符串
      */
