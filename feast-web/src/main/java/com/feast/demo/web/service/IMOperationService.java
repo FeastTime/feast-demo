@@ -18,6 +18,12 @@ import com.feast.demo.web.util.CouponIdCreator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.rong.RYConfig;
+import io.rong.RongCloud;
+import io.rong.messages.TxtMessage;
+import io.rong.messages.VoiceMessage;
+import io.rong.messages.WaitingUserChangedMessage;
+import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
@@ -88,8 +94,8 @@ public class IMOperationService {
             case WebSocketEvent.SEND_MESSAGE:
                 return chat(jsonObject, sender, storeId);
 
-            case WebSocketEvent.SET_NUMBER_OF_USER:
-                return setNumberOfUser(jsonObject,sender,storeId);
+//            case WebSocketEvent.SET_NUMBER_OF_USER:
+//                return setNumberOfUser(jsonObject,sender,storeId);
         }
 
         return null;
@@ -98,22 +104,31 @@ public class IMOperationService {
     /**
      * 设置就餐人数
      *
-     * @param jsonObject JSONObject
-     * @param user 用户
-     * @param storeId 店铺ID
+     ** @param storeId 店铺ID
      * @return 消息列表
      */
-    private List<WebSocketMessageBean> setNumberOfUser(JSONObject jsonObject, User user, String storeId) {
-
-        String userId = user.getUserId().toString();
+    public void setNumberOfUser(Integer numberPerTable, String storeId,String userId) throws Exception{
 
         if (userId.length() == 0) {
-            return null;
+            return;
         }
 
-        Integer numberPerTable = jsonObject.getInteger("dinnerCount");
         user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
-        return getDinnerListMessage(storeId);
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        result.put("dinnerList",getDinnerList(storeId));
+        result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
+        result.put("storeId",storeId);
+        result.put("userId","system");
+
+        WaitingUserChangedMessage messagePublishGroupTxtMessage = new WaitingUserChangedMessage(new Date().getTime(), JSON.toJSONString(result));
+
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        String[] messagePublishGroupToGroupId = {storeId};
+
+        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
     }
 
 
@@ -185,19 +200,14 @@ public class IMOperationService {
     /**
      * 拆红包
      *
-     * @param jsonObject json
-     * @param sender 发送者
-     * @return 返回消息列表
+     * @param redPackageId
+     * @param userId
+     * @param storeId
      */
-    private List<WebSocketMessageBean> takeRedPackage(JSONObject jsonObject, User sender,String storeId) {
+    public void takeRedPackage(String redPackageId,String userId,String storeId) {
 
         try {
             lock.lock();
-
-            Long userId = sender.getUserId();
-            String userIdStr = userId.toString();
-
-            String redPackageId = jsonObject.getString("redPackageId");
 
             List<Object> redPackage = redPackages.get(redPackageId);
             redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
@@ -216,7 +226,7 @@ public class IMOperationService {
                 redPackages.remove(redPackageId);
                 redId2UserId.remove(redPackageId+"");
 
-            } else if (redId2UserId.get(redPackageId+"").contains(userIdStr)) {
+            } else if (redId2UserId.get(redPackageId+"").contains(userId)) {
 
                 message = "您已经抢过这个红包了";
 
@@ -226,33 +236,34 @@ public class IMOperationService {
 
                 boolean hasGetTable = false;
 
-                User user = userService.findById(userId);
+                User user = userService.findById(Long.parseLong(userId));
                 if (lastObject instanceof TableInfo) {
 
                     TableInfo tableInfo = (TableInfo) lastObject;
                     String[] supportSeatNumbers = tableInfo.getSuportSeatNumber().split(",");
 
                     for (String supportSeatNumber : supportSeatNumbers) {
-                        System.out.println(supportSeatNumber+"===="+user2Store.get(storeId).get(userIdStr).getNumberPerTable());
-                        if(Integer.parseInt(supportSeatNumber)==user2Store.get(storeId).get(userIdStr).getNumberPerTable()){
+                        System.out.println(supportSeatNumber+"===="+user2Store.get(storeId).get(userId).getNumberPerTable());
+                        if(Integer.parseInt(supportSeatNumber)==user2Store.get(storeId).get(userId).getNumberPerTable()){
 
                             tableInfo.setUserPhone(user.getMobileNo());
                             tableInfo.setUserIcon(user.getUserIcon());
                             tableInfo.setUserNickname(user.getNickName());
                             broadcastMessage = user.getNickName()+"手气太棒了，恭喜获得一个桌位！";
 
-                            tableInfo.setUserId(userId);
+                            tableInfo.setUserId(Long.parseLong(userId));
                             tableInfo.setIsCome(1);
                             tableInfo.setTaketableTime(new Date());
 
                             tableInfo= tableService.saveTableInfo(tableInfo);
 
-                            redId2UserId.get(redPackageId+"").add(userIdStr);
+                            redId2UserId.get(redPackageId+"").add(userId);
 
                             result.put("tableInfo", tableInfo);
                             redPackage.remove(0);
                             message = "恭喜您获得一个桌位";
-                            broadcastMessage = createChatMessage(sender,broadcastMessage);
+
+                            broadcastMessage = createChatMessage(user,broadcastMessage);
 
                             HashMap<String, UserBean> map = user2Store.get(storeId);
 
@@ -292,15 +303,15 @@ public class IMOperationService {
                         userCoupon.setStoreId(couponTemplate.getStoreId());
                         userCoupon.setPermissionsDescribed(couponTemplate.getPermissionsDescribed());
                         userCoupon = couponService.saveUserCoupon(userCoupon);
-                        userCoupon.setUserId(userId);
+                        userCoupon.setUserId(Long.parseLong(userId));
                         couponService.saveUserCoupon(userCoupon);
 
-                        redId2UserId.get(redPackageId+"").add(userIdStr);
+                        redId2UserId.get(redPackageId+"").add(userId);
                         result.put("couponInfo", userCoupon);
                         message = "恭喜您获得一张优惠券";
                         broadcastMessage = user.getNickName()+"手气太棒了，恭喜获得一个优惠券！";
                         redPackage.remove(i);
-                        broadcastMessage = createChatMessage(sender,broadcastMessage);
+                        broadcastMessage = createChatMessage(user,broadcastMessage);
 
                         HashMap<String, UserBean> map = user2Store.get(storeId);
 
@@ -318,20 +329,26 @@ public class IMOperationService {
             result.put("userId", "system");
             result.put("message", message);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE_SURPRISED);
-            String backMessage = JSON.toJSONString(result);
 
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userIdStr));
+            WaitingUserChangedMessage messagePublishGroupTxtMessage = new WaitingUserChangedMessage(new Date().getTime(), JSON.toJSONString(result));
+
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+            String[] messagePublishGroupToGroupId = {storeId};
+
+            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 
 
-            return list;
+            String[] messagePublishPrivateToUserId = {userId};
+            VoiceMessage messagePublishPrivateVoiceMessage = new VoiceMessage("hello", "helloExtra", 20L);
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("userId1", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             lock.unlock();
         }
-
-        return null;
 
     }
 

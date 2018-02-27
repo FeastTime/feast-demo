@@ -4,14 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.device.entity.Device;
 import com.feast.demo.feedback.entity.Feedback;
-import com.feast.demo.web.service.FeedbackService;
+import com.feast.demo.web.service.*;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
-import com.feast.demo.web.service.DeviceService;
-import com.feast.demo.web.service.StoreService;
-import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.MD5Utils;
 import com.feast.demo.web.util.StringUtils;
 import com.feast.demo.web.util.TokenUtils;
@@ -49,6 +46,9 @@ public class UserController {
 
     @Resource
     private StoreService storeService;
+
+    @Resource
+    private IMOperationService imOperationService;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String register(@RequestBody String text) {
@@ -498,5 +498,84 @@ public class UserController {
 
         return true;
     }
+
+    /**
+     * 设置就餐人数
+     *
+     * @param servletRequest servletRequest
+     * @return json
+     */
+    @RequestMapping(value = "/setNumberOfUser",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String setNumberOfUser(HttpServletRequest servletRequest){
+
+        String resultMsg;
+        Byte resultCode;
+
+        try {
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+
+            JSONObject obj = JSONObject.parseObject(text);
+            Integer numberPerTable = obj.getInteger("dinnerCount");
+            String storeId = obj.getString("storeId");
+            String userId = obj.getString("userId");
+
+            imOperationService.setNumberOfUser(numberPerTable, storeId, userId);
+
+            resultCode = 0;
+            resultMsg = "设置就餐人数成功";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            resultCode = 1;
+            resultMsg = "设置就餐人数失败";
+        }
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/takeRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String takeRedPackage(HttpServletRequest servletRequest){
+
+        String resultMsg;
+        Byte resultCode;
+
+        try {
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+
+            JSONObject obj = JSONObject.parseObject(text);
+            String redPackageId = obj.getString("redPackageId");
+            String userId = obj.getString("userId");
+            String storeId = obj.getString("storeId");
+
+            imOperationService.takeRedPackage(redPackageId,userId,storeId);
+
+            resultCode = 0;
+            resultMsg = "拆红包成功";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            resultCode = 1;
+            resultMsg = "拆红包失败";
+        }
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+
+        return JSON.toJSONString(result);
+    }
+
 
 }
