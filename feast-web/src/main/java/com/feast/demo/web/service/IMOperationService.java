@@ -20,9 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.rong.RYConfig;
 import io.rong.RongCloud;
-import io.rong.messages.TxtMessage;
-import io.rong.messages.VoiceMessage;
-import io.rong.messages.WaitingUserChangedMessage;
+import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,20 +80,20 @@ public class IMOperationService {
 
         switch(type){
 
-            case WebSocketEvent.ENTER_STORE:
-                return userComeInProc(sender, storeId);
+//          case WebSocketEvent.ENTER_STORE:
+//              return userComeInProc(sender, storeId);
 
-            case WebSocketEvent.SEND_RED_PACKAGE:
-                return sendRedPackage(jsonObject,sender,storeId);
+//          case WebSocketEvent.SEND_RED_PACKAGE:
+//              return sendRedPackage(jsonObject,sender,storeId);
 
-            case WebSocketEvent.OPEN_RED_PACKAGE:
-                return takeRedPackage(jsonObject, sender, storeId);
+//          case WebSocketEvent.OPEN_RED_PACKAGE:
+//              return takeRedPackage(jsonObject, sender, storeId);
 
-            case WebSocketEvent.SEND_MESSAGE:
-                return chat(jsonObject, sender, storeId);
+//          case WebSocketEvent.SEND_MESSAGE:
+//              return chat(jsonObject, sender, storeId);
 
-//            case WebSocketEvent.SET_NUMBER_OF_USER:
-//                return setNumberOfUser(jsonObject,sender,storeId);
+//          case WebSocketEvent.SET_NUMBER_OF_USER:
+//              return setNumberOfUser(jsonObject,sender,storeId);
         }
 
         return null;
@@ -118,17 +116,20 @@ public class IMOperationService {
         Map<String,Object> result = Maps.newHashMap();
 
         result.put("dinnerList",getDinnerList(storeId));
-        result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
+        result.put("type",IMEvent.WAITING_USER_CHANGED);
         result.put("storeId",storeId);
         result.put("userId","system");
 
-        WaitingUserChangedMessage messagePublishGroupTxtMessage = new WaitingUserChangedMessage(new Date().getTime(), JSON.toJSONString(result));
+        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
-        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-        String[] messagePublishGroupToGroupId = {storeId};
+        for (Long id : waiters) {
+            WaitingUserChangedMessage messagePublishPrivateVoiceMessage = new WaitingUserChangedMessage(new Date().getTime(),JSON.toJSONString(result));
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+            String[] messagePublishPrivateToUserId = {id+""};
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
+        }
 
-        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
-        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
     }
 
 
@@ -138,12 +139,12 @@ public class IMOperationService {
      * @param storeId 商家ID
      * @return 消息列表
      */
-    private List<WebSocketMessageBean> getDinnerListMessage(String storeId){
+    private void getDinnerListMessage(String storeId) throws Exception{
 
         List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
         if (null == waiters) {
-            return null;
+            return;
         }
 
         Map<String,Object> result = Maps.newHashMap();
@@ -153,15 +154,13 @@ public class IMOperationService {
         result.put("storeId",storeId);
         result.put("userId","system");
 
-        String backMessage = JSON.toJSONString(result);
-
-        List<WebSocketMessageBean> list = new ArrayList<>();
-
         for (Long id : waiters) {
-            list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(id + ""));
+            WaitingUserChangedMessage messagePublishPrivateVoiceMessage = new WaitingUserChangedMessage(new Date().getTime(),JSON.toJSONString(result));
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+            String[] messagePublishPrivateToUserId = {id+""};
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
         }
-
-        return list;
     }
     /**
      * 获取店铺食客人数列表
@@ -265,14 +264,11 @@ public class IMOperationService {
 
                             broadcastMessage = createChatMessage(user,broadcastMessage);
 
-                            HashMap<String, UserBean> map = user2Store.get(storeId);
-
-                            if (null != map){
-
-                                for (String receiverId : map.keySet()) {
-                                    list.add(new WebSocketMessageBean().setMessage(broadcastMessage).toUser(receiverId));
-                                }
-                            }
+                            String[] messagePublishGroupToGroupId = {storeId};
+                            RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
+                            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+                            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("system", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                             hasGetTable = true;
                             break;
                         }
@@ -313,14 +309,11 @@ public class IMOperationService {
                         redPackage.remove(i);
                         broadcastMessage = createChatMessage(user,broadcastMessage);
 
-                        HashMap<String, UserBean> map = user2Store.get(storeId);
-
-                        if (null != map){
-
-                            for (String receiverId : map.keySet()) {
-                                list.add(new WebSocketMessageBean().setMessage(broadcastMessage).toUser(receiverId));
-                            }
-                        }
+                        String[] messagePublishGroupToGroupId = {storeId};
+                        RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
+                        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+                        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("system", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                     }
                 }
             }
@@ -330,18 +323,10 @@ public class IMOperationService {
             result.put("message", message);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE_SURPRISED);
 
-            WaitingUserChangedMessage messagePublishGroupTxtMessage = new WaitingUserChangedMessage(new Date().getTime(), JSON.toJSONString(result));
-
+            OpenRedPackageMessage messagePublishPrivateVoiceMessage = new OpenRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            String[] messagePublishGroupToGroupId = {storeId};
-
-            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
-            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
-
-
             String[] messagePublishPrivateToUserId = {userId};
-            VoiceMessage messagePublishPrivateVoiceMessage = new VoiceMessage("hello", "helloExtra", 20L);
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("userId1", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
             System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
         } catch (Exception e) {
@@ -355,27 +340,20 @@ public class IMOperationService {
     /**
      * 发红包
      *
-     * @param jsonObject json
-     * @param sender 发送用户
-     * @param storeId 店铺ID
-     * @return 消息列表
+     * @param userId
+     * @param storeId
+     * @param tableInfo
+     * @param couponList
      */
-    private List<WebSocketMessageBean> sendRedPackage(JSONObject jsonObject, User sender, String storeId) {
+    public void sendRedPackage(String userId,String storeId,TableInfo tableInfo,List<CouponTemplate> couponList) {
 
         List<Object> redPackage;
-        TableInfo tableInfo;
-        List<CouponTemplate> couponList;
-        String backMessage;
         try {
-            List<WebSocketMessageBean> list = new ArrayList<>();
-
             redPackage = Lists.newArrayList();
+            User sender = userService.findById(Long.parseLong(userId));
 
             //添加优惠券
-            JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
             String dateStr = format.format(new Date());
-            if(couponArray!=null){
-                couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
                 for (CouponTemplate couponTemplate : couponList) {
                     Long count = couponTemplate.getCouponCount();
                     CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
@@ -392,13 +370,13 @@ public class IMOperationService {
                         storeResult.put("message",couponTemplate_.getCouponTitle()+"存量不足");
                         storeResult.put("promptInformation","请及时到\"优惠券管理\"补充");
                         storeResult.put("time",dateStr);
-                        backMessage = JSON.toJSONString(storeResult);
-                        HashMap<String, UserBean> userMap = user2Store.get(storeId);
-                        for (String userId : userMap.keySet()) {
-                            UserBean userBean = userMap.get(userId);
-                            if(userBean.getUserType()==UserBean.STORE){
-                                list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId));
-                            }
+                        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+                        for (Long id : waiters) {
+                            ChatTextMessage messagePublishPrivateVoiceMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(storeResult));
+                            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+                            String[] messagePublishPrivateToUserId = {id+""};
+                            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+                            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
                         }
 
                     }else{
@@ -409,10 +387,10 @@ public class IMOperationService {
                         couponService.createCouponTemplate(couponTemplate_);
                     }
                 }
-            }
+
 
             //添加桌位
-            tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
+
             if (null != tableInfo) {
                 tableInfo.setMaketableTime(new Date());
                 tableInfo = tableService.saveTableInfo(tableInfo);
@@ -429,57 +407,50 @@ public class IMOperationService {
             result.put("nickname", sender.getUsername());
             result.put("userIcon", sender.getUserIcon());
             result.put("redPackageId", redPackageId);
-            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE);
-
-            backMessage = JSON.toJSONString(result);
+            result.put("type", IMEvent.RECIEVED_RED_PACKAGE);
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
             if (null != map){
 
                 for (String receiverId : map.keySet()) {
-                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
+                    RecievedRedPackageMessage messagePublishPrivateVoiceMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+                    RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+                    String[] messagePublishPrivateToUserId = {receiverId};
+                    CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+                    System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
                 }
             }
 
-            return list;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
     }
 
     /**
      * 聊天
      *
-     * @param jsonObject 发送json
-     * @param sender 发送者
-     * @return jsonString
+     * @param userId
+     * @param storeId
+     * @param chatText
      */
-    private List<WebSocketMessageBean> chat(JSONObject jsonObject, User sender, String storeId) {
+    public void chat(String userId, String storeId,String chatText) throws Exception {
 
-        String message = jsonObject.getString("message");
-
-        if (null == message || message.length() == 0){
-            return null;
+        if (null == chatText || chatText.length() == 0){
+            return;
         }
 
-        String backMessage = createChatMessage(sender, message);
+        User sender = userService.findById(Long.parseLong(userId));
 
-        List<WebSocketMessageBean> list = new ArrayList<>();
+        String backMessage = createChatMessage(sender, chatText);
 
-        HashMap<String, UserBean> concurrentHashMap = user2Store.get(storeId);
+        ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),backMessage);
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        String[] messagePublishGroupToGroupId = {storeId};
+        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 
-        if (null != concurrentHashMap) {
-
-            for (String receiverId : concurrentHashMap.keySet()) {
-                list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
-            }
-        }
-
-        return list;
     }
 
     /**
@@ -488,7 +459,7 @@ public class IMOperationService {
      * @param message
      * @return
      */
-    private String createChatMessage(User sender, String message) {
+    public String createChatMessage(User sender, String message) {
         String dateStr = format.format(new Date());
 
         HashMap<String,Object> map = new HashMap<>();
@@ -507,32 +478,31 @@ public class IMOperationService {
     /**
      * 用户扫码进店
      *
-     * @param user 用户信息
-     * @param storeId 店铺id
-     * @return 消息列表
+     * @param userId
+     * @param storeId
      */
-    private List<WebSocketMessageBean> userComeInProc(User user, String storeId) {
-
-        Long userId = user.getUserId();
+    public void userComeInProc(String userId, String storeId) throws  Exception{
 
         if (null == storeId || null == userId) {
-            return null;
+            return;
         }
+
+        User user = userService.findById(Long.parseLong(userId));
 
         // 添加用户与商家关系 -> cache
         UserBean userBean = new UserBean();
-        userBean.setUserID(userId.toString());
+        userBean.setUserID(userId);
         userBean.setNumberPerTable(0);
         userBean.setUserType(1);
 
         user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
-        user2Store.get(storeId).put(userId + "", userBean);
+        user2Store.get(storeId).put(userId, userBean);
 
         HashMap<String, Object> result = Maps.newHashMap();
 
         // 添加用户与商家关系 -> db
         try {
-            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(userId, Long.parseLong(storeId));
+            UserStore userStore = userService.findUserStoreByUserIdAndStoreId(Long.parseLong(userId), Long.parseLong(storeId));
 
             Date date = new Date();
 
@@ -540,7 +510,7 @@ public class IMOperationService {
                 userStore = new UserStore();
                 userStore.setCreateTime(date);
                 userStore.setStoreId(Long.parseLong(storeId));
-                userStore.setUserId(userId);
+                userStore.setUserId(Long.parseLong(userId));
                 userStore.setCount(1L);
 
             } else {
@@ -561,28 +531,14 @@ public class IMOperationService {
             result.put("nickName", store.getStoreName());
             result.put("userIcon", store.getStoreIcon());
 
-            String backMessage = JSON.toJSONString(result);
-            List<WebSocketMessageBean> list = new ArrayList<>();
-
-            HashMap<String, UserBean> map = user2Store.get(storeId);
-
-
-            if (null != map) {
-
-                for (String receiverId : map.keySet()) {
-                    list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
-                }
-            }
+            EnterStoreMessage messagePublishGroupTxtMessage = new EnterStoreMessage(new Date().getTime(),JSON.toJSONString(result));
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+            String[] messagePublishGroupToGroupId = {storeId};
+            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 
             // 添加消息通知商家信息变更
-            List<WebSocketMessageBean> dinnerListMessage = getDinnerListMessage(storeId);
-
-            if (null != dinnerListMessage) {
-
-                list.addAll(dinnerListMessage);
-            }
-
-            return list;
+            getDinnerListMessage(storeId);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -593,11 +549,12 @@ public class IMOperationService {
         result.put("userId", userId);
         result.put("message", "用户进店失败");
 
-        String backMessage = JSON.toJSONString(result);
-        List<WebSocketMessageBean> list = new ArrayList<>();
-        list.add(new WebSocketMessageBean().setMessage(backMessage).toUser(userId + ""));
+        EnterStoreMessage messagePublishPrivateVoiceMessage = new EnterStoreMessage(new Date().getTime(),JSON.toJSONString(result));
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        String[] messagePublishPrivateToUserId = {userId};
+        CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+        System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
-        return list;
     }
 
     /**
@@ -634,7 +591,7 @@ public class IMOperationService {
      *
      * @param userId 用户ID
      */
-    public List<WebSocketMessageBean> removeRelationship(String userId){
+    public List<WebSocketMessageBean> removeRelationship(String userId) throws Exception{
 
         List<WebSocketMessageBean> allDinnerListMessage = new ArrayList<>();
         List<WebSocketMessageBean> dinnerListMessage;
@@ -645,12 +602,9 @@ public class IMOperationService {
             user2Store.get(storeId).remove(userId);
 
             // 通知商家用户离店
-            dinnerListMessage = getDinnerListMessage(storeId);
+            getDinnerListMessage(storeId);
 
-            if (null != dinnerListMessage){
 
-                allDinnerListMessage.addAll(dinnerListMessage);
-            }
 
         }
 

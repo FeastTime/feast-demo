@@ -13,13 +13,13 @@ public class IMEvent {
     public static final String SEND_RED_PACKAGE = "CM:sendRedPackage";
 
     // 收到红包
-    public static final String RECEIVED_RED_PACKAGE = "CM:receivedRedPackage";
+    public static final String RECIEVED_RED_PACKAGE = "CM:recievedRedPackage";
 
     // 打开红包
     public static final String OPEN_RED_PACKAGE = "CM:openRedPackage";
 
     // 获得红包奖励
-    public static final String RECEIVED_RED_PACKAGE_SURPRISED = "CM:receivedRedPackageSurprised";
+    public static final String RECIEVED_RED_PACKAGE_SURPRISED = "CM:recievedRedPackageSurprised";
 
     // 用餐人数变更通知
     public static final String WAITING_USER_CHANGED = "CM:waitingUserChanged";

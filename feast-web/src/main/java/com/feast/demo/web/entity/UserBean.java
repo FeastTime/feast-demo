@@ -9,7 +9,7 @@ public class UserBean {
 
     public static final int STORE = 2;
 
-    public static final int CUSTOMER = 2;
+    public static final int CUSTOMER = 1;
 
     private String userID;
     private String name;

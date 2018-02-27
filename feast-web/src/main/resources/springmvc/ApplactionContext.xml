@@ -42,6 +42,7 @@
             <mvc:exclude-mapping path="/user/storeLogin"/>
             <mvc:exclude-mapping path="/**/*.html"/>
             <mvc:exclude-mapping path="/favicon.ico"/>
+            <mvc:exclude-mapping path="/im"/>
             <bean class="com.feast.demo.web.controller.intercepter.LoginInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
