@@ -5,13 +5,13 @@ import io.rong.util.GsonUtil;
 public class OpenRedPackageMessage extends BaseMessage {
 
     private long mSendTime;
-    private String mContent;
+    private String content;
 
     private transient static final String TYPE = "CM:openRedPackage";
 
-    public OpenRedPackageMessage(long mSendTime,String mContent) {
+    public OpenRedPackageMessage(long mSendTime,String content) {
         this.mSendTime = mSendTime;
-        this.mContent = mContent;
+        this.content = content;
     }
 
     public String getType() {
@@ -26,12 +26,12 @@ public class OpenRedPackageMessage extends BaseMessage {
         this.mSendTime = mSendTime;
     }
 
-    public String getmContent() {
-        return mContent;
+    public String getContent() {
+        return content;
     }
 
-    public void setmContent(String mContent) {
-        this.mContent = mContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override

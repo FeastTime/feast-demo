@@ -5,13 +5,13 @@ import io.rong.util.GsonUtil;
 public class RecievedRedPackageMessage extends BaseMessage {
 
     private long mSendTime;
-    private String mContent;
+    private String content;
 
     private transient static final String TYPE = "CM:recievedRedPackage";
 
-    public RecievedRedPackageMessage(long mSendTime, String mContent) {
+    public RecievedRedPackageMessage(long mSendTime, String content) {
         this.mSendTime = mSendTime;
-        this.mContent = mContent;
+        this.content = content;
     }
 
     public String getType() {
@@ -26,15 +26,17 @@ public class RecievedRedPackageMessage extends BaseMessage {
         this.mSendTime = mSendTime;
     }
 
-    public String getmContent() {
-        return mContent;
+
+    public String getContent() {
+        return content;
     }
 
-    public void setmContent(String mContent) {
-        this.mContent = mContent;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @Override
+
     public String toString() {
         return GsonUtil.toJson(this, RecievedRedPackageMessage.class);
     }
