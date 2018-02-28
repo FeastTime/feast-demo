@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 
 /**
@@ -35,6 +36,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Service()
 public class IMOperationService {
+
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     // 用户与商户关系
     private static Map<String, HashMap<String, UserBean>> user2Store = Maps.newHashMap();
@@ -65,38 +68,6 @@ public class IMOperationService {
     @Autowired
     private StoreService storeService;
 
-
-    /**
-     * 长连接消息处理入口
-     *
-     * @param type 消息类型
-     * @param jsonObject JSONObject
-     * @param sender 发送者
-     * @param storeId 店铺ID
-     * @return 返回消息列表
-     */
-    public List<WebSocketMessageBean> WSInterfaceProc(int type, JSONObject jsonObject, User sender, String storeId){
-
-        switch(type){
-
-//          case WebSocketEvent.ENTER_STORE:
-//              return userComeInProc(sender, storeId);
-
-//          case WebSocketEvent.SEND_RED_PACKAGE:
-//              return sendRedPackage(jsonObject,sender,storeId);
-
-//          case WebSocketEvent.OPEN_RED_PACKAGE:
-//              return takeRedPackage(jsonObject, sender, storeId);
-
-//          case WebSocketEvent.SEND_MESSAGE:
-//              return chat(jsonObject, sender, storeId);
-
-//          case WebSocketEvent.SET_NUMBER_OF_USER:
-//              return setNumberOfUser(jsonObject,sender,storeId);
-        }
-
-        return null;
-    }
 
     /**
      * 设置就餐人数
@@ -488,6 +459,8 @@ public class IMOperationService {
     public void userComeInProc(String userId, String storeId) throws  Exception{
 
         if (null == storeId || null == userId) {
+
+            logger.info("userId or storeId  is null");
             return;
         }
 
@@ -543,8 +516,10 @@ public class IMOperationService {
 
             String[] messagePublishGroupToGroupId = {storeId};
 
-            if(user.getUserType()==UserBean.CUSTOMER){
-                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"",messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+
+            if(user.getUserType() == UserBean.CUSTOMER){
+
+                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("10007", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, JSON.toJSONString(result), "{\"pushData\":\"hello\"}", 1, 1, 0);
                 System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
             }
 
