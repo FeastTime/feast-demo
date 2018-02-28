@@ -151,13 +151,20 @@ public class IMOperationService {
         result.put("storeId",storeId);
         result.put("userId","system");
 
-        for (Long id : waiters) {
-            WaitingUserChangedMessage messagePublishPrivateVoiceMessage = new WaitingUserChangedMessage(new Date().getTime(),JSON.toJSONString(result));
-            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            String[] messagePublishPrivateToUserId = {id+""};
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
+
+        String[] messagePublishPrivateToUserId = new String[waiters.size()];
+
+        for (int i = 0; i < waiters.size(); i++) {
+
+            messagePublishPrivateToUserId[i] = waiters.get(i).toString();
         }
+
+        WaitingUserChangedMessage messagePublishPrivateVoiceMessage = new WaitingUserChangedMessage(new Date().getTime(),JSON.toJSONString(result));
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
+
+        CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+        System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
     }
     /**
      * 获取店铺食客人数列表
