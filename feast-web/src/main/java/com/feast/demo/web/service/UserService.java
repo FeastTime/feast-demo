@@ -171,12 +171,8 @@ public class UserService {
         return userRemoteService.findUserIdByStoreId(storeId);
     }
 
-    public String findUsernameById(Long id_) {
-        return userRemoteService.findUsernameById(id_);
-    }
-
-    public String findUserIconById(Long id_) {
-        return userRemoteService.findUserIconById(id_);
+    public ArrayList<User> findByStoreIdAndUserType(String storeId, int userType) {
+        return userRemoteService.findByStoreIdAndUserType(storeId,userType);
     }
 }
 

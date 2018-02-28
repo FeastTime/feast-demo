@@ -36,7 +36,6 @@ public class ImController {
     @RequestMapping(value = "/message",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
     public String loginUser(@RequestBody String text) throws Exception{
 
-
         if (null == text || text.length() == 0) {
             return "";
         }
@@ -45,94 +44,9 @@ public class ImController {
 
         logger.info(message);
 
-        Map<String, String> map =  URLParser.urlSplit(message);
-        String objectName = map.get("objectName");
-
-        String content = map.get("content");
-        JSONObject jsonObject = JSONObject.parseObject(content);
-
-        String resultMsg;
-        Byte resultCode;
-
-        // 用户聊天
-        if(objectName.equals(IMEvent.CHAT_TEXT)){
-            String chatText = jsonObject.getString("message");
-            String userId = jsonObject.getString("userId");
-            String storeId = jsonObject.getString("storeId");
-
-            if (null == message || message.length() == 0){
-                return null;
-            }
-
-            imOperationService.chat(userId,storeId,chatText);
-
-        }
-        // 发红包
-        else if(objectName.equals(IMEvent.SEND_RED_PACKAGE)){
-            TableInfo tableInfo;
-            try {
-
-                JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
-                List<CouponTemplate> couponList = null;
-                if(couponArray!=null) {
-                    couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
-                }
-                tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
-                String storeId = jsonObject.getString("storeId");
-                String userId = jsonObject.getString("userId");
-
-                imOperationService.sendRedPackage(userId,storeId,tableInfo,couponList);
-
-                resultCode = 0;
-                resultMsg = "发红包成功";
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                resultCode = 1;
-                resultMsg = "发红包失败";
-            }
-
-            Map<String,Object> result = Maps.newHashMap();
-
-            result.put("resultCode",resultCode);
-            result.put("resultMsg",resultMsg);
-
-            return JSON.toJSONString(result);
-        }
-        // 用餐人数变更通知
-        else if(objectName.equals(IMEvent.WAITING_USER_CHANGED)){
-
-            try {
-
-                Integer numberPerTable = jsonObject.getInteger("dinnerCount");
-                String storeId = jsonObject.getString("storeId");
-                String userId = jsonObject.getString("userId");
-
-                imOperationService.setNumberOfUser(numberPerTable, storeId, userId);
-
-                resultCode = 0;
-                resultMsg = "设置就餐人数成功";
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                resultCode = 1;
-                resultMsg = "设置就餐人数失败";
-            }
-
-            Map<String,Object> result = Maps.newHashMap();
-
-            result.put("resultCode",resultCode);
-            result.put("resultMsg",resultMsg);
-
-            return JSON.toJSONString(result);
-        }
-
         return "";
-    }
-    //拆红包
 
+    }
 
     /**
      * url 解码

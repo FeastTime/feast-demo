@@ -7,7 +7,7 @@ public class EnterStoreMessage extends BaseMessage {
     private long mSendTime;
     private String mContent;
 
-    private transient static final String TYPE = "CM:openRedPackage";
+    private transient static final String TYPE = "CM:enterStore";
 
     public EnterStoreMessage(long mSendTime,String mContent) {
         this.mSendTime = mSendTime;

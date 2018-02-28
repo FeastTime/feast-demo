@@ -531,11 +531,15 @@ public class IMOperationService {
             result.put("nickName", store.getStoreName());
             result.put("userIcon", store.getStoreIcon());
 
-            EnterStoreMessage messagePublishGroupTxtMessage = new EnterStoreMessage(new Date().getTime(),JSON.toJSONString(result));
+            ArrayList<User> waiters = userService.findByStoreIdAndUserType(storeId,UserBean.STORE);
+
+            ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
             String[] messagePublishGroupToGroupId = {storeId};
-            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
-            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
+            if(user.getUserType()==UserBean.CUSTOMER){
+                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0).getUserId()+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
+            }
 
             // 添加消息通知商家信息变更
             getDinnerListMessage(storeId);

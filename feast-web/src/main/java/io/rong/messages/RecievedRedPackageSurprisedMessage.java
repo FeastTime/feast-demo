@@ -7,7 +7,7 @@ public class RecievedRedPackageSurprisedMessage extends BaseMessage {
     private long mSendTime;
     private String mContent;
 
-    private transient static final String TYPE = "CM:openRedPackage";
+    private transient static final String TYPE = "CM:recievedRedPackageSurprised";
 
     public RecievedRedPackageSurprisedMessage(long mSendTime, String mContent) {
         this.mSendTime = mSendTime;

@@ -41,7 +41,7 @@ public class WaitingUserChangedMessage extends BaseMessage {
 
     @Override
     public String toString() {
-        return GsonUtil.toJson(this, WaitingUserChangedMessage                                                                                                                                                                                                                                                                                                                                                                                                .class);
+        return GsonUtil.toJson(this, WaitingUserChangedMessage.class);
     }
 
 }
