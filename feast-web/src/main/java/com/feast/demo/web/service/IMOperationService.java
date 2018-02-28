@@ -291,7 +291,7 @@ public class IMOperationService {
             // 添加发送者
             result.put("userId", "system");
             result.put("message", message);
-            result.put("type", IMEvent.RECIEVED_RED_PACKAGE);
+            result.put("type", IMEvent.RECEIVED_RED_PACKAGE);
 
             OpenRedPackageMessage messagePublishPrivateVoiceMessage = new OpenRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
