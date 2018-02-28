@@ -29,9 +29,11 @@ public class RedPackageController {
 
     @RequestMapping(value = "/sendRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String sendRedPackage(HttpServletRequest servletRequest){
+
         Byte resultCode;
         String resultMsg;
         TableInfo tableInfo;
+
         try {
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
@@ -78,6 +80,7 @@ public class RedPackageController {
 
         String resultMsg;
         Byte resultCode;
+        Map<String,Object> result = Maps.newHashMap();
 
         try {
             String text = (String) servletRequest.getAttribute("json");
@@ -89,7 +92,7 @@ public class RedPackageController {
             String userId = obj.getString("userId");
             String storeId = obj.getString("storeId");
 
-            imOperationService.takeRedPackage(redPackageId,userId,storeId);
+            result.putAll(imOperationService.takeRedPackage(redPackageId,userId,storeId));
 
             resultCode = 0;
             resultMsg = "拆红包成功";
@@ -101,7 +104,7 @@ public class RedPackageController {
             resultMsg = "拆红包失败";
         }
 
-        Map<String,Object> result = Maps.newHashMap();
+
 
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);

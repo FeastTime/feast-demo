@@ -167,36 +167,32 @@ public class IMOperationService {
     /**
      * 拆红包
      *
-     * @param redPackageId
-     * @param userId
-     * @param storeId
+     * @param redPackageId 红包ID
+     * @param userId 用户ID
+     * @param storeId 店铺ID
      */
 
-    public void takeRedPackage(String redPackageId,String userId,String storeId) {
+    public Map<String, Object> takeRedPackage(String redPackageId,String userId,String storeId) {
 
+        Map<String, Object> result = Maps.newHashMap();
         try {
             lock.lock();
 
             List<Object> redPackage = redPackages.get(redPackageId);
             redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
 
-            String message = "";
-            Map<String, Object> result = Maps.newHashMap();
-
-            String broadcastMessage = ""; //“昵称”手气太棒了，恭喜 得到 “详细奖项”！
-
             List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
             if (null == redPackages || redPackage.size() == 0) {
 
-                message = "对不起，您来晚了";
+                result.put("message", "对不起，您来晚了");
                 // 删除缓存数据
                 redPackages.remove(redPackageId);
                 redId2UserId.remove(redPackageId+"");
 
             } else if (redId2UserId.get(redPackageId+"").contains(userId)) {
 
-                message = "您已经抢过这个红包了";
+                result.put("message", "您已经抢过这个红包了");
 
             } else {
 
@@ -212,13 +208,13 @@ public class IMOperationService {
                     String[] supportSeatNumbers = tableInfo.getSuportSeatNumber().split(",");
 
                     for (String supportSeatNumber : supportSeatNumbers) {
+
                         System.out.println(supportSeatNumber+"===="+user2Store.get(storeId).get(userId).getNumberPerTable());
                         if(Integer.parseInt(supportSeatNumber)==user2Store.get(storeId).get(userId).getNumberPerTable()){
 
                             tableInfo.setUserPhone(user.getMobileNo());
                             tableInfo.setUserIcon(user.getUserIcon());
                             tableInfo.setUserNickname(user.getNickName());
-                            broadcastMessage = user.getNickName()+"手气太棒了，恭喜获得一个桌位！";
 
                             tableInfo.setUserId(Long.parseLong(userId));
                             tableInfo.setIsCome(1);
@@ -230,13 +226,22 @@ public class IMOperationService {
 
                             result.put("tableInfo", tableInfo);
                             redPackage.remove(0);
-                            message = "恭喜您获得一个桌位";
+                            result.put("message", "恭喜您获得一个桌位");
 
-                            broadcastMessage = createChatMessage(user,broadcastMessage);
 
                             String[] messagePublishGroupToGroupId = {storeId};
-                            RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
+
+
+                            Map<String ,Object> sendMessageMap = new HashMap<>();
+                            sendMessageMap.put("date", new Date());
+                            sendMessageMap.put("message", user.getNickName()+"手气太棒了！，恭喜您获得一个桌位！");
+
+
+                            ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(), JSON.toJSONString(sendMessageMap));
+
+
                             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
                             CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                             System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                             hasGetTable = true;
@@ -252,12 +257,14 @@ public class IMOperationService {
                         randomSize-- ;
                     }
                     if(randomSize<=0){
-                        message = "对不起，您来晚了";
+
+                        result.put("message", "对不起，您来晚了");
                     }else{
                         int i = random.nextInt(randomSize);
 
                         CouponTemplate couponTemplate = (CouponTemplate) redPackage.get(i);
                         couponTemplate = couponService.findCouponTemplateById(couponTemplate.getId());
+
                         UserCoupon userCoupon = new UserCoupon();
                         userCoupon.setCouponCode(CouponIdCreator.nextId());
                         userCoupon.setCouponTitle(couponTemplate.getCouponTitle());
@@ -274,30 +281,29 @@ public class IMOperationService {
 
                         redId2UserId.get(redPackageId+"").add(userId);
                         result.put("couponInfo", userCoupon);
-                        message = "恭喜您获得一张优惠券";
-                        broadcastMessage = user.getNickName()+"手气太棒了，恭喜获得一个优惠券！";
+                        result.put("message", "恭喜您获得一张优惠券");
+
                         redPackage.remove(i);
-                        broadcastMessage = createChatMessage(user,broadcastMessage);
 
                         String[] messagePublishGroupToGroupId = {storeId};
-                        RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
+
+
+                        Map<String ,Object> sendMessageMap = new HashMap<>();
+                        sendMessageMap.put("date", new Date());
+                        sendMessageMap.put("message", user.getNickName()+"手气不错哦！，恭喜获得一个优惠券！");
+
+
+                        ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(), JSON.toJSONString(sendMessageMap));
+
+
                         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
                         CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                         System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                     }
                 }
             }
 
-            // 添加发送者
-            result.put("userId", "system");
-            result.put("message", message);
-            result.put("type", IMEvent.RECEIVED_RED_PACKAGE);
-
-            ReceivedRedPackageSurprisedMessage messagePublishPrivateVoiceMessage = new ReceivedRedPackageSurprisedMessage(new Date().getTime(),JSON.toJSONString(result));
-            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            String[] messagePublishPrivateToUserId = {userId};
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(waiters.get(0)+"", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,15 +311,17 @@ public class IMOperationService {
             lock.unlock();
         }
 
+        return result;
+
     }
 
     /**
      * 发红包
      *
-     * @param userId
-     * @param storeId
-     * @param tableInfo
-     * @param couponList
+     * @param userId 用户ID
+     * @param storeId 店铺ID
+     * @param tableInfo 桌位信息
+     * @param couponList 优惠券信息
      */
     public void sendRedPackage(String userId,String storeId,TableInfo tableInfo,List<CouponTemplate> couponList) {
 
@@ -395,28 +403,6 @@ public class IMOperationService {
 
 
     /**
-     * 创建聊天消息
-     * @param sender
-     * @param message
-     * @return
-     */
-    public String createChatMessage(User sender, String message) {
-        String dateStr = format.format(new Date());
-
-        HashMap<String,Object> map = new HashMap<>();
-
-        map.put("userId", sender.getUserId());
-        map.put("nickname", sender.getNickName());
-        map.put("userIcon", sender.getUserIcon());
-        map.put("date", dateStr);
-        map.put("type", WebSocketEvent.RECEIVED_MESSAGE);
-        map.put("message", message);
-
-        return JSON.toJSONString(map);
-    }
-
-
-    /**
      * 用户扫码进店
      *
      * @param userId 用户ID
@@ -467,7 +453,6 @@ public class IMOperationService {
 
             Store store = storeService.getStoreInfo(Long.parseLong(storeId));
 
-            result.put("type", WebSocketEvent.RECEIVED_MESSAGE);
             result.put("date", new Date());
             result.put("userId", userId);
             result.put("message", "欢迎" + user.getNickName() + "进店！店小二祝您用餐愉快");
@@ -495,7 +480,6 @@ public class IMOperationService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -663,8 +647,5 @@ public class IMOperationService {
         }
 
     }
-
-
-
 
 }
