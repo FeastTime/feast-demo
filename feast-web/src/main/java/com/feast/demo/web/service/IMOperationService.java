@@ -293,7 +293,7 @@ public class IMOperationService {
             result.put("message", message);
             result.put("type", IMEvent.RECEIVED_RED_PACKAGE);
 
-            OpenRedPackageMessage messagePublishPrivateVoiceMessage = new OpenRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+            ReceivedRedPackageSurprisedMessage messagePublishPrivateVoiceMessage = new ReceivedRedPackageSurprisedMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
             String[] messagePublishPrivateToUserId = {userId};
             CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(waiters.get(0)+"", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);

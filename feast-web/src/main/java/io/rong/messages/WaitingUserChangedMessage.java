@@ -1,6 +1,7 @@
 package io.rong.messages;
 
 
+import com.feast.demo.web.service.IMEvent;
 import io.rong.util.GsonUtil;
 
 /**
@@ -12,7 +13,7 @@ public class WaitingUserChangedMessage extends BaseMessage {
     private long mSendTime;
     private String content;
 
-    private transient static final String TYPE = "CM:waitingUserChanged";
+    private transient static final String TYPE = IMEvent.WAITING_USER_CHANGED;
 
     public WaitingUserChangedMessage(long mSendTime,String content) {
         this.mSendTime = mSendTime;

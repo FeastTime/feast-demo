@@ -1,5 +1,6 @@
 package io.rong.messages;
 
+import com.feast.demo.web.service.IMEvent;
 import io.rong.util.GsonUtil;
 
 public class ReceivedRedPackageMessage extends BaseMessage {
@@ -7,7 +8,7 @@ public class ReceivedRedPackageMessage extends BaseMessage {
     private long mSendTime;
     private String content;
 
-    private transient static final String TYPE = "CM:receivedRedPackage";
+    private transient static final String TYPE = IMEvent.RECEIVED_RED_PACKAGE;
 
     public ReceivedRedPackageMessage(long mSendTime, String content) {
         this.mSendTime = mSendTime;

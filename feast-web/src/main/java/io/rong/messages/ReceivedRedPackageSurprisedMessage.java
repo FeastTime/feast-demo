@@ -1,15 +1,16 @@
 package io.rong.messages;
 
+import com.feast.demo.web.service.IMEvent;
 import io.rong.util.GsonUtil;
 
-public class RecievedRedPackageSurprisedMessage extends BaseMessage {
+public class ReceivedRedPackageSurprisedMessage extends BaseMessage {
 
     private long mSendTime;
     private String content;
 
-    private transient static final String TYPE = "CM:recievedRedPackageSurprised";
+    private transient static final String TYPE = IMEvent.RECEIVED_RED_PACKAGE_SURPRISED;
 
-    public RecievedRedPackageSurprisedMessage(long mSendTime, String content) {
+    public ReceivedRedPackageSurprisedMessage(long mSendTime, String content) {
         this.mSendTime = mSendTime;
         this.content = content;
     }
@@ -36,6 +37,6 @@ public class RecievedRedPackageSurprisedMessage extends BaseMessage {
 
     @Override
     public String toString() {
-        return GsonUtil.toJson(this, RecievedRedPackageSurprisedMessage.class);
+        return GsonUtil.toJson(this, ReceivedRedPackageSurprisedMessage.class);
     }
 }
