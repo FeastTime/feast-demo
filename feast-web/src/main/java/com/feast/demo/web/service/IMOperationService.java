@@ -348,7 +348,7 @@ public class IMOperationService {
 
                             messagePublishPrivateToUserId[i] = waiters.get(i).toString();
                         }
-                        ChatTextMessage messagePublishPrivateVoiceMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(storeResult));
+                        SendRedPackageMessage messagePublishPrivateVoiceMessage = new SendRedPackageMessage(new Date().getTime(),JSON.toJSONString(storeResult));
                         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
                         CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
                         System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
@@ -384,22 +384,11 @@ public class IMOperationService {
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
-            String[] messagePublishPrivateToUserId = new String[map.keySet().size()];
-
-            int i = 0;
-
-            if (null != map){
-
-                for (String receiverId : map.keySet()) {
-                    messagePublishPrivateToUserId[i] = receiverId;
-                    i++;
-                }
-            }
-
-            RecievedRedPackageMessage messagePublishPrivateVoiceMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+            String[] messagePublishGroupToGroupId = {storeId};
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(userId, messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
+            RecievedRedPackageMessage messagePublishGroupTxtMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("userId", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
