@@ -169,8 +169,8 @@ public class UserServiceImpl implements UserService{
         return userDao.findUserIdByStoreId(storeId);
     }
 
-    public ArrayList<User> findByStoreIdAndUserType(String storeId, int userType) {
-        return userDao.findByStoreIdAndUserType(Long.parseLong(storeId),userType);
+    public ArrayList<Long> findUserIdByStoreIdAndUserType(String storeId, int userType) {
+        return userDao.findUserIdByStoreIdAndUserType(storeId,userType);
     }
 
 }

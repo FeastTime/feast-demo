@@ -149,7 +149,7 @@ public class IMOperationService {
         Map<String,Object> result = Maps.newHashMap();
 
         result.put("dinnerList",getDinnerList(storeId));
-        result.put("type", WebSocketEvent.WAITING_USER_CHANGED_NOTIFY);
+        result.put("type", IMEvent.WAITING_USER_CHANGED);
         result.put("storeId",storeId);
         result.put("userId","system");
 
@@ -530,7 +530,7 @@ public class IMOperationService {
             result.put("nickName", store.getStoreName());
             result.put("userIcon", store.getStoreIcon());
 
-            ArrayList<User> waiters = userService.findByStoreIdAndUserType(storeId,UserBean.STORE);
+            ArrayList<Long> waiters = userService.findUserIdByStoreIdAndUserType(storeId,UserBean.STORE);
 
             ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(result));
 
@@ -539,8 +539,7 @@ public class IMOperationService {
             String[] messagePublishGroupToGroupId = {storeId};
 
             if(user.getUserType()==UserBean.CUSTOMER){
-
-                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0).getUserId()+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"",messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                 System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
             }
 

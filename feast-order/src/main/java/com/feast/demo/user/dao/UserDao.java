@@ -35,16 +35,11 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     @Query("select u.userId from User u where u.storeId = ?1")
     ArrayList<Long> findUserIdByStoreId(Long storeId);
 
-    @Query("select u.nickName from User u where u.userId = ?1")
-    String findUsernameByUserId(Long id_);
-
-    @Query("select u.userIcon from User u where u.userId = ?1")
-    String findUserIconById(Long id_);
-
     @Query("select u.mobileNo from User u where u.userId = ?1")
     String findMobileNoByUserId(Long userId);
 
-    ArrayList<User> findByStoreIdAndUserType(Long storeId, int userType);
+    @Query("select u.userId from User u where u.storeId = ?1 and u.userType = ?2")
+    ArrayList<Long> findUserIdByStoreIdAndUserType(String storeId, int userType);
 
 
 

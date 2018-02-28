@@ -171,8 +171,8 @@ public class UserService {
         return userRemoteService.findUserIdByStoreId(storeId);
     }
 
-    public ArrayList<User> findByStoreIdAndUserType(String storeId, int userType) {
-        return userRemoteService.findByStoreIdAndUserType(storeId,userType);
+    public ArrayList<Long> findUserIdByStoreIdAndUserType(String storeId, int userType) {
+        return userRemoteService.findUserIdByStoreIdAndUserType(storeId,userType);
     }
 }
 
