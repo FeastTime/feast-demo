@@ -1,7 +1,6 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
@@ -530,7 +529,7 @@ public class IMOperationService {
             result.put("nickName", store.getStoreName());
             result.put("userIcon", store.getStoreIcon());
 
-            ArrayList<Long> waiters = userService.findUserIdByStoreIdAndUserType(storeId,UserBean.STORE);
+            ArrayList<Long> waiters = userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
 
             ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(result));
 

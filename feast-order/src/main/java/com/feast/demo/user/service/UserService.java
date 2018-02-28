@@ -55,5 +55,6 @@ public interface UserService {
 
     public ArrayList<Long> findUserIdByStoreId(Long storeId);
 
-    public ArrayList<Long> findUserIdByStoreIdAndUserType(String storeId, int userType);
+    public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, int userType);
 }
+
