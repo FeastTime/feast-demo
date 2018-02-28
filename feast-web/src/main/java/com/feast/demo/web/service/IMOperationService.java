@@ -171,6 +171,7 @@ public class IMOperationService {
      * @param userId
      * @param storeId
      */
+
     public void takeRedPackage(String redPackageId,String userId,String storeId) {
 
         try {
@@ -184,7 +185,7 @@ public class IMOperationService {
 
             String broadcastMessage = ""; //“昵称”手气太棒了，恭喜 得到 “详细奖项”！
 
-            List<WebSocketMessageBean> list = new ArrayList<>();
+            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
             if (null == redPackages || redPackage.size() == 0) {
 
@@ -204,6 +205,7 @@ public class IMOperationService {
                 boolean hasGetTable = false;
 
                 User user = userService.findById(Long.parseLong(userId));
+
                 if (lastObject instanceof TableInfo) {
 
                     TableInfo tableInfo = (TableInfo) lastObject;
@@ -235,7 +237,7 @@ public class IMOperationService {
                             String[] messagePublishGroupToGroupId = {storeId};
                             RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
                             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-                            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("system", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                             System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                             hasGetTable = true;
                             break;
@@ -280,7 +282,7 @@ public class IMOperationService {
                         String[] messagePublishGroupToGroupId = {storeId};
                         RecievedRedPackageSurprisedMessage messagePublishGroupTxtMessage = new RecievedRedPackageSurprisedMessage(new Date().getTime(),broadcastMessage);
                         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-                        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("system", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+                        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                         System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
                     }
                 }
@@ -289,9 +291,7 @@ public class IMOperationService {
             // 添加发送者
             result.put("userId", "system");
             result.put("message", message);
-            result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE_SURPRISED);
-
-            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+            result.put("type", IMEvent.RECIEVED_RED_PACKAGE);
 
             OpenRedPackageMessage messagePublishPrivateVoiceMessage = new OpenRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
