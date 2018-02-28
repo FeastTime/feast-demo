@@ -418,17 +418,22 @@ public class IMOperationService {
 
             HashMap<String, UserBean> map = user2Store.get(storeId);
 
+            String[] messagePublishPrivateToUserId = new String[map.keySet().size()];
+
+            int i = 0;
+
             if (null != map){
 
                 for (String receiverId : map.keySet()) {
-                    RecievedRedPackageMessage messagePublishPrivateVoiceMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
-                    RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-                    String[] messagePublishPrivateToUserId = {receiverId};
-                    CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-                    System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
+                    messagePublishPrivateToUserId[i] = receiverId;
+                    i++;
                 }
             }
 
+            RecievedRedPackageMessage messagePublishPrivateVoiceMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(userId, messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
