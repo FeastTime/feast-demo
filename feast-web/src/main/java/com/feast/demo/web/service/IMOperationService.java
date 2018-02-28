@@ -134,12 +134,11 @@ public class IMOperationService {
 
 
     /**
-     * 获取 就餐人数返回消息
+     * 通知商家人数变更
      *
      * @param storeId 商家ID
-     * @return 消息列表
      */
-    private void getDinnerListMessage(String storeId) throws Exception{
+    private void sendDinnerListChangeMessage(String storeId) throws Exception{
 
         List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
@@ -478,8 +477,8 @@ public class IMOperationService {
     /**
      * 用户扫码进店
      *
-     * @param userId
-     * @param storeId
+     * @param userId 用户ID
+     * @param storeId 商家ID
      */
     public void userComeInProc(String userId, String storeId) throws  Exception{
 
@@ -534,30 +533,24 @@ public class IMOperationService {
             ArrayList<User> waiters = userService.findByStoreIdAndUserType(storeId,UserBean.STORE);
 
             ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(result));
+
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
             String[] messagePublishGroupToGroupId = {storeId};
+
             if(user.getUserType()==UserBean.CUSTOMER){
+
                 CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0).getUserId()+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                 System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
             }
 
-            // 添加消息通知商家信息变更
-            getDinnerListMessage(storeId);
+            // 通知商家人数变更
+            sendDinnerListChangeMessage(storeId);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        result.put("type", WebSocketEvent.RECEIVED_MESSAGE);
-        result.put("date", new Date());
-        result.put("userId", userId);
-        result.put("message", "用户进店失败");
-
-        EnterStoreMessage messagePublishPrivateVoiceMessage = new EnterStoreMessage(new Date().getTime(),JSON.toJSONString(result));
-        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-        String[] messagePublishPrivateToUserId = {userId};
-        CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-        System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
     }
 
@@ -606,9 +599,7 @@ public class IMOperationService {
             user2Store.get(storeId).remove(userId);
 
             // 通知商家用户离店
-            getDinnerListMessage(storeId);
-
-
+            sendDinnerListChangeMessage(storeId);
 
         }
 
