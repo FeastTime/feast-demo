@@ -283,10 +283,12 @@ public class IMOperationService {
             result.put("message", message);
             result.put("type", WebSocketEvent.RECEIVED_RED_PACKAGE_SURPRISED);
 
+            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+
             OpenRedPackageMessage messagePublishPrivateVoiceMessage = new OpenRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
             String[] messagePublishPrivateToUserId = {userId};
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(waiters.get(0)+"", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
             System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
 
         } catch (Exception e) {
