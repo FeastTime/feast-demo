@@ -1,7 +1,6 @@
 package com.feast.demo.web.service;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.history.entity.UserStore;
@@ -411,30 +410,6 @@ public class IMOperationService {
         }
     }
 
-    /**
-     * 聊天
-     *
-     * @param userId
-     * @param storeId
-     * @param chatText
-     */
-    public void chat(String userId, String storeId,String chatText) throws Exception {
-
-        if (null == chatText || chatText.length() == 0){
-            return;
-        }
-
-        User sender = userService.findById(Long.parseLong(userId));
-
-        String backMessage = createChatMessage(sender, chatText);
-
-        ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),backMessage);
-        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-        String[] messagePublishGroupToGroupId = {storeId};
-        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
-        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
-
-    }
 
     /**
      * 创建聊天消息
@@ -527,7 +502,7 @@ public class IMOperationService {
 
             if(user.getUserType() == UserBean.CUSTOMER){
 
-                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("10007", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, JSON.toJSONString(result), "{\"pushData\":\"hello\"}", 1, 1, 0);
+                CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0).toString(), messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "", "", 1, 1, 0);
                 System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
             }
 
