@@ -62,7 +62,6 @@ public class User extends TimedEntity implements Serializable{
      */
     private String userIcon;
 
-
     private Long storeId;
 
     private Integer sex;
@@ -71,7 +70,7 @@ public class User extends TimedEntity implements Serializable{
 
     private String area;
 
-    private String personal_Explanation;
+    private String personalExplanation;
 
     private Date birthday;
 
