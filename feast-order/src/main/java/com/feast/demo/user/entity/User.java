@@ -4,6 +4,7 @@ import com.feast.demo.hibernate.TimedEntity;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -63,4 +64,15 @@ public class User extends TimedEntity implements Serializable{
 
 
     private Long storeId;
+
+    private Integer sex;
+
+    private String servicePhone;
+
+    private String area;
+
+    private String personal_Explanation;
+
+    private Date birthday;
+
 }
