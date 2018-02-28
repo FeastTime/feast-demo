@@ -535,6 +535,11 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+    /** 设置就餐人数
+     *
+     * @param servletRequest HttpServletRequest
+     * @return 是否成功的消息
+     */
     @RequestMapping(value = "/userComeInProc",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String userComeInProc(HttpServletRequest servletRequest){
 
@@ -560,6 +565,47 @@ public class UserController {
 
             resultCode = 1;
             resultMsg = "用户进店失败";
+        }
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+
+        return JSON.toJSONString(result);
+    }
+
+    /** 设置就餐人数
+     *
+     * @param servletRequest HttpServletRequest
+     * @return 是否成功的消息
+     */
+    @RequestMapping(value = "/setTheNumberOfDiners",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String setTheNumberOfDiners(HttpServletRequest servletRequest){
+
+        String resultMsg;
+        Byte resultCode;
+
+        try {
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+
+            JSONObject obj = JSONObject.parseObject(text);
+            String userId = obj.getString("userId");
+            int numberOfDiners = obj.getInteger("dinnerCount");
+            String storeId = obj.getString("storeId");
+
+            imOperationService.setNumberOfUser(numberOfDiners, storeId, userId);
+
+            resultCode = 0;
+            resultMsg = "设置用餐人数成功";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            resultCode = 1;
+            resultMsg = "设置用餐人数失败";
         }
 
         Map<String,Object> result = Maps.newHashMap();

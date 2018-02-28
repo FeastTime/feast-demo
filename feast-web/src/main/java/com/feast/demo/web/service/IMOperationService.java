@@ -82,22 +82,8 @@ public class IMOperationService {
 
         user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
 
-        Map<String,Object> result = Maps.newHashMap();
-
-        result.put("dinnerList",getDinnerList(storeId));
-        result.put("type",IMEvent.WAITING_USER_CHANGED);
-        result.put("storeId",storeId);
-        result.put("userId","system");
-
         List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
-
-        for (Long id : waiters) {
-            WaitingUserChangedMessage messagePublishPrivateVoiceMessage = new WaitingUserChangedMessage(new Date().getTime(),JSON.toJSONString(result));
-            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            String[] messagePublishPrivateToUserId = {id+""};
-            CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate("system", messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-            System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
-        }
+        sendDinnerListChangeMessage(storeId, waiters);
 
     }
 
