@@ -382,12 +382,10 @@ public class IMOperationService {
             result.put("redPackageId", redPackageId);
             result.put("type", IMEvent.RECIEVED_RED_PACKAGE);
 
-            HashMap<String, UserBean> map = user2Store.get(storeId);
-
             String[] messagePublishGroupToGroupId = {storeId};
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
             RecievedRedPackageMessage messagePublishGroupTxtMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
-            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup("userId", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
             System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 
         } catch (Exception e) {
