@@ -72,7 +72,6 @@ public class IMOperationService {
      * 设置就餐人数
      *
      ** @param storeId 店铺ID
-     * @return 消息列表
      */
     public void setNumberOfUser(Integer numberPerTable, String storeId,String userId) throws Exception{
 
@@ -80,11 +79,22 @@ public class IMOperationService {
             return;
         }
 
+        user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
+
+        if(!user2Store.get(storeId).containsKey(userId)){
+
+            // 添加用户与商家关系 -> cache
+            UserBean userBean = new UserBean();
+            userBean.setUserID(userId);
+            userBean.setNumberPerTable(0);
+            userBean.setUserType(1);
+            user2Store.get(storeId).put(userId, userBean);
+        }
+
         user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
 
         List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
         sendDinnerListChangeMessage(storeId, waiters);
-
     }
 
 
@@ -103,9 +113,7 @@ public class IMOperationService {
         Map<String,Object> result = Maps.newHashMap();
 
         result.put("dinnerList",getDinnerList(storeId));
-        result.put("type", IMEvent.WAITING_USER_CHANGED);
         result.put("storeId",storeId);
-        result.put("userId","system");
 
 
         String[] messagePublishPrivateToUserId = new String[waiters.size()];
