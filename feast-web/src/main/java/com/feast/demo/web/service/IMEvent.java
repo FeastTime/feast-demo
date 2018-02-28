@@ -13,7 +13,7 @@ public class IMEvent {
     public static final String SEND_RED_PACKAGE = "CM:sendRedPackage";
 
     // 收到红包
-    public static final String RECIEVED_RED_PACKAGE = "CM:recievedRedPackage";
+    public static final String RECEIVED_RED_PACKAGE = "CM:receivedRedPackage";
 
     // 打开红包
     public static final String OPEN_RED_PACKAGE = "CM:openRedPackage";

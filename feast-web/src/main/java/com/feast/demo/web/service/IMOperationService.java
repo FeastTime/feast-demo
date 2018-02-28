@@ -380,11 +380,11 @@ public class IMOperationService {
             result.put("nickname", sender.getUsername());
             result.put("userIcon", sender.getUserIcon());
             result.put("redPackageId", redPackageId);
-            result.put("type", IMEvent.RECIEVED_RED_PACKAGE);
+
 
             String[] messagePublishGroupToGroupId = {storeId};
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            RecievedRedPackageMessage messagePublishGroupTxtMessage = new RecievedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
+            ReceivedRedPackageMessage messagePublishGroupTxtMessage = new ReceivedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
             CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
             System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
 

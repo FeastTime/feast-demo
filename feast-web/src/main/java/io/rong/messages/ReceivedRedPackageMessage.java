@@ -2,14 +2,14 @@ package io.rong.messages;
 
 import io.rong.util.GsonUtil;
 
-public class RecievedRedPackageMessage extends BaseMessage {
+public class ReceivedRedPackageMessage extends BaseMessage {
 
     private long mSendTime;
     private String content;
 
-    private transient static final String TYPE = "CM:recievedRedPackage";
+    private transient static final String TYPE = "CM:receivedRedPackage";
 
-    public RecievedRedPackageMessage(long mSendTime, String content) {
+    public ReceivedRedPackageMessage(long mSendTime, String content) {
         this.mSendTime = mSendTime;
         this.content = content;
     }
@@ -38,6 +38,6 @@ public class RecievedRedPackageMessage extends BaseMessage {
     @Override
 
     public String toString() {
-        return GsonUtil.toJson(this, RecievedRedPackageMessage.class);
+        return GsonUtil.toJson(this, ReceivedRedPackageMessage.class);
     }
 }
