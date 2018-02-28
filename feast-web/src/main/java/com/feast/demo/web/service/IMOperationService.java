@@ -137,11 +137,10 @@ public class IMOperationService {
      *
      * @param storeId 商家ID
      */
-    private void sendDinnerListChangeMessage(String storeId) throws Exception{
+    private void sendDinnerListChangeMessage(String storeId, List<Long> waiters) throws Exception{
 
-        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
-        if (null == waiters) {
+        if (null == waiters || waiters.size() == 0) {
             return;
         }
 
@@ -543,7 +542,7 @@ public class IMOperationService {
             }
 
             // 通知商家人数变更
-            sendDinnerListChangeMessage(storeId);
+            sendDinnerListChangeMessage(storeId, waiters);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -591,13 +590,16 @@ public class IMOperationService {
         List<WebSocketMessageBean> allDinnerListMessage = new ArrayList<>();
         List<WebSocketMessageBean> dinnerListMessage;
 
+
         for (String storeId : user2Store.keySet()) {
 
             // 将连接  从  用户与商户的关系结构中 删除
             user2Store.get(storeId).remove(userId);
 
+            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+
             // 通知商家用户离店
-            sendDinnerListChangeMessage(storeId);
+            sendDinnerListChangeMessage(storeId, waiters);
 
         }
 
