@@ -14,7 +14,7 @@ public class ImController {
     Logger logger = Logger.getLogger(this.getClass().getName());
 
     @RequestMapping(value = "/message",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
-    public String loginUser(@RequestBody String text) throws Exception{
+    public String message(@RequestBody String text) throws Exception{
 
         if (null == text || text.length() == 0) {
             return "";
@@ -27,6 +27,24 @@ public class ImController {
         return "";
 
     }
+
+
+    @RequestMapping(value = "/userStatus",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String userStatus(@RequestBody String text) throws Exception{
+
+        if (null == text || text.length() == 0) {
+            return "";
+        }
+
+        String message = getURLDecoderString(text);
+
+        logger.info("用户状态监听消息     ：      " + message);
+
+        return "";
+
+    }
+
+
 
     /**
      * url 解码
