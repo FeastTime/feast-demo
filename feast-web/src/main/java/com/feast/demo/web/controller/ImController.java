@@ -1,10 +1,12 @@
 package com.feast.demo.web.controller;
 
-
+import com.alibaba.fastjson.JSONArray;
+import com.feast.demo.web.entity.UserStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
@@ -25,7 +27,6 @@ public class ImController {
         logger.info(message);
 
         return "";
-
     }
 
 
@@ -38,10 +39,20 @@ public class ImController {
 
         String message = getURLDecoderString(text);
 
+        List<UserStatus> list = JSONArray.parseArray(message, UserStatus.class);
+//        ArrayList<UserStatus> list = JSON.parseObject(message, new TypeReference<ArrayList<UserStatus>>(){});
+
         logger.info("用户状态监听消息     ：      " + message);
 
-        return "";
+        for (UserStatus userStatus : list) {
+            logger.info("userStatus     ：   getUserid   :  "
+                    + userStatus.getUserid()
+                    + "   --getTime--- :  " + userStatus.getTime()
+                    + "   --getOs--- :   " + userStatus.getOs()
+                    + "   --getStatus--- :   " + userStatus.getStatus());
+        }
 
+        return "";
     }
 
 

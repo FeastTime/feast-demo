@@ -103,7 +103,7 @@ public class IMOperationService {
      *
      * @param storeId 商家ID
      */
-    private void sendDinnerListChangeMessage(String storeId, List<Long> waiters) throws Exception{
+    private void sendDinnerListChangeMessage(String storeId, List<Long> waiters) throws Exception {
 
 
         if (null == waiters || waiters.size() == 0) {
@@ -483,47 +483,51 @@ public class IMOperationService {
 
     }
 
+
     /**
-     * 恢复用户与商家的关系
+     * 设置用户与商家的关系
      *
      * @param userId 用户ID
+     * @param storeId 店铺ID
+     * @param status 关系状态
+     * @throws Exception 异常
      */
-    public void repairRelationship(String userId){
+    public void setRelationshipWithStore(String userId, String storeId, int status) throws Exception {
 
-        // 恢复用户与商家的关系
-        Set<Long> storeIds = userService.findStoreIdByUserId(Long.parseLong(userId));
+        if (null == userId || null == storeId){
 
-        if(storeIds!=null){
-
-            String storeIdStr;
-            UserBean userBean;
-
-            for (Long storeId: storeIds) {
-
-                storeIdStr = storeId + "";
-                userBean = new UserBean();
-                userBean.setUserID(userId);
-                userBean.setNumberPerTable(0);
-
-                user2Store.computeIfAbsent(storeIdStr, k -> Maps.newHashMap());
-                user2Store.get(storeIdStr).put(userId, userBean);
-            }
+            return ;
         }
-    }
+
+        UserStore userStore = userService.findUserStoreByUserIdAndStoreId(Long.parseLong(userId), Long.parseLong(storeId));
+        Date date = new Date();
+
+        if (userStore == null) {
+
+            userStore = new UserStore();
+
+            userStore.setCreateTime(date);
+            userStore.setStoreId(Long.parseLong(storeId));
+            userStore.setUserId(Long.parseLong(userId));
+        }
+
+        userStore.setLastModified(date);
 
 
-    /**
-     * 用户离店
-     *
-     * @param userId 用户ID
-     */
-    public List<WebSocketMessageBean> removeRelationship(String userId) throws Exception{
+        // 修改用户与店铺之间的关系
+        try {
 
-        List<WebSocketMessageBean> allDinnerListMessage = new ArrayList<>();
-        List<WebSocketMessageBean> dinnerListMessage;
+            userStore.setStatus(status);
 
+            userService.saveUserStore(userStore);
 
-        for (String storeId : user2Store.keySet()) {
+        } catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+        // 不再关注
+        if (status == UserStore.STATUS_RELATION_BREAK){
 
             // 将连接  从  用户与商户的关系结构中 删除
             user2Store.get(storeId).remove(userId);
@@ -532,11 +536,64 @@ public class IMOperationService {
 
             // 通知商家用户离店
             sendDinnerListChangeMessage(storeId, waiters);
-
         }
-
-        return allDinnerListMessage;
     }
+
+
+//    /**
+//     * 恢复用户与商家的关系
+//     *
+//     * @param userId 用户ID
+//     */
+//    public void repairRelationship(String userId){
+//
+//        // 恢复用户与商家的关系
+//        Set<Long> storeIds = userService.findStoreIdByUserId(Long.parseLong(userId));
+//
+//        if(storeIds!=null){
+//
+//            String storeIdStr;
+//            UserBean userBean;
+//
+//            for (Long storeId: storeIds) {
+//
+//                storeIdStr = storeId + "";
+//                userBean = new UserBean();
+//                userBean.setUserID(userId);
+//                userBean.setNumberPerTable(0);
+//
+//                user2Store.computeIfAbsent(storeIdStr, k -> Maps.newHashMap());
+//                user2Store.get(storeIdStr).put(userId, userBean);
+//            }
+//        }
+//    }
+
+
+//    /**
+//     * 用户离店
+//     *
+//     * @param userId 用户ID
+//     */
+//    public List<WebSocketMessageBean> removeRelationship(String userId) throws Exception{
+//
+//        List<WebSocketMessageBean> allDinnerListMessage = new ArrayList<>();
+//        List<WebSocketMessageBean> dinnerListMessage;
+//
+//
+//        for (String storeId : user2Store.keySet()) {
+//
+//            // 将连接  从  用户与商户的关系结构中 删除
+//            user2Store.get(storeId).remove(userId);
+//
+//            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+//
+//            // 通知商家用户离店
+//            sendDinnerListChangeMessage(storeId, waiters);
+//
+//        }
+//
+//        return allDinnerListMessage;
+//    }
 
     // 存放最后一次发放时间
     private static Map<Long, Long> redPackageSendTime = new HashMap<>();

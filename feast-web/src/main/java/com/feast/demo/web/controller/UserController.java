@@ -391,7 +391,7 @@ public class UserController {
     @RequestMapping(value = "/queryUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String queryUserInfo(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
-        String resultMsg = "";
+        String resultMsg;
         Byte resultCode = 1;
         try{
             result = Maps.newHashMap();
@@ -414,30 +414,44 @@ public class UserController {
         return JSON.toJSONString(result);
     }
 
+
+    /**
+     * 设置用户与商家关系
+     *
+     * @param servletRequest HttpServletRequest
+     * @return 结果
+     */
     @RequestMapping(value = "/setRelationshipWithStore",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String setRelationshipWithStore(HttpServletRequest servletRequest){
-        Map<String,Object> result = null;
-        String resultMsg = "";
-        Byte resultCode = 1;
-        try{
-            result = Maps.newHashMap();
+
+        Map<String,Object> result = Maps.newHashMap();
+
+        try {
+
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
+
             JSONObject obj = JSONObject.parseObject(text);
-            Long userId = obj.getLong("userId");
-            Long storeId = obj.getLong("storeId");
-            Integer status = obj.getInteger("status");
-            userService.setRelationshipWithStore(userId,storeId,status);
-            resultCode = 0;
-            resultMsg = "设置用户和商家关系成功";
-        }catch (Exception e){
+
+            String userId = obj.getString("userId");
+            String storeId = obj.getString("storeId");
+            int status = obj.getInteger("status");
+
+            imOperationService.setRelationshipWithStore(userId, storeId, status);
+
+            result.put("resultCode", 0);
+            result.put("resultMsg", "设置用户和商家关系成功");
+
+        } catch (Exception e) {
+
             e.printStackTrace();
-            resultMsg = "设置用户和商家关系失败";
+            result.put("resultCode", 1);
+            result.put("resultMsg", "设置用户和商家关系失败");
         }
-        result.put("resultCode",resultCode);
-        result.put("resultMsg",resultMsg);
+
         return JSON.toJSONString(result);
+
     }
 
     @RequestMapping(value = "/feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
@@ -500,7 +514,7 @@ public class UserController {
     }
 
 
-    /** 设置就餐人数
+    /** 用户扫码进店
      *
      * @param servletRequest HttpServletRequest
      * @return 是否成功的消息

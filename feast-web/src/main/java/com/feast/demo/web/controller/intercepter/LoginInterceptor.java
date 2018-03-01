@@ -22,7 +22,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         System.out.println(requestURI);
 
         if(requestURI.contains("/websocket")
-                || requestURI.contains("/im/message")){
+                || requestURI.contains("/im/message")
+                || requestURI.contains("/im/userStatus")){
 
             System.out.println("放过路径  ： " + requestURI);
 
