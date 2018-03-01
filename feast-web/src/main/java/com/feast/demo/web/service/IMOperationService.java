@@ -11,7 +11,6 @@ import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
 import com.feast.demo.web.entity.DinnerInfo;
 import com.feast.demo.web.entity.UserBean;
-import com.feast.demo.web.entity.WebSocketMessageBean;
 import com.feast.demo.web.util.CouponIdCreator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -22,7 +21,7 @@ import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.text.SimpleDateFormat;
+//import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -48,7 +47,7 @@ public class IMOperationService {
     private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
 
 
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
 
     private static Random random = new Random();
@@ -81,7 +80,7 @@ public class IMOperationService {
 
         user2Store.computeIfAbsent(storeId, k -> Maps.newHashMap());
 
-        if(!user2Store.get(storeId).containsKey(userId)){
+        if (!user2Store.get(storeId).containsKey(userId)) {
 
             // 添加用户与商家关系 -> cache
             UserBean userBean = new UserBean();
@@ -93,7 +92,7 @@ public class IMOperationService {
 
         user2Store.get(storeId).get(userId).setNumberPerTable(numberPerTable);
 
-        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+        List<Long> waiters = getWaiters(storeId);
         sendDinnerListChangeMessage(storeId, waiters);
     }
 
@@ -130,6 +129,7 @@ public class IMOperationService {
         CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
         System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
     }
+
     /**
      * 获取店铺食客人数列表
      *
@@ -181,7 +181,6 @@ public class IMOperationService {
             List<Object> redPackage = redPackages.get(redPackageId);
             redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
 
-            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
 
             if (null == redPackages || redPackage.size() == 0) {
 
@@ -201,6 +200,8 @@ public class IMOperationService {
                 boolean hasGetTable = false;
 
                 User user = userService.findById(Long.parseLong(userId));
+
+                List<Long> waiters = getWaiters(storeId);
 
                 if (lastObject instanceof TableInfo) {
 
@@ -241,6 +242,7 @@ public class IMOperationService {
 
 
                             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
 
                             CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiters.get(0)+"", messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
                             System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
@@ -318,56 +320,48 @@ public class IMOperationService {
     /**
      * 发红包
      *
-     * @param userId 用户ID
+     * @param senderId 用户ID
      * @param storeId 店铺ID
      * @param tableInfo 桌位信息
      * @param couponList 优惠券信息
      */
-    public void sendRedPackage(String userId,String storeId,TableInfo tableInfo,List<CouponTemplate> couponList) {
+    public void sendRedPackage(String senderId,String storeId,TableInfo tableInfo,List<CouponTemplate> couponList) {
 
-        List<Object> redPackage;
+        List<Object> redPackage = Lists.newArrayList();
+
         try {
-            redPackage = Lists.newArrayList();
-            User sender = userService.findById(Long.parseLong(userId));
+            User sender = userService.findById(Long.parseLong(senderId));
 
-            //添加优惠券
-            String dateStr = format.format(new Date());
-                for (CouponTemplate couponTemplate : couponList) {
-                    Long count = couponTemplate.getCouponCount();
-                    CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
-                    if(null==count||null==couponTemplate_){
-                        continue;
-                    }
-                    if(couponTemplate_.getCouponCount()<count){
-                        // 提示商家优惠券不足
-                        Map<String,Object> storeResult = Maps.newHashMap();
-                        storeResult.put("type",WebSocketEvent.POPUP_MESSAGE);
-                        storeResult.put("storeId",storeId);
-                        storeResult.put("userId",sender.getUserId());
-                        storeResult.put("title","库存不足");
-                        storeResult.put("message",couponTemplate_.getCouponTitle()+"存量不足");
-                        storeResult.put("promptInformation","请及时到\"优惠券管理\"补充");
-                        storeResult.put("time",dateStr);
-                        List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+            //红包中添加优惠券
+            for (CouponTemplate couponTemplate : couponList) {
 
-                        String[] messagePublishPrivateToUserId = new String[waiters.size()];
+                Long count = couponTemplate.getCouponCount();
 
-                        for (int i = 0; i < waiters.size(); i++) {
+                CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
 
-                            messagePublishPrivateToUserId[i] = waiters.get(i).toString();
-                        }
-                        SendRedPackageMessage messagePublishPrivateVoiceMessage = new SendRedPackageMessage(new Date().getTime(),JSON.toJSONString(storeResult));
-                        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-                        CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
-                        System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
-                    }else{
-                        for (int i = 0; i < count; i++) {
-                            redPackage.add(couponTemplate);
-                        }
-                        couponTemplate_.setCouponCount(couponTemplate_.getCouponCount()-count);
-                        couponService.createCouponTemplate(couponTemplate_);
-                    }
+                if(null==count||null==couponTemplate_){
+                    continue;
                 }
+                if(couponTemplate_.getCouponCount()<count){
+                    // 提示商家优惠券不足
+
+                    try {
+                        List<Long> waiters = getWaiters(storeId);
+                        sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    continue;
+                }
+
+                for (int i = 0; i < count; i++) {
+                    redPackage.add(couponTemplate);
+                }
+                couponTemplate_.setCouponCount(couponTemplate_.getCouponCount()-count);
+                couponService.createCouponTemplate(couponTemplate_);
+
+            }
 
 
             //添加桌位
@@ -381,24 +375,41 @@ public class IMOperationService {
             String redPackageId = UUID.randomUUID() + "";
             redPackages.put(redPackageId, redPackage);
 
-            Map<String, Object> result = Maps.newHashMap();
 
-            result.put("date", dateStr);
-            result.put("userId", sender.getUserId());
-            result.put("nickname", sender.getUsername());
-            result.put("userIcon", sender.getUserIcon());
-            result.put("redPackageId", redPackageId);
+            String senderNickName = sender.getNickName();
+            String senderIcon = sender.getUserIcon();
 
-
-            String[] messagePublishGroupToGroupId = {storeId};
-            RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-            ReceivedRedPackageMessage messagePublishGroupTxtMessage = new ReceivedRedPackageMessage(new Date().getTime(),JSON.toJSONString(result));
-            CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(userId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
-            System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
+            sendRedPackageMessage(senderId, storeId, redPackageId, senderNickName, senderIcon);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * 发送红包消息
+     * @param senderId 发送者ID
+     * @param storeId 店铺ID
+     * @param redPackageId 红包ID
+     * @param senderNickName 发送者昵称
+     * @param senderIcon 发送者图标
+     * @throws Exception 异常
+     */
+    private void sendRedPackageMessage(String senderId, String storeId, String redPackageId, String senderNickName, String senderIcon) throws Exception {
+        Map<String, Object> result = Maps.newHashMap();
+
+        result.put("userId", senderId);
+        result.put("nickname", senderNickName);
+        result.put("userIcon", senderIcon);
+        result.put("redPackageId", redPackageId);
+
+
+        String[] messagePublishGroupToGroupId = {storeId};
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        ReceivedRedPackageMessage messagePublishGroupTxtMessage = new ReceivedRedPackageMessage(new Date().getTime(), JSON.toJSONString(result));
+        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(senderId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
     }
 
 
@@ -459,14 +470,14 @@ public class IMOperationService {
             result.put("nickName", store.getStoreName());
             result.put("userIcon", store.getStoreIcon());
 
-            ArrayList<Long> waiters = userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
-
             ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(),JSON.toJSONString(result));
 
             RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
 
             String[] messagePublishGroupToGroupId = {storeId};
 
+
+            List<Long> waiters = getWaiters(storeId);
 
             if(user.getUserType() == UserBean.CUSTOMER){
 
@@ -532,7 +543,7 @@ public class IMOperationService {
             // 将连接  从  用户与商户的关系结构中 删除
             user2Store.get(storeId).remove(userId);
 
-            List<Long> waiters = userService.findUserIdByStoreId(Long.parseLong(storeId));
+            List<Long> waiters = getWaiters(storeId);
 
             // 通知商家用户离店
             sendDinnerListChangeMessage(storeId, waiters);
@@ -598,111 +609,170 @@ public class IMOperationService {
     // 存放最后一次发放时间
     private static Map<Long, Long> redPackageSendTime = new HashMap<>();
 
-    private void autoSender(){
 
-        List<Object> redPackage  = Lists.newArrayList();
+    /**
+     * 自动发红包
+     */
+    private void autoSenderRedPackage(){
 
-        long nowTime = new Date().getTime();
+        Date newDate = new Date();
+        long nowTime = newDate.getTime();
 
-        List<Long> storeIds = new ArrayList<>();
+        // 查询在线的店
+        List<Long> storeIds = getLongListFromStringSet(user2Store.keySet());
 
-        for (String storeId : user2Store.keySet()) {
+        // 查询在线的店存储的红包信息
+        List<RedPackage> redPackageInfoList = storeService.findRedPackageByStoreIdAndIsUse(storeIds,2);
 
-            if (null != storeId && storeId.length()>0){
-                storeIds.add(Long.parseLong(storeId));
-            }
-        }
-
-        // 查询开启的红包  storeIds
-        List<RedPackage> redPackages_ = storeService.findRedPackageByStoreIdAndIsUse(storeIds,2);
-
-        if (null == redPackages_){
+        if (null == redPackageInfoList || redPackageInfoList.size() == 0){
             return;
         }
 
-        for (RedPackage redPackage_ : redPackages_) {
+        // 循环发送红包
+        for (RedPackage redPackageInfo : redPackageInfoList) {
 
-            redPackageSendTime.putIfAbsent(redPackage_.getRedPackageId(), 0L);
+            // 如果之前没法送过红包，则设置发红包时间为0
+            redPackageSendTime.putIfAbsent(redPackageInfo.getRedPackageId(), 0L);
 
-            // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   发红包
-            if ((nowTime - redPackageSendTime.get(redPackage_.getRedPackageId())) > redPackage_.getAutoSendTime()*60*1000 ){
+            // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   则发红包
+            if ((nowTime - redPackageSendTime.get(redPackageInfo.getRedPackageId())) > redPackageInfo.getAutoSendTime()*60*1000 ){
 
-                // 发红包1创建红包，
-                Long id = redPackage_.getRedPackageId();
-                String userIds = "";
-                List<RedPackageCouponTemplate> redPackageCouponTemplates = storeService.findRedPackageCouponTemplateByRedPackageId(id);
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                String dateStr = format.format(new Date());
-                for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
-                    Long couponTemplateId = redPackageCouponTemplate.getCouponTemplateId();
-                    Integer couponCount = redPackageCouponTemplate.getCouponCount();
-                    CouponTemplate couponTemplate = couponService.findCouponTemplateById(couponTemplateId);
-                    if(null == couponTemplate){
-                        continue;
-                    }
-                    Set<String> ids = user2Store.get(redPackage_.getStoreId()+"").keySet();
-                    int count = 1;
-                    for (String id_ : ids) {
-                        if(count==ids.size()){
-                            userIds=userIds+id_;
-                        }else{
-                            userIds+=id_+",";
-                            count++;
-                        }
-                    }
-                    if(couponTemplate.getCouponCount()<couponCount){
-                        // 提示商家优惠券不足
-                        Map<String,Object> storeResult = Maps.newHashMap();
-                        storeResult.put("type",WebSocketEvent.POPUP_MESSAGE);
-                        storeResult.put("storeId",redPackage_.getStoreId());
-                        storeResult.put("userId",userIds);
-                        storeResult.put("title","库存不足");
-                        storeResult.put("message",couponTemplate.getCouponTitle()+"存量不足");
-                        storeResult.put("promptInformation","请及时到\"优惠券管理\"补充");
-                        storeResult.put("time",dateStr);
-                        String backMessage = JSON.toJSONString(storeResult);
-                        HashMap<String, UserBean> userMap = user2Store.get(redPackage_.getStoreId()+"");
-                        for (String userId : userMap.keySet()) {
-                            UserBean userBean = userMap.get(userId);
-                            if(userBean.getUserType()==UserBean.STORE){
-//                                webSocketMessageQueue.offer(new WebSocketMessageBean().setMessage(backMessage).toUser(userId));
-                            }
-                        }
-                    }else{
-                        for (int i = 0; i < couponCount; i++) {
-                            redPackage.add(couponTemplate);
-                        }
-                        couponTemplate.setCouponCount(couponTemplate.getCouponCount()-couponCount);
-                        couponService.createCouponTemplate(couponTemplate);
-                    }
-                }
-                String redPackageId = UUID.randomUUID() + "";
-                redPackages.put(redPackageId, redPackage);
-                String backMessage;
-                //发送消息
-                Map<String,Object> result = Maps.newHashMap();
-                result.put("date", dateStr);
-                result.put("userId", "system");
+                // 发送红包
+                sendRedPackage(redPackageInfo);
 
-                //result.put("nickname", username);
-               // result.put("userIcon", userIcon);
-                result.put("redPackageId", redPackageId);
-                result.put("type", WebSocketEvent.AUTO_SEND_RED_PACKAGE);
-                HashMap<String, UserBean> map = user2Store.get(redPackage_.getStoreId()+"");
-                backMessage = JSON.toJSONString(result);
-                if (null != map){
-
-                    for (String receiverId : map.keySet()) {
-//                        webSocketMessageQueue.offer(new WebSocketMessageBean().setMessage(backMessage).toUser(receiverId));
-                    }
-                }
-
-
-                redPackageSendTime.put(redPackage_.getRedPackageId(), nowTime);
+                // 设置最后发送红包的时间
+                redPackageSendTime.put(redPackageInfo.getRedPackageId(), nowTime);
 
             }
         }
+    }
 
+    /**
+     * 发送红包
+     *
+     * @param redPackageInfo 红包信息
+     */
+    private void sendRedPackage(RedPackage redPackageInfo) {
+
+        // 创建红包
+        List<Object> redPackage  = Lists.newArrayList();
+
+        // 红包信息 ID
+        Long redPackageInfoId = redPackageInfo.getRedPackageId();
+
+        // 查询红包优惠券模板
+        List<RedPackageCouponTemplate> redPackageCouponTemplates = storeService.findRedPackageCouponTemplateByRedPackageId(redPackageInfoId);
+
+        List<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
+
+        // 把优惠券添加到红包中
+        for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
+
+            Long couponTemplateId = redPackageCouponTemplate.getCouponTemplateId();
+            Integer couponCount = redPackageCouponTemplate.getCouponCount();
+
+            CouponTemplate couponTemplate = couponService.findCouponTemplateById(couponTemplateId);
+
+            if(null == couponTemplate){
+                continue;
+            }
+
+            if (couponTemplate.getCouponCount() < couponCount) {
+
+                try {
+                    sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                continue;
+            }
+
+            // 添加优惠券
+            for (int i = 0; i < couponCount; i++) {
+
+                redPackage.add(couponTemplate);
+            }
+
+            // 扣减  优惠券模板中的  优惠券张数
+            couponTemplate.setCouponCount(couponTemplate.getCouponCount() - couponCount);
+            couponService.updateCouponTemplate(couponTemplate);
+
+        }
+
+        // 创建优惠券Id
+        String redPackageId = UUID.randomUUID() + "";
+
+        redPackages.put(redPackageId, redPackage);
+
+        // 发送红包 到  群
+        try {
+
+            User firstWaiter = userService.findById(waiters.get(0));
+            sendRedPackageMessage(firstWaiter.getUserId().toString(), redPackageInfo.getStoreId().toString(), redPackageId, firstWaiter.getNickName(), firstWaiter.getUserIcon());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 通知商家优惠券不足
+     *
+     * @param couponTitle 优惠券标题
+     * @param waiters 服务器
+     * @throws Exception 异常
+     */
+    private void sendCouponNotEnoughMessage(String couponTitle, List<Long> waiters) throws Exception {
+
+
+        if (null == waiters || waiters.size() == 0) {
+            return;
+        }
+
+        Map<String, Object> result = Maps.newHashMap();
+
+        result.put("title", "库存不足");
+        result.put("message", couponTitle + "存量不足");
+        result.put("promptInformation", "请及时到\"优惠券管理\"补充");
+
+        String[] messagePublishPrivateToUserId = new String[waiters.size()];
+
+        for (int i = 0; i < waiters.size(); i++) {
+
+            messagePublishPrivateToUserId[i] = waiters.get(i).toString();
+        }
+
+        CouponNotEnoughMessage messagePublishPrivateVoiceMessage = new CouponNotEnoughMessage(new Date().getTime(),JSON.toJSONString(result));
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+
+        CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+        System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
+    }
+
+
+    private ArrayList<Long> getWaiters(String storeId){
+        return userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
+    }
+    /**
+     * 格式转换
+     *
+     * @param set 输入
+     * @return 返回列表
+     */
+    private List<Long> getLongListFromStringSet(Set<String> set){
+
+        List<Long> result = Lists.newArrayList();
+
+        for (String storeId : set) {
+
+            if (null != storeId && storeId.length()>0){
+                result.add(Long.parseLong(storeId));
+            }
+        }
+
+        return result;
     }
 
 }

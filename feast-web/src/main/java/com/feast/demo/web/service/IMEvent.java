@@ -18,4 +18,7 @@ public class IMEvent {
     // 用餐人数变更通知
     public static final String WAITING_USER_CHANGED = "CM:waitingUserChanged";
 
+    // 优惠券不足
+    public static final String COUPON_NOT_ENOUGH = "CM:couponNotEnough";
+
 }
