@@ -79,6 +79,32 @@ public class StoreController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping(value = "/getStoreInfoList",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String getStoreInfoList(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        try{
+            result = Maps.newHashMap();
+            String params = (String) servletRequest.getAttribute("json");
+            params = StringUtils.decode(params);
+            logger.info(params);
+            JSONObject jsonObject = JSONObject.parseObject(params);
+            JSONArray storeId = jsonObject.getJSONArray("storeId");
+            ArrayList<Long> storeIds = (ArrayList<Long>)storeId.toJavaList(Long.class);
+            ArrayList<Store> stores = storeService.getStoreInfoList(storeIds);
+            resultCode = 0;
+            resultMsg = "查询商家详细信息列表成功";
+            result.put("stores",stores);
+        }catch(Exception e){
+            e.printStackTrace();
+            resultMsg = "查询商家详细信息列表失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("reslutMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping(value = "/queryHadVisitUser",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String queryHadVisitUser(HttpServletRequest servletRequest){
         Map<String,Object> result = null;

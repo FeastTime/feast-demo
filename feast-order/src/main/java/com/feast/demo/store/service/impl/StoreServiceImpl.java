@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ggke on 2017/8/1.
@@ -34,6 +35,10 @@ public class StoreServiceImpl implements StoreService {
 
     public String findStoreName(Long storeId) {
         return storeDao.findStoreName(storeId);
+    }
+
+    public ArrayList<Store> getStoreInfoList(ArrayList<Long> storeIds) {
+        return storeDao.findByStoreIdIn(storeIds);
     }
 
 

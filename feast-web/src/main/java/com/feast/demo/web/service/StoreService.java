@@ -60,4 +60,8 @@ public class StoreService {
     public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse) {
         return redPackageService.findRedPackageByStoreIdAndIsUse(storeIds,isUse);
     }
+
+    public ArrayList<Store> getStoreInfoList(ArrayList<Long> storeIds) {
+        return storeRemoteService.getStoreInfoList(storeIds);
+    }
 }
