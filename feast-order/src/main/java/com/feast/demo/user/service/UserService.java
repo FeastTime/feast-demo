@@ -52,5 +52,7 @@ public interface UserService {
     public ArrayList<Long> findUserIdByStoreId(Long storeId);
 
     public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType);
+
+    public void saveUserInfo(User user);
 }
 

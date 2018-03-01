@@ -174,5 +174,9 @@ public class UserService {
     public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType) {
         return userRemoteService.findWaitersIdByStoreIdAndUserType(storeId,userType);
     }
+
+    public void saveUserInfo(User user) {
+        userRemoteService.saveUserInfo(user);
+    }
 }
 

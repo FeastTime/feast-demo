@@ -173,4 +173,7 @@ public class UserServiceImpl implements UserService{
         return userDao.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),userType);
     }
 
+    public void saveUserInfo(User user) {
+        userDao.save(user);
+    }
 }

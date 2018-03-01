@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -402,9 +403,7 @@ public class UserController {
             User user = userService.queryUserInfo(userId);
             resultCode = 0;
             resultMsg = "查询用户信息成功";
-            result.put("nickName",user.getNickName());
-            result.put("mobileNo",user.getMobileNo());
-            result.put("userIcon",user.getUserIcon());
+            result.put("user",user);
         }catch (Exception e){
             e.printStackTrace();
             resultMsg = "查询用户信息失败";
@@ -454,6 +453,40 @@ public class UserController {
 
     }
 
+    @RequestMapping(value = "/saveUserInfo",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String saveUserInfo(HttpServletRequest servletRequest){
+        String resultMsg = "";
+        Byte resultCode;
+        try{
+
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            String birthday = obj.getString("birthday");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date birthday_ = dateFormat.parse(birthday);
+            User user = JSONObject.parseObject(text, User.class);
+            User user_ = userService.findById(user.getUserId());
+            user_.setArea(user.getArea());
+            user_.setBirthday(birthday_);
+            user_.setPersonalExplanation(user.getPersonalExplanation());
+            user_.setSex(user.getSex());
+            userService.saveUserInfo(user);
+            resultCode = 0;
+            resultMsg = "保存用户信息成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultCode = 1;
+            resultMsg = "保存用户信息失败";
+        }
+
+        Map<String,Object> result = Maps.newHashMap();
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping(value = "/feedback",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String feedback(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
@@ -465,7 +498,6 @@ public class UserController {
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
-            System.out.println(text+"9999999999");
             Feedback feedback = JSONObject.parseObject(text, Feedback.class);
             feedbackService.feedback(feedback);
             resultCode = 0;
