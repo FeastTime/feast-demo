@@ -472,7 +472,7 @@ public class UserController {
             user_.setBirthday(birthday_);
             user_.setPersonalExplanation(user.getPersonalExplanation());
             user_.setSex(user.getSex());
-            userService.saveUserInfo(user);
+            userService.saveUserInfo(user_);
             resultCode = 0;
             resultMsg = "保存用户信息成功";
         }catch (Exception e){
