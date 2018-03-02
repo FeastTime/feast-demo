@@ -38,10 +38,10 @@ public class IMOperationService {
     private static Map<String, HashMap<String, UserBean>> user2Store = Maps.newHashMap();
 
     // 红包
-    private static Map<String, List<Object>> redPackages = Maps.newHashMap();
+    private static Map<String, List<Object>> redPackageMap = Maps.newHashMap();
 
     // 红包与用户关系
-    private static Map<String,Set<String>> redId2UserId = Maps.newHashMap();
+    private static Map<String,Set<String>> redId2UserIdMap = Maps.newHashMap();
 
 
 //    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -175,20 +175,23 @@ public class IMOperationService {
         try {
             lock.lock();
 
-            List<Object> redPackage = redPackages.get(redPackageId);
-            redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
+            List<Object> redPackage = redPackageMap.get(redPackageId);
+            redId2UserIdMap.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
 
 
-            if (null == redPackages || redPackages.size() == 0) {
+            if (null == redPackage || redPackage.size() == 0) {
 
                 result.put("message", "对不起，您来晚了");
                 // 删除缓存数据
-                redPackages.remove(redPackageId);
-                redId2UserId.remove(redPackageId+"");
+                redPackageMap.remove(redPackageId);
+                redId2UserIdMap.remove(redPackageId+"");
 
-            } else if (redId2UserId.get(redPackageId+"").contains(userId)) {
+                return result;
+
+            } else if (redId2UserIdMap.get(redPackageId+"").contains(userId)) {
 
                 result.put("message", "您已经抢过这个红包了");
+                return result;
 
             } else {
 
@@ -220,7 +223,7 @@ public class IMOperationService {
 
                             tableInfo= tableService.saveTableInfo(tableInfo);
 
-                            redId2UserId.get(redPackageId+"").add(userId);
+                            redId2UserIdMap.get(redPackageId+"").add(userId);
 
                             result.put("tableInfo", tableInfo);
                             redPackage.remove(0);
@@ -278,7 +281,7 @@ public class IMOperationService {
                         userCoupon.setUserId(Long.parseLong(userId));
                         couponService.saveUserCoupon(userCoupon);
 
-                        redId2UserId.get(redPackageId+"").add(userId);
+                        redId2UserIdMap.get(redPackageId+"").add(userId);
                         result.put("couponInfo", userCoupon);
                         result.put("message", "恭喜您获得一张优惠券");
 
@@ -380,7 +383,7 @@ public class IMOperationService {
             }
 
             String redPackageId = UUID.randomUUID() + "";
-            redPackages.put(redPackageId, redPackage);
+            redPackageMap.put(redPackageId, redPackage);
 
 
             String senderNickName = sender.getNickName();
@@ -627,10 +630,10 @@ public class IMOperationService {
         Date newDate = new Date();
         long nowTime = newDate.getTime();
 
-        // 查询在线的店
-        List<Long> storeIds = getLongListFromStringSet(user2Store.keySet());
+//        // 查询在线的店
+//        List<Long> storeIds = getLongListFromStringSet(user2Store.keySet());
 
-        // 查询在线的店存储的红包信息
+        // 查询店存储的红包信息
         List<RedPackage> redPackageInfoList = storeService.findRedPackageByIsUse(2);
 
         if (null == redPackageInfoList || redPackageInfoList.size() == 0){
@@ -728,7 +731,7 @@ public class IMOperationService {
         // 创建优惠券Id
         String redPackageId = UUID.randomUUID() + "";
 
-        redPackages.put(redPackageId, redPackage);
+        redPackageMap.put(redPackageId, redPackage);
 
         // 发送红包 到  群
         try {
@@ -780,24 +783,25 @@ public class IMOperationService {
     private ArrayList<Long> getWaiters(String storeId){
         return userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
     }
-    /**
-     * 格式转换
-     *
-     * @param set 输入
-     * @return 返回列表
-     */
-    private List<Long> getLongListFromStringSet(Set<String> set){
 
-        List<Long> result = Lists.newArrayList();
-
-        for (String storeId : set) {
-
-            if (null != storeId && storeId.length()>0){
-                result.add(Long.parseLong(storeId));
-            }
-        }
-
-        return result;
-    }
+//    /**
+//     * 格式转换
+//     *
+//     * @param set 输入
+//     * @return 返回列表
+//     */
+//    private List<Long> getLongListFromStringSet(Set<String> set){
+//
+//        List<Long> result = Lists.newArrayList();
+//
+//        for (String storeId : set) {
+//
+//            if (null != storeId && storeId.length()>0){
+//                result.add(Long.parseLong(storeId));
+//            }
+//        }
+//
+//        return result;
+//    }
 
 }

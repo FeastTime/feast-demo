@@ -462,11 +462,14 @@ public class UserController {
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
+
             JSONObject obj = JSONObject.parseObject(text);
-            String birthday = obj.getString("birthday");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date birthday_ = dateFormat.parse(birthday);
+
+            long birthday = obj.getLong("birthday");
+            Date birthday_ =new Date(birthday);
+
             User user = JSONObject.parseObject(text, User.class);
+
             User user_ = userService.findById(user.getUserId());
             user_.setArea(user.getArea());
             user_.setBirthday(birthday_);
