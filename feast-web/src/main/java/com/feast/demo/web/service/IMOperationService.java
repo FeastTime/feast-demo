@@ -32,7 +32,6 @@ import java.util.logging.Logger;
  *
  * Created by LiXQ on 2017/10/22.
  */
-@Service()
 public class IMOperationService {
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -614,6 +613,8 @@ public class IMOperationService {
      * 自动发红包
      */
     public void autoSenderRedPackage(){
+
+        logger.info("自动发红包");
 
         Date newDate = new Date();
         long nowTime = newDate.getTime();

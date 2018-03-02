@@ -91,7 +91,7 @@ public class StoreController {
             logger.info(params);
             JSONObject jsonObject = JSONObject.parseObject(params);
             JSONArray storeId = jsonObject.getJSONArray("storeId");
-            ArrayList<Long> storeIds = (ArrayList<Long>)storeId.toJavaList(Long.class);
+            ArrayList<Long> storeIds = (ArrayList<Long>)JSONArray.parseArray(JSON.toJSONString(storeId),Long.class);
             ArrayList<Store> stores = storeService.getStoreInfoList(storeIds);
             resultCode = 0;
             resultMsg = "查询商家详细信息列表成功";
