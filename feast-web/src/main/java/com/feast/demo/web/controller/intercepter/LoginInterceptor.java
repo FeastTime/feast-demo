@@ -32,7 +32,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String text = readJSONString(httpServletRequest);
         httpServletRequest.setAttribute("json",text);
+
         logger.info("收到内容 ： " + text);
+
         JSONObject jsono = JSON.parseObject(text);
 
         if (null == jsono) {
@@ -43,8 +45,13 @@ public class LoginInterceptor implements HandlerInterceptor {
         String deviceId = jsono.getString("deviceId");
         String userId = jsono.getString("userId");
         String token = jsono.getString("token");
+
         boolean b = TokenUtils.isValidToken(token, deviceId, userId);
-        logger.info(b+"");
+
+        logger.info("token 验证结果   ： " + b
+                + "/n deviceId : " + deviceId
+                + "/n userId : " + userId
+                + "/n token : " + token);
 
         if (!b) {
             httpServletResponse.getWriter().write("{\"resultCode\":\"201\",\"resultMsg\":\"token invalid!\"}");

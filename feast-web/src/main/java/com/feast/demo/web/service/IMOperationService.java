@@ -179,7 +179,7 @@ public class IMOperationService {
             redId2UserId.computeIfAbsent(redPackageId+"", k -> Sets.newHashSet());
 
 
-            if (null == redPackages || redPackage.size() == 0) {
+            if (null == redPackages || redPackages.size() == 0) {
 
                 result.put("message", "对不起，您来晚了");
                 // 删除缓存数据
@@ -683,8 +683,11 @@ public class IMOperationService {
 
         List<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
 
-        System.out.println("waiters.toString()" + waiters.toString());
+        if (null == waiters || waiters.size() == 0){
 
+            logger.info("没有店员 不发送红包");
+            return;
+        }
         logger.info("waiters.toString()" + waiters.toString());
 
         // 把优惠券添加到红包中
@@ -699,7 +702,7 @@ public class IMOperationService {
                 continue;
             }
 
-            if (couponTemplate.getCouponCount() < couponCount) {
+            if (Long.compare(couponTemplate.getCouponCount() , couponCount) < 0) {
 
                 try {
                     sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
