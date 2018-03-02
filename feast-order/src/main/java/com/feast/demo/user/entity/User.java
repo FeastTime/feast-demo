@@ -74,4 +74,8 @@ public class User extends TimedEntity implements Serializable{
 
     private Date birthday;
 
+
+    public static final Integer WOMAN = 1;
+
+    public static final Integer MAN = 2;
 }
