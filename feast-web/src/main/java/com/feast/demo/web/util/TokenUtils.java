@@ -190,7 +190,7 @@ public class TokenUtils {
      */
     public static void main(String[] args) {
 
-        String token = getToken("355301077459561", "10007");
+        String token = getToken("999", "18");
         System.out.println("获取  token  ：  " + token);
 
         boolean result = isValidToken(token, "355301077459561", "10007");
