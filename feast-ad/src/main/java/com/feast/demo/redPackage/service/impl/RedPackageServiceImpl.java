@@ -40,15 +40,10 @@ public class RedPackageServiceImpl implements RedPackageService {
 
             RedPackage redPackage = redPackageDao.findOne(redPackageId);
 
-            redPackage.setIsUse(2);
+            redPackage.setIsUse(RedPackage.IS_USE);
             redPackageDao.save(redPackage);
 
-            List<RedPackage> redPackages = redPackageDao.findByStoreIdFilterRedPackageId(storeId,redPackageId);
-
-            for (RedPackage rp : redPackages) {
-                rp.setIsUse(1);
-                redPackageDao.save(rp);
-            }
+            redPackageDao.updateRedPackageId(RedPackage.IS_NOT_USE,storeId,redPackageId);
 
         } catch (Exception e){
             e.printStackTrace();
