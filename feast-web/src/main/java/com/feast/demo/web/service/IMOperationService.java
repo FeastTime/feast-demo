@@ -613,7 +613,7 @@ public class IMOperationService {
     /**
      * 自动发红包
      */
-    private void autoSenderRedPackage(){
+    public void autoSenderRedPackage(){
 
         Date newDate = new Date();
         long nowTime = newDate.getTime();
