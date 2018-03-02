@@ -32,6 +32,7 @@ public class RedPackageServiceImpl implements RedPackageService {
         }
     }
 
+    @Transactional(readOnly = false)
     public void setAutoRedPackageIsUse(Long redPackageId, Long storeId) {
 
         System.out.println("setAutoRedPackageIsUse  :  " + redPackageId +"  --    "+ storeId);
@@ -63,10 +64,6 @@ public class RedPackageServiceImpl implements RedPackageService {
     @Transactional(readOnly = false)
     public void setRedPackageAutoSendTime( Integer time,Long storeId) {
         redPackageDao.updateByStoreId(time,storeId);
-    }
-
-    public List<RedPackage> findRedPackageByStoreIds(List<Long> storeIds) {
-        return redPackageDao.findByStoreIdIn(storeIds);
     }
 
     public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
