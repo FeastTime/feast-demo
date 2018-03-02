@@ -22,6 +22,7 @@ public class RedPackageServiceImpl implements RedPackageService {
 
 
     public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds) {
+
         redPackage.setCreateTime(new Date());
         redPackage = redPackageDao.save(redPackage);
         Long redPackageId = redPackage.getRedPackageId();
@@ -75,6 +76,11 @@ public class RedPackageServiceImpl implements RedPackageService {
 
     public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse) {
         return redPackageDao.findByIsUseAndStoreIdIn(isUse,storeIds);
+    }
+
+    public List<RedPackage> findRedPackageByIsUse(Integer isUse){
+
+        return redPackageDao.findRedPackageByIsUse(isUse);
     }
 
 }

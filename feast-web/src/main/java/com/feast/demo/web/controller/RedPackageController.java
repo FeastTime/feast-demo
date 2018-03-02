@@ -38,12 +38,16 @@ public class RedPackageController {
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
+
             JSONObject jsonObject = JSONObject.parseObject(text);
             JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
+
             List<CouponTemplate> couponList = null;
+
             if(couponArray!=null) {
                 couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
             }
+
             tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
             String storeId = jsonObject.getString("storeId");
             String userId = jsonObject.getString("userId");

@@ -20,8 +20,6 @@ import io.rong.RongCloud;
 import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-//import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -338,15 +336,24 @@ public class IMOperationService {
 
                 CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
 
-                if(null==count||null==couponTemplate_){
+                if (null == count || null == couponTemplate_) {
                     continue;
                 }
-                if(couponTemplate_.getCouponCount()<count){
+
+                logger.info("couponTemplate_.getCouponCount()" + couponTemplate_.getCouponCount() + "-----" + count);
+
+
+                if (Long.compare(couponTemplate_.getCouponCount(), count) < 0 ) {
+
+                    logger.info("couponTemplate_.getCouponCount()    result");
                     // 提示商家优惠券不足
 
                     try {
                         List<Long> waiters = getWaiters(storeId);
-                        sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
+
+                        System.out.println("waiters.toString()" + waiters.toString());
+
+                        sendCouponNotEnoughMessage(couponTemplate_.getCouponTitle(), waiters);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -355,8 +362,9 @@ public class IMOperationService {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    redPackage.add(couponTemplate);
+                    redPackage.add(couponTemplate_);
                 }
+
                 couponTemplate_.setCouponCount(couponTemplate_.getCouponCount()-count);
                 couponService.createCouponTemplate(couponTemplate_);
 
@@ -623,11 +631,14 @@ public class IMOperationService {
         List<Long> storeIds = getLongListFromStringSet(user2Store.keySet());
 
         // 查询在线的店存储的红包信息
-        List<RedPackage> redPackageInfoList = storeService.findRedPackageByStoreIdAndIsUse(storeIds,2);
+        List<RedPackage> redPackageInfoList = storeService.findRedPackageByIsUse(2);
 
         if (null == redPackageInfoList || redPackageInfoList.size() == 0){
+            logger.info("没有查询到需要发送的红包");
             return;
         }
+
+        logger.info("循环发送红包");
 
         // 循环发送红包
         for (RedPackage redPackageInfo : redPackageInfoList) {
@@ -636,13 +647,19 @@ public class IMOperationService {
             redPackageSendTime.putIfAbsent(redPackageInfo.getRedPackageId(), 0L);
 
             // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   则发红包
-            if ((nowTime - redPackageSendTime.get(redPackageInfo.getRedPackageId())) > redPackageInfo.getAutoSendTime()*60*1000 ){
 
-                // 发送红包
-                sendRedPackage(redPackageInfo);
+            long distanceTime = nowTime - redPackageSendTime.get(redPackageInfo.getRedPackageId());
+
+            if (distanceTime > redPackageInfo.getAutoSendTime()*60*1000 ){
+
+                System.out.println("时间超过 设置时间   红包发送");
+
 
                 // 设置最后发送红包的时间
                 redPackageSendTime.put(redPackageInfo.getRedPackageId(), nowTime);
+
+                // 发送红包
+                sendRedPackage(redPackageInfo);
 
             }
         }
@@ -665,6 +682,10 @@ public class IMOperationService {
         List<RedPackageCouponTemplate> redPackageCouponTemplates = storeService.findRedPackageCouponTemplateByRedPackageId(redPackageInfoId);
 
         List<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
+
+        System.out.println("waiters.toString()" + waiters.toString());
+
+        logger.info("waiters.toString()" + waiters.toString());
 
         // 把优惠券添加到红包中
         for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplates) {
@@ -735,7 +756,7 @@ public class IMOperationService {
         Map<String, Object> result = Maps.newHashMap();
 
         result.put("title", "库存不足");
-        result.put("message", couponTitle + "存量不足");
+        result.put("message", "\""+couponTitle + "\"存量不足");
         result.put("promptInformation", "请及时到\"优惠券管理\"补充");
 
         String[] messagePublishPrivateToUserId = new String[waiters.size()];

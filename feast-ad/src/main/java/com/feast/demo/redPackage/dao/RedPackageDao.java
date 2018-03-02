@@ -18,6 +18,8 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     @Query()
     List<RedPackage> findByIsUseAndStoreIdIn(Integer isUse, List<Long> storeIds);
 
+    List<RedPackage> findRedPackageByIsUse(Integer isUse);
+
     List<RedPackage> findByStoreIdOrderByCreateTimeDesc(Long storeId);
 
     @Modifying

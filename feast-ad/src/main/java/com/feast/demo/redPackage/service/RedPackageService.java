@@ -20,4 +20,6 @@ public interface RedPackageService {
     public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id);
 
     public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse);
+
+    public List<RedPackage> findRedPackageByIsUse(Integer isUse);
 }

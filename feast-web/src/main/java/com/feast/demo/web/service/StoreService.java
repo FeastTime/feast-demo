@@ -64,6 +64,10 @@ public class StoreService {
         return redPackageService.findRedPackageByStoreIdAndIsUse(storeIds,isUse);
     }
 
+    public List<RedPackage> findRedPackageByIsUse(Integer isUse) {
+        return redPackageService.findRedPackageByIsUse(isUse);
+    }
+
     public ArrayList<Store> getStoreInfoList(ArrayList<Long> storeIds) {
         return storeRemoteService.getStoreInfoList(storeIds);
     }
