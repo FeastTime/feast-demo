@@ -37,7 +37,10 @@ public class StoreService {
 
 
     public void setRedPackageIsUse(Long redPackageId, Long storeId) {
-        redPackageService.setRedPackageIsUse(redPackageId,storeId);
+
+
+        redPackageService.setAutoRedPackageIsUse(redPackageId,storeId);
+
     }
 
     public List<RedPackage> queryRedPackageList(Long storeId) {

@@ -11,7 +11,7 @@ public interface RedPackageService {
 
     public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds);
 
-    public void setRedPackageIsUse(Long redPackageId, Long storeId);
+    public void setAutoRedPackageIsUse(Long redPackageId, Long storeId);
 
     public List<RedPackage> queryRedPackageList(Long storeId);
 

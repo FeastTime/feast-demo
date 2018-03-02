@@ -174,6 +174,13 @@ public class StoreController {
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
             Long storeId = obj.getLong("storeId");
+
+            System.out.println("storeId" + storeId);
+            System.out.println("redPackageId   : " + redPackageId);
+
+
+
+
             storeService.setRedPackageIsUse(redPackageId,storeId);
             resultCode = 0;
             resultMsg = "设置红包成功";

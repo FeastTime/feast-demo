@@ -32,16 +32,33 @@ public class RedPackageServiceImpl implements RedPackageService {
         }
     }
 
-    public void setRedPackageIsUse(Long redPackageId, Long storeId) {
-        RedPackage redPackage = redPackageDao.findOne(redPackageId);
-        redPackage.setIsUse(2);
-        redPackageDao.save(redPackage);
-        List<RedPackage> redPackages = redPackageDao.findByStoreIdFilterRedPackageId(storeId,redPackageId);
-        for (RedPackage rp : redPackages) {
-            rp.setIsUse(1);
-            redPackageDao.save(rp);
+    public void setAutoRedPackageIsUse(Long redPackageId, Long storeId) {
+
+        System.out.println("setAutoRedPackageIsUse  :  " + redPackageId +"  --    "+ storeId);
+
+        try {
+
+            RedPackage redPackage = redPackageDao.findOne(redPackageId);
+
+            redPackage.setIsUse(2);
+            redPackageDao.save(redPackage);
+
+            List<RedPackage> redPackages = redPackageDao.findByStoreIdFilterRedPackageId(storeId,redPackageId);
+
+            for (RedPackage rp : redPackages) {
+                rp.setIsUse(1);
+                redPackageDao.save(rp);
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
+
+
     }
+
+
 
     public List<RedPackage> queryRedPackageList(Long storeId) {
         List<RedPackage> redPackages = redPackageDao.findByStoreIdOrderByCreateTimeDesc(storeId);
