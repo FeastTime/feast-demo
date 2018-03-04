@@ -254,6 +254,7 @@ public class UserController {
             user.setNickName(nickName);
             user.setMobileNo(mobileNo);
             user.setDeviceId(deviceId);
+            user.setOpenId(openId);
 
             User user_ = userService.checkWeChatUserBindStatus(openId);
 
