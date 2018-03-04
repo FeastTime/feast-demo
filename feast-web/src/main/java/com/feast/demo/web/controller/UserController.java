@@ -2,7 +2,6 @@ package com.feast.demo.web.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.feast.demo.device.entity.Device;
 import com.feast.demo.feedback.entity.Feedback;
 import com.feast.demo.web.service.*;
 import com.feast.demo.store.entity.Store;
@@ -18,10 +17,8 @@ import io.rong.RongCloud;
 import io.rong.models.TokenResult;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -122,49 +119,47 @@ public class UserController {
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject json = JSON.parseObject(text);
+
             String username = json.getString("username");
             String password = json.getString("password");
-            password = MD5Utils.encryptHMAC(password);
-            Long deviceId = json.getLong("deviceId");
-            Device device = deviceService.findByDeviceId(deviceId);
+            String deviceId = json.getString("deviceId");
 
-            if (device != null && device.getStore() != null) {
-
-                result.put("storeId", device.getStore().getStoreId());
-                String storeName = storeService.findStoreName(device.getStore().getStoreId());
-                result.put("storeName", storeName);
-
-            } else {
-
-                result.put("storeId", null);
-            }
-
-            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)|| StringUtils.isEmpty(deviceId)) {
 
                 result.put("resultCode", 1);
                 result.put("resultMsg", "参数错误");
 
                 return JSON.toJSONString(result);
 
-            } else {
-
-                //用户登录
-                user = userService.storeLogin(username, password);
-
-                if (user == null) {
-
-                    result.put("resultMsg", "账号或密码错误");
-                    result.put("resultCode", 2);
-
-                    return JSON.toJSONString(result);
-                }
-
-                LoginMemory.set(user.getUsername() + "", user);
-
-                result.put("token", TokenUtils.getToken(deviceId + "", user.getUserId() + ""));
-                result.put("userType", user.getUserType());
-                result.put("userId", user.getUserId());
             }
+
+            // 用户登录
+
+            password = MD5Utils.encryptHMAC(password);
+            user = userService.storeLogin(username, password);
+
+            if (user == null || user.getStoreId() == null) {
+
+                result.put("resultMsg", "账号或密码错误");
+                result.put("resultCode", 2);
+
+                return JSON.toJSONString(result);
+            }
+
+            // 查询商家信息
+            Store store = storeService.getStoreInfo(user.getStoreId());
+
+            if (store != null) {
+
+                result.put("storeId", store.getStoreId());
+                result.put("storeName", store.getStoreName());
+            }
+
+            LoginMemory.set(user.getUsername() + "", user);
+
+            result.put("token", TokenUtils.getToken(deviceId + "", user.getUserId() + ""));
+            result.put("userType", user.getUserType());
+            result.put("userId", user.getUserId());
 
         } catch (Exception e) {
 
@@ -177,9 +172,10 @@ public class UserController {
 
         if (!getRYToken(user, result)) {
 
+            result.put("resultCode",3);
+            result.put("resultMsg","服务端获取融云token 失败");
             return JSON.toJSONString(result);
         }
-
 
         result.put("resultMsg", "欢迎您登录成功!");
         result.put("resultCode", 0);
@@ -300,7 +296,7 @@ public class UserController {
     public String checkWeChatUserBindStatus(@RequestBody String text){
         Map<String,Object> result = null;
         String resultMsg = "";
-        Byte resultCode = 1;
+        byte resultCode;
         Byte status = null;
         try{
             result = Maps.newHashMap();
@@ -318,11 +314,13 @@ public class UserController {
             }
             resultCode = 0;
         }catch(Exception e){
+            resultCode = 1;
             e.printStackTrace();
         }
-        result.put("resultCode",resultCode);
-        result.put("resultMsg",resultMsg);
-        result.put("status",status);
+        result.put("resultCode", resultCode);
+        result.put("resultMsg", resultMsg);
+        result.put("status", status);
+
         return JSON.toJSONString(result);
     }
 
