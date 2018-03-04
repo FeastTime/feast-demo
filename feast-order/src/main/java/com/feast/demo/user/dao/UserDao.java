@@ -3,6 +3,7 @@ package com.feast.demo.user.dao;
 import com.feast.demo.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -41,6 +42,9 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     @Query("select u.userId from User u where u.storeId = ?1 and u.userType = ?2")
     ArrayList<Long> findWaitersIdByStoreIdAndUserType(Long storeId, int userType);
 
+    @Modifying
+    @Query("update User u set u.deviceId = ?1,u.mobileNo=?2,u.nickName=?3,u.userIcon=?4 where u.openId = ?5")
+    void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
 
     /*@Query("select s from Store s where s.id in ?1")
     List<Store> findByIdIn(List<Long> storeIds);*/

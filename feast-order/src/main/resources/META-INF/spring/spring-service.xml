@@ -30,4 +30,6 @@
     <dubbo:service interface="com.feast.demo.table.service.TableService" protocol="dubbo" ref="tableServiceImpl" />
 
     <dubbo:service interface="com.feast.demo.feedback.service.FeedbackService" protocol="dubbo" ref="feedbackServiceImpl" />
+
+    <dubbo:service interface="com.feast.demo.version.service.VersionService" protocol="dubbo" ref="versionServiceImpl" />
 </beans>

@@ -19,7 +19,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
 
         String requestURI = httpServletRequest.getRequestURI();
-        System.out.println(requestURI);
+        String method = httpServletRequest.getMethod();
+        System.out.println(method+"88888888888");
+        System.out.println(requestURI+"ppppppppppp");
 
         if(requestURI.contains("/websocket")
                 || requestURI.contains("/im/message")

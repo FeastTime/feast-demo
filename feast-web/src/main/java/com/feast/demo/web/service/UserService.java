@@ -117,8 +117,8 @@ public class UserService {
         return msg;
     }
     
-    public void saveWeChatUserInfo(User user) {
-        userRemoteService.saveWeChatUserInfo(user);
+    public User saveWeChatUserInfo(User user) {
+        return userRemoteService.saveWeChatUserInfo(user);
     }
 
     public User checkWeChatUserBindStatus(String openId) {
@@ -177,6 +177,14 @@ public class UserService {
 
     public void saveUserInfo(User user) {
         userRemoteService.saveUserInfo(user);
+    }
+
+    public User findByOpenId(String openId) {
+        return userRemoteService.findByOpenId(openId);
+    }
+
+    public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId) {
+        userRemoteService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
     }
 }
 

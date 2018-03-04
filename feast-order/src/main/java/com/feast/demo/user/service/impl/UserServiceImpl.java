@@ -76,8 +76,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional(readOnly = false)
-    public void saveWeChatUserInfo(User user) {
-        userDao.save(user);
+    public User saveWeChatUserInfo(User user) {
+        return userDao.save(user);
     }
 
     public User checkWeChatUserBindStatus(String openId) {
@@ -95,19 +95,6 @@ public class UserServiceImpl implements UserService{
 
     public User findById(Long userId) {
         return userDao.findOne(userId);
-    }
-
-
-    public UserStore selectHistoryByUserIdAndStoreId(Long userId, Long storeId) {
-        return userStoreDao.selectHistoryByUserIdAndStoreId(userId,storeId);
-    }
-
-    public void saveHistory(UserStore history) {
-        userStoreDao.save(history);
-    }
-
-    public ArrayList<User> selectVisitUser(Long storeId) {
-        return userStoreDao.selectVisitUser(storeId);
     }
 
     public User queryUserInfo(Long userId) {
@@ -153,6 +140,7 @@ public class UserServiceImpl implements UserService{
         return userStoreDao.findByUserIdAndStoreId(userId,storeId);
     }
 
+    @Transactional(readOnly = false)
     public void saveUserStore(UserStore us) {
         userStoreDao.save(us);
     }
@@ -173,7 +161,18 @@ public class UserServiceImpl implements UserService{
         return userDao.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),userType);
     }
 
+    @Transactional(readOnly = false)
     public void saveUserInfo(User user) {
         userDao.save(user);
     }
+
+    public User findByOpenId(String openId) {
+        return userDao.findByOpenId(openId);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId) {
+        userDao.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
+    }
+
 }

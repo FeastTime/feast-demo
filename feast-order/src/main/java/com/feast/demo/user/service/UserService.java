@@ -23,7 +23,7 @@ public interface UserService {
     /**
      * @param user
      */
-    public void saveWeChatUserInfo(User user);
+    public User saveWeChatUserInfo(User user);
 
     public User checkWeChatUserBindStatus(String openId);
 
@@ -54,5 +54,9 @@ public interface UserService {
     public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType);
 
     public void saveUserInfo(User user);
+
+    public User findByOpenId(String openId);
+
+    public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
 }
 

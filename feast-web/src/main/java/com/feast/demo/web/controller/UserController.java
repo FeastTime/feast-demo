@@ -241,41 +241,40 @@ public class UserController {
     public String saveWeChatUserInfo(@RequestBody String text){
 
         Map<String,Object> result = Maps.newHashMap();
+        User user = new User();
 
-//        Long userId;
-
-        User user = JSONObject.parseObject(text,User.class);
-
-        if(null == user){
-
-            result.put("resultMsg", "收到User信息转json失败");
-            result.put("resultCode",1);
-            return JSON.toJSONString(result);
-        }
-
-        //  保存用户信息
         try{
-
             text = StringUtils.decode(text);
             logger.info(text);
+            JSONObject jsonObject = JSONObject.parseObject(text);
 
-            User user_ = userService.checkWeChatUserBindStatus(user.getOpenId());
+            String deviceId = jsonObject.getString("deviceId");
+            String mobileNo = jsonObject.getString("mobileNo");
+            String nickName = jsonObject.getString("nickName");
+            String userIcon = jsonObject.getString("userIcon");
+            String openId = jsonObject.getString("openId");
+
+            user.setUserIcon(userIcon);
+            user.setNickName(nickName);
+            user.setMobileNo(mobileNo);
+            user.setDeviceId(deviceId);
+
+            User user_ = userService.checkWeChatUserBindStatus(openId);
 
             if(user_ != null) {
 
+                userService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
                 user.setUserId(user_.getUserId());
-
             } else {
-
-                userService.saveWeChatUserInfo(user);
-                user.setUserId(userService.findUserId(user.getOpenId()));
+                User user_1 = userService.saveWeChatUserInfo(user);
+                user.setUserId(user_1.getUserId());
             }
 
         } catch (Exception e) {
 
             e.printStackTrace();
             result.put("resultMsg", "保存用户信息失败");
-            result.put("resultCode",2);
+            result.put("resultCode",1);
             return JSON.toJSONString(result);
         }
 
@@ -629,4 +628,6 @@ public class UserController {
 
         return JSON.toJSONString(result);
     }
+
+
 }
