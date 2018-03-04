@@ -9,12 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.logging.Logger;
 
-@Controller
+@RestController
 @RequestMapping(value = "/version")
 public class VersionController {
 
@@ -33,12 +34,10 @@ public class VersionController {
             String text = (String) servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
-            System.out.println("kkkkk");
 
             JSONObject obj = JSONObject.parseObject(text);
             String clientType = obj.getString("clientType");
             Integer versionNumber = obj.getInteger("versionNumber");
-            logger.info(versionNumber+"_"+clientType);
 
             Map<String,Object> versionMessage = versionService.upgradeReminding(clientType,versionNumber);
 
@@ -47,7 +46,6 @@ public class VersionController {
 
             resultCode = 0;
             resultMsg = "版本升级成功";
-            System.out.println("yyyyyy");
         } catch (Exception e) {
             e.printStackTrace();
 
