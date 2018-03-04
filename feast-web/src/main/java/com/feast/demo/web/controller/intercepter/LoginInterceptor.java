@@ -20,8 +20,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         String requestURI = httpServletRequest.getRequestURI();
         String method = httpServletRequest.getMethod();
-        System.out.println(method+"88888888888");
-        System.out.println(requestURI+"ppppppppppp");
 
         if(requestURI.contains("/websocket")
                 || requestURI.contains("/im/message")

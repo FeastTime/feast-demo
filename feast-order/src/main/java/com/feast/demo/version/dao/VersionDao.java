@@ -9,9 +9,6 @@ import java.util.ArrayList;
 
 public interface VersionDao extends PagingAndSortingRepository<Version,Long> {
 
-    @Query("select v.versionNumber from Version v where v.clientType = ?1 order by v.versionNumber desc ")
-    public ArrayList<Integer> findVersionNumberByClientTypeOrderByVersionNumberDesc(String clientType, Pageable pageable);
-
-    @Query("select v.downloadAddress from Version v where v.versionNumber = ?1")
-    String findDownloadAddressByVersionNumber(Integer versionNumberMax);
+    @Query(value = "select * from version where client_type = ?1 and version_number > ?2 ORDER BY version_number DESC LIMIT 1", nativeQuery = true)
+    public Version findVersionNumberByClientTypeOrderByVersionNumberDesc(String clientType,Integer versionNumber);
 }
