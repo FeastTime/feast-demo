@@ -46,6 +46,9 @@ public interface UserDao  extends PagingAndSortingRepository<User,Long>,UserDaoC
     @Query("update User u set u.deviceId = ?1,u.mobileNo=?2,u.nickName=?3,u.userIcon=?4 where u.openId = ?5")
     void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
 
+    @Query("select u.openId from User u where u.userId = ?1")
+    String findOpenIdByUserId(Long userId);
+
     /*@Query("select s from Store s where s.id in ?1")
     List<Store> findByIdIn(List<Long> storeIds);*/
 }

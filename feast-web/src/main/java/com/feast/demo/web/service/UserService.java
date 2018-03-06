@@ -121,8 +121,8 @@ public class UserService {
         return userRemoteService.saveWeChatUserInfo(user);
     }
 
-    public User checkWeChatUserBindStatus(String openId) {
-        return userRemoteService.checkWeChatUserBindStatus(openId);
+    public String checkWeChatUserBindStatus(Long userId) {
+        return userRemoteService.checkWeChatUserBindStatus(userId);
     }
 
     public void saveUserPhone(Long userId,String mobileNo) {

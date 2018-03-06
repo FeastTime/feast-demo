@@ -59,17 +59,6 @@ public class UserServiceImpl implements UserService{
     }
 
 
-    /**
-     * 分页查询
-     * @param page
-     * @param size
-     * @return
-     */
-    public Page<User> findByPage(int page,int size){
-        PageRequest pageRequest = new PageRequest(page,size);
-        return userDao.findByPage2(pageRequest);
-    }
-
 
     public User findByMobileAndPwd(String mobileNo, String pwd) {
         return userDao.findByMobileAndPwd(mobileNo,pwd);
@@ -80,8 +69,8 @@ public class UserServiceImpl implements UserService{
         return userDao.save(user);
     }
 
-    public User checkWeChatUserBindStatus(String openId) {
-        return userDao.findByOpenId(openId);
+    public String checkWeChatUserBindStatus(Long userId) {
+        return userDao.findOpenIdByUserId(userId);
     }
 
     @Transactional(readOnly = false)

@@ -68,4 +68,8 @@ public class StoreService {
     public ArrayList<Store> getStoreInfoList(ArrayList<Long> storeIds) {
         return storeRemoteService.getStoreInfoList(storeIds);
     }
+
+    public RedPackage findByIsUseAndStoreId(Integer isUse,Long storeId) {
+        return redPackageService.findByIsUseAndStoreId(isUse,storeId);
+    }
 }

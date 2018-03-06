@@ -63,7 +63,6 @@ public class IMOperationService {
     @Autowired
     private StoreService storeService;
 
-
     /**
      * 设置就餐人数
      *
@@ -617,7 +616,7 @@ public class IMOperationService {
 //    }
 
     // 存放最后一次发放时间
-    private static Map<Long, Long> redPackageSendTime = new HashMap<>();
+    public static Map<Long, Long> redPackageSendTime = new HashMap<>();
 
 
     /**
@@ -655,8 +654,7 @@ public class IMOperationService {
 
             if (distanceTime > redPackageInfo.getAutoSendTime()*60*1000 ){
 
-                System.out.println("时间超过 设置时间   红包发送");
-
+                System.out.println("时间超过 设置时间 红包发送");
 
                 // 设置最后发送红包的时间
                 redPackageSendTime.put(redPackageInfo.getRedPackageId(), nowTime);

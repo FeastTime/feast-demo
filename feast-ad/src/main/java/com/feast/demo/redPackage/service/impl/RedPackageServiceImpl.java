@@ -79,4 +79,8 @@ public class RedPackageServiceImpl implements RedPackageService {
         return redPackageDao.findRedPackageByIsUse(isUse);
     }
 
+    public RedPackage findByIsUseAndStoreId(Integer isUse, Long storeId) {
+        return redPackageDao.findByIsUseAndStoreId(isUse,storeId);
+    }
+
 }

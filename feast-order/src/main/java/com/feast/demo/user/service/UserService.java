@@ -25,7 +25,7 @@ public interface UserService {
      */
     public User saveWeChatUserInfo(User user);
 
-    public User checkWeChatUserBindStatus(String openId);
+    public String checkWeChatUserBindStatus(Long openId);
 
     public void saveUserPhone(Long userId, String mobileNo);
 

@@ -37,9 +37,6 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private DeviceService deviceService;
-
-    @Resource
     private FeedbackService feedbackService;
 
     @Resource
@@ -249,6 +246,7 @@ public class UserController {
             String nickName = jsonObject.getString("nickName");
             String userIcon = jsonObject.getString("userIcon");
             String openId = jsonObject.getString("openId");
+            Long userId = jsonObject.getLong("userId");
 
             user.setUserIcon(userIcon);
             user.setNickName(nickName);
@@ -256,12 +254,12 @@ public class UserController {
             user.setDeviceId(deviceId);
             user.setOpenId(openId);
 
-            User user_ = userService.checkWeChatUserBindStatus(openId);
+            String openId_ = userService.checkWeChatUserBindStatus(userId);
 
-            if(user_ != null) {
+            if(openId_!=null&&!("".equals(openId.trim()))) {
 
                 userService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
-                user.setUserId(user_.getUserId());
+                user.setUserId(userId);
             } else {
                 User user_1 = userService.saveWeChatUserInfo(user);
                 user.setUserId(user_1.getUserId());
@@ -304,10 +302,10 @@ public class UserController {
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject jsono = JSON.parseObject(text);
-            String openId = jsono.getString("openId");
-            User user = userService.checkWeChatUserBindStatus(openId);
-            if(user!=null){
-                resultMsg = "用户已绑定";
+            Long userId = jsono.getLong("userId");
+            String openId = userService.checkWeChatUserBindStatus(userId);
+            if(openId!=null&&!("".equals(openId.trim()))){
+                resultMsg = "用户绑定";
                 status = 0;
             }else{
                 resultMsg = "用户还未绑定";
