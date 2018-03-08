@@ -135,10 +135,6 @@ public class UserService {
         return userRemoteService.queryUserInfo(userId);
     }
 
-    public void setRelationshipWithStore(Long userId, Long storeId, Integer status) {
-        userRemoteService.setRelationshipWithStore(userId,storeId,status);
-    }
-
     public User storeLogin(String username, String password) {
         return userRemoteService.storeLogin(username,password);
     }
@@ -157,18 +153,6 @@ public class UserService {
 
     public void saveUserStore(UserStore us) {
         userRemoteService.saveUserStore(us);
-    }
-
-    public Long findUserId(String openId) {
-        return userRemoteService.findUserId(openId);
-    }
-
-    public Set<Long> findStoreIdByUserId(Long userId) {
-        return userRemoteService.findStoreIdByUserId(userId);
-    }
-
-    public List<Long> findUserIdByStoreId(Long storeId) {
-        return userRemoteService.findUserIdByStoreId(storeId);
     }
 
     public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType) {

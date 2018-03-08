@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by ggke on 2017/8/2.
@@ -27,7 +28,6 @@ public class Store implements Serializable{
      */
     private String storeName;
 
-
     private String locate;
 
     private String phone;
@@ -39,6 +39,7 @@ public class Store implements Serializable{
     private String storeIcon;
 
     private String storePicture;
+
 
 //    @OneToMany(mappedBy = "store",cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
 //    @Lazy(value = false)

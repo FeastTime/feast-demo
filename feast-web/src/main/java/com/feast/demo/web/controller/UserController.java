@@ -3,6 +3,8 @@ package com.feast.demo.web.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.feedback.entity.Feedback;
+import com.feast.demo.history.entity.UserStore;
+import com.feast.demo.web.entity.UserStatus;
 import com.feast.demo.web.service.*;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;

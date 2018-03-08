@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService{
     }
 
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
-        ArrayList<UserStore> userStoreList = null;
+        ArrayList<Store> userStoreList = null;
         if(order==1){
             userStoreList = userStoreDao.findByUserIdOrderByCount(userId);
         }else if(order==2){
@@ -115,14 +115,7 @@ public class UserServiceImpl implements UserService{
         }else{
             userStoreList = userStoreDao.findByUserIdOrderByLastModifiedDesc(userId);
         }
-        ArrayList<Long> storeIdList = Lists.newArrayList();
-        for (UserStore userStore:userStoreList) {
-            if(!storeIdList.contains(userStore.getStoreId())){
-                storeIdList.add(userStore.getStoreId());
-            }
-        }
-        ArrayList<Store> storeList = storeDao.findByStoreIdIn(storeIdList);
-        return storeList;
+        return userStoreList;
     }
 
     public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId) {

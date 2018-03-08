@@ -186,7 +186,6 @@ public class RedPackageController {
             logger.info(text);
 
             JSONObject obj = JSONObject.parseObject(text);
-            Long userId = obj.getLong("userId");
             String redPackageId = obj.getString("redPackageId");
 
             ArrayList<RedPackageDetail> redPackageDetailList = redPackageDetailService.queryRedPackageDetail(redPackageId);
@@ -295,10 +294,10 @@ public class RedPackageController {
 
             redPackageService.setRedPackageIsNotUse(redPackageId);
             resultCode = 0;
-            resultMsg = "设置红包为不适用状态成功";
+            resultMsg = "关闭自动发红包成功";
         }catch (Exception e){
             e.printStackTrace();
-            resultMsg = "设置红包为不适用状态失败";
+            resultMsg = "关闭自动发红包失败";
         }
         result = Maps.newHashMap();
         result.put("resultCode",resultCode);

@@ -10,6 +10,7 @@ import com.feast.demo.web.service.CouponService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -32,10 +33,10 @@ import java.util.Random;
 @RequestMapping(value = "/ad")
 public class AdvertisementController {
 
-    @Resource
+    @Autowired
     private AdverstismentService adverstismentService;
 
-    @Resource
+    @Autowired
     private CouponService couponService;
 
     private static final String path="http://47.94.16.58:9798/feast-web";

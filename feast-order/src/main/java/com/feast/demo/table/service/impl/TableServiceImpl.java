@@ -28,9 +28,6 @@ public class TableServiceImpl implements TableService{
     @Autowired
     private StoreDao storeDao;
 
-    @Autowired
-    private UserDao userDao;
-
     public void setBusinessInfo(TableTemplate tableTemplate) {
         tableTemplateDao.save(tableTemplate);
     }

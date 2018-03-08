@@ -99,6 +99,7 @@ public class RedPackageServiceImpl implements RedPackageService {
 
         ArrayList<CouponTemplate> couponTemplateList = couponTemplateDao.findByIdIn(couponTemplateIdList);
 
+        System.out.println(couponTemplateList.size()+"0000000000");
         return couponTemplateList;
     }
 
