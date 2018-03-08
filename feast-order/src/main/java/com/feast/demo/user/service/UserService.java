@@ -58,5 +58,7 @@ public interface UserService {
     public User findByOpenId(String openId);
 
     public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
+
+    public User checkWeChatUserBindStatus(String openId);
 }
 

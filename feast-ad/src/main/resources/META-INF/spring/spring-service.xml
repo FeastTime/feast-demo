@@ -19,5 +19,6 @@
 
     <dubbo:service interface="com.feast.demo.ad.service.AdService" protocol="dubbo" ref="adServiceImpl"/>
     <dubbo:service interface="com.feast.demo.coupon.service.CouponService" protocol="dubbo" ref="couponServiceImpl"/>
+    <dubbo:service interface="com.feast.demo.redPackage.service.RedPackageDetailService" protocol="dubbo" ref="redPackageDetailServiceImpl"/>
     <dubbo:service interface="com.feast.demo.redPackage.service.RedPackageService" protocol="dubbo" ref="redPackageServiceImpl"/>
 </beans>

@@ -14,5 +14,7 @@ public interface CouponTemplateDao extends PagingAndSortingRepository<CouponTemp
 
 
     @Query("select ct from CouponTemplate ct where ct.storeId = ?1 and ct.couponCount >0 order by ct.lastModified desc")
-    ArrayList<CouponTemplate> findByStoreIdAndCount(Long storeId);
+    ArrayList<CouponTemplate> findByStoreIdOrderByLastModifiedDesc(Long storeId);
+
+    ArrayList<CouponTemplate> findByIdIn(ArrayList<Long> couponTemplateIdList);
 }

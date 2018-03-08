@@ -97,7 +97,9 @@ public class CouponController {
             params = StringUtils.decode(params);
             logger.info(params);
             CouponTemplate coupon = JSONObject.parseObject(params,CouponTemplate.class);
-            coupon.setCreateTime(new Date());
+            Date date = new Date();
+            coupon.setCreateTime(date);
+            coupon.setLastModified(date);
             couponService.createCouponTemplate(coupon);
             resultCode = 0;
             resultMsg = "创建优惠券模板成功";

@@ -179,12 +179,12 @@ public class UserService {
         userRemoteService.saveUserInfo(user);
     }
 
-    public User findByOpenId(String openId) {
-        return userRemoteService.findByOpenId(openId);
-    }
-
     public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId) {
         userRemoteService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
+    }
+
+    public User checkWeChatUserBindStatus(String openId) {
+        return userRemoteService.checkWeChatUserBindStatus(openId);
     }
 }
 

@@ -1,4 +1,6 @@
 package com.feast.demo.redPackage.service.impl;
+import com.feast.demo.coupon.dao.CouponTemplateDao;
+import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.dao.RedPackageCouponTemplateDao;
 import com.feast.demo.redPackage.dao.RedPackageDao;
 import com.feast.demo.redPackage.entity.RedPackage;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +22,9 @@ public class RedPackageServiceImpl implements RedPackageService {
 
     @Autowired
     private RedPackageCouponTemplateDao redPackageCouponTemplateDao;
+
+    @Autowired
+    private CouponTemplateDao couponTemplateDao;
 
 
     public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds) {
@@ -81,6 +87,25 @@ public class RedPackageServiceImpl implements RedPackageService {
 
     public RedPackage findByIsUseAndStoreId(Integer isUse, Long storeId) {
         return redPackageDao.findByIsUseAndStoreId(isUse,storeId);
+    }
+
+    @Transactional(readOnly = false)
+    public void setRedPackageIsNotUse(Long redPackageId) {
+        redPackageDao.updateByRedPackageIdAndIsUse(1,redPackageId);
+    }
+
+    public ArrayList<CouponTemplate> queryCouponInRedPackage(Long redPackageId) {
+        ArrayList<Long> couponTemplateIdList = redPackageCouponTemplateDao.findCouponTemplateIdByRedPackageId(redPackageId);
+
+        ArrayList<CouponTemplate> couponTemplateList = couponTemplateDao.findByIdIn(couponTemplateIdList);
+
+        return couponTemplateList;
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteAutoRedPackage(Long redPackageId) {
+        redPackageDao.delete(redPackageId);
+        redPackageCouponTemplateDao.deleteByRedPackageId(redPackageId);
     }
 
 }

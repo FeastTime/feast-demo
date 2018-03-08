@@ -246,20 +246,18 @@ public class UserController {
             String nickName = jsonObject.getString("nickName");
             String userIcon = jsonObject.getString("userIcon");
             String openId = jsonObject.getString("openId");
-            Long userId = jsonObject.getLong("userId");
 
             user.setUserIcon(userIcon);
             user.setNickName(nickName);
             user.setMobileNo(mobileNo);
             user.setDeviceId(deviceId);
-            user.setOpenId(openId);
 
-            String openId_ = userService.checkWeChatUserBindStatus(userId);
+            User user_ = userService.checkWeChatUserBindStatus(openId);
 
-            if(openId_!=null&&!("".equals(openId.trim()))) {
+            if(user_ != null) {
 
                 userService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
-                user.setUserId(userId);
+                user.setUserId(user_.getUserId());
             } else {
                 User user_1 = userService.saveWeChatUserInfo(user);
                 user.setUserId(user_1.getUserId());

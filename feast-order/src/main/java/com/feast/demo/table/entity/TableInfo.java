@@ -46,6 +46,7 @@ public class TableInfo implements Serializable{
     @Transient
     private Long  expirationTime;
 
+
     public void setTaketableTime(Date taketableTime) {
 
         this.taketableTime = taketableTime;

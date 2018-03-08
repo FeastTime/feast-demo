@@ -50,16 +50,7 @@ public class TableServiceImpl implements TableService{
 
 
     public ArrayList<TableInfo> getHistoryTables(Long storeId) {
-        ArrayList<TableInfo> tableInfos = tableInfoDao.findByStoreId(storeId);
-        for (TableInfo tableInfo : tableInfos) {
-            if(tableInfo.getUserPhone()==null||tableInfo.getUserPhone().equals("")){
-                Long userId = tableInfo.getUserId();
-                if(userId!=null){
-                    String userPhone = userDao.findMobileNoByUserId(userId);
-                    tableInfo.setUserPhone(userPhone);
-                }
-            }
-        }
+        ArrayList<TableInfo> tableInfos = tableInfoDao.findByStoreIdOrderByMaketableTimeDesc(storeId);
         return tableInfos;
     }
 

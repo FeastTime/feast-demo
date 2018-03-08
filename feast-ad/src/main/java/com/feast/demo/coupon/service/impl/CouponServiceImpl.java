@@ -56,7 +56,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     public ArrayList<CouponTemplate> queryCouponTemplateList(Long storeId) {
-        return couponTemplateDao.findByStoreIdAndCount(storeId);
+        return couponTemplateDao.findByStoreIdOrderByLastModifiedDesc(storeId);
     }
 
 

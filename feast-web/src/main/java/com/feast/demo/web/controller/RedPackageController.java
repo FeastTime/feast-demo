@@ -5,9 +5,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
+import com.feast.demo.redPackage.entity.RedPackageDetail;
 import com.feast.demo.table.entity.TableInfo;
+import com.feast.demo.user.entity.User;
 import com.feast.demo.web.service.IMOperationService;
-import com.feast.demo.web.service.StoreService;
+import com.feast.demo.web.service.RedPackageDetailService;
+import com.feast.demo.web.service.RedPackageService;
+import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +37,13 @@ public class RedPackageController {
     private IMOperationService imOperationService;
 
     @Autowired
-    private StoreService storeService;
+    private RedPackageService redPackageService;
+
+    @Autowired
+    private RedPackageDetailService redPackageDetailService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/sendRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String sendRedPackage(HttpServletRequest servletRequest){
@@ -114,8 +126,6 @@ public class RedPackageController {
             resultMsg = "拆红包失败";
         }
 
-
-
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
 
@@ -137,7 +147,7 @@ public class RedPackageController {
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
 
-            RedPackage redPackageInfo = storeService.findByIsUseAndStoreId(2,storeId);
+            RedPackage redPackageInfo = redPackageService.findByIsUseAndStoreId(2,storeId);
             if(redPackageInfo==null){
                 result.put("isCountDown",false);
                 result.put("countDownTime",null);
@@ -160,6 +170,237 @@ public class RedPackageController {
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
 
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/queryRedPackageDetail",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String queryRedPackageDetail(HttpServletRequest servletRequest){
+
+        String resultMsg;
+        Byte resultCode;
+        Map<String,Object> result = Maps.newHashMap();
+
+        try {
+            String text = (String) servletRequest.getAttribute("json");
+                 text = StringUtils.decode(text);
+            logger.info(text);
+
+            JSONObject obj = JSONObject.parseObject(text);
+            Long userId = obj.getLong("userId");
+            String redPackageId = obj.getString("redPackageId");
+
+            ArrayList<RedPackageDetail> redPackageDetailList = redPackageDetailService.queryRedPackageDetail(redPackageId);
+
+            Map<String,RedPackageDetail> redPackageDetailMap = Maps.newHashMap();
+
+            for (RedPackageDetail redPackageDetail : redPackageDetailList) {
+
+                Long userId_ = redPackageDetail.getUserId();
+
+                User user = userService.findById(userId_);
+                redPackageDetail.setUserIcon(user.getUserIcon());
+                redPackageDetail.setNickName(user.getNickName());
+
+                redPackageDetailMap.put(userId_+"",redPackageDetail);
+            }
+
+            result.put("redPackageDetailMap",redPackageDetailMap);
+            resultCode = 0;
+            resultMsg = "查询红包详情成功";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            resultCode = 1;
+            resultMsg = "查询红包详情失败";
+        }
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/createRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String createRedPackage(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        List<RedPackageCouponTemplate> redPackageCouponTemplates = null;
+        try{
+            result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            JSONArray couponTemplateIdArray = obj.getJSONArray("couponTemplateIdsAndCount");
+            redPackageCouponTemplates = JSONArray.parseArray(JSON.toJSONString(couponTemplateIdArray),RedPackageCouponTemplate.class);
+            Long storeId = obj.getLong("storeId");
+            String redPackageName = obj.getString("redPackageName");
+            RedPackage redPackage = new RedPackage();
+            redPackage.setStoreId(storeId);
+            redPackage.setRedPackageName(redPackageName);
+            redPackageService.createRedPackage(redPackage,redPackageCouponTemplates);
+            resultCode = 0;
+            resultMsg = "创建红包成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "创建红包失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/setRedPackageIsUse",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String setRedPackageIsUse(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        try{
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long redPackageId = obj.getLong("redPackageId");
+            Long storeId = obj.getLong("storeId");
+
+            System.out.println("storeId" + storeId);
+            System.out.println("redPackageId   : " + redPackageId);
+
+            redPackageService.setRedPackageIsUse(redPackageId,storeId);
+            resultCode = 0;
+            resultMsg = "设置红包为使用状态成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "设置红包为使用状态失败";
+        }
+        result = Maps.newHashMap();
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/closeAutoSendRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String closeAutoSendRedPackage(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        try{
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long redPackageId = obj.getLong("redPackageId");
+
+            redPackageService.setRedPackageIsNotUse(redPackageId);
+            resultCode = 0;
+            resultMsg = "设置红包为不适用状态成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "设置红包为不适用状态失败";
+        }
+        result = Maps.newHashMap();
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/queryRedPackageList",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String queryRedPackageList(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Integer resultCode = 1;
+        try{
+            result = Maps.newHashMap();
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long storeId = obj.getLong("storeId");
+            List<RedPackage> redPackages = redPackageService.queryRedPackageList(storeId);
+            result.put("redPackages",redPackages);
+            resultCode = 0;
+            resultMsg = "查询红包列表成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询红包列表失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/setRedPackageAutoSendTime",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String setRedPackageAutoSendTime(HttpServletRequest servletRequest){
+        String resultMsg;
+        Integer resultCode = 1;
+        try{
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long storeId = obj.getLong("storeId");
+            Integer time = obj.getInteger("time");
+            redPackageService.setRedPackageAutoSendTime(time,storeId);
+            resultCode = 0;
+            resultMsg = "设置红包自动发送周期成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "设置红包自动发送周期失败";
+        }
+        Map<String,Object> result = Maps.newHashMap();
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/queryCouponInRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String queryCouponInRedPackage(HttpServletRequest servletRequest){
+        String resultMsg;
+        Integer resultCode = 1;
+        Map<String,Object> result = Maps.newHashMap();
+
+        try{
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long redPackageId = obj.getLong("redPackageId");
+            ArrayList<CouponTemplate> couponTemplateList = redPackageService.queryCouponInRedPackage(redPackageId);
+            result.put("couponTemplateList",couponTemplateList);
+            resultCode = 0;
+            resultMsg = "查询自动发送红包中的优惠券成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询自动发送红包中的优惠券失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping(value = "/deleteAutoRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String deleteAutoRedPackage(HttpServletRequest servletRequest){
+        String resultMsg;
+        Integer resultCode = 1;
+        Map<String,Object> result = Maps.newHashMap();
+
+        try{
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+            JSONObject obj = JSONObject.parseObject(text);
+            Long redPackageId = obj.getLong("redPackageId");
+            redPackageService.deleteAutoRedPackage(redPackageId);
+            resultCode = 0;
+            resultMsg = "删除自动发送的红包成功";
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "删除自动发送的红包失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
         return JSON.toJSONString(result);
     }
 }

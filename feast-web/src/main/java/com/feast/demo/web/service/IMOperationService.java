@@ -6,6 +6,8 @@ import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.redPackage.entity.RedPackage;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
+import com.feast.demo.redPackage.entity.RedPackageDetail;
+import com.feast.demo.redPackage.service.RedPackageDetailService;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.table.entity.TableInfo;
 import com.feast.demo.user.entity.User;
@@ -62,6 +64,12 @@ public class IMOperationService {
 
     @Autowired
     private StoreService storeService;
+
+    @Autowired
+    private RedPackageService redPackageService;
+
+    @Autowired
+    private RedPackageDetailService redPackageDetailRemoteService;
 
     /**
      * 设置就餐人数
@@ -151,6 +159,9 @@ public class IMOperationService {
 
         for (Integer noPerTable : personMap.keySet()) {
 
+            if(noPerTable==0){
+                continue;
+            }
             dinnerInfo = new DinnerInfo();
             dinnerInfo.setNumberPerTable(noPerTable);
             dinnerInfo.setWaitingCount(personMap.get(noPerTable));
@@ -181,6 +192,7 @@ public class IMOperationService {
             if (null == redPackage || redPackage.size() == 0) {
 
                 result.put("message", "对不起，您来晚了");
+                result.put("takeRedPackageResultType",1);
                 // 删除缓存数据
                 redPackageMap.remove(redPackageId);
                 redId2UserIdMap.remove(redPackageId+"");
@@ -190,6 +202,7 @@ public class IMOperationService {
             } else if (redId2UserIdMap.get(redPackageId+"").contains(userId)) {
 
                 result.put("message", "您已经抢过这个红包了");
+                result.put("takeRedPackageResultType",2);
                 return result;
 
             } else {
@@ -218,21 +231,32 @@ public class IMOperationService {
 
                             tableInfo.setUserId(Long.parseLong(userId));
                             tableInfo.setIsCome(1);
-                            tableInfo.setTaketableTime(new Date());
+                            Date date = new Date();
+                            tableInfo.setTaketableTime(date);
 
                             tableInfo= tableService.saveTableInfo(tableInfo);
 
                             redId2UserIdMap.get(redPackageId+"").add(userId);
 
                             result.put("tableInfo", tableInfo);
+                            result.put("takeRedPackageResultType",3);
                             redPackage.remove(0);
                             result.put("message", "恭喜您获得一个桌位");
 
+                            //保存红包详情信息
+                            RedPackageDetail redPackageDetail = new RedPackageDetail();
+                            redPackageDetail.setRedPackageId(redPackageId);
+                            redPackageDetail.setUnpackTime(date);
+                            redPackageDetail.setRedPackageTitle("座位");
+                            redPackageDetail.setIsBestLuck(RedPackageDetail.ISBESTLUCK);
+                            redPackageDetail.setUserId(Long.parseLong(userId));
+
+                            redPackageDetailRemoteService.saveRedPackageDetail(redPackageDetail);
 
                             String[] messagePublishGroupToGroupId = {storeId};
 
 
-                            Map<String ,Object> sendMessageMap = new HashMap<>();
+                             Map<String ,Object> sendMessageMap = new HashMap<>();
                             sendMessageMap.put("date", new Date());
                             sendMessageMap.put("message", user.getNickName()+"手气太棒了！，恭喜您获得一个桌位！");
 
@@ -271,7 +295,8 @@ public class IMOperationService {
                         userCoupon.setCouponTitle(couponTemplate.getCouponTitle());
                         userCoupon.setCouponPicture(couponTemplate.getCouponPicture());
                         userCoupon.setCouponType(couponTemplate.getCouponType());
-                        userCoupon.setStartTime(new Date());
+                        Date date = new Date();
+                        userCoupon.setStartTime(date);
                         userCoupon.setIsUse(UserCoupon.ISUSE_UNUSED);
                         userCoupon.setCouponValidity(new Date(new Date().getTime() + couponTemplate.getCouponValidity() * 24 * 60 * 60 * 1000));
                         userCoupon.setStoreId(couponTemplate.getStoreId());
@@ -282,7 +307,18 @@ public class IMOperationService {
 
                         redId2UserIdMap.get(redPackageId+"").add(userId);
                         result.put("couponInfo", userCoupon);
+                        result.put("takeRedPackageResultType",3);
                         result.put("message", "恭喜您获得一张优惠券");
+
+                        //保存红包详情信息
+                        RedPackageDetail redPackageDetail = new RedPackageDetail();
+                        redPackageDetail.setRedPackageId(redPackageId);
+                        redPackageDetail.setUnpackTime(date);
+                        redPackageDetail.setRedPackageTitle(couponTemplate.getCouponTitle());
+                        redPackageDetail.setIsBestLuck(RedPackageDetail.NOTBESTLUCK);
+                        redPackageDetail.setUserId(Long.parseLong(userId));
+
+                        redPackageDetailRemoteService.saveRedPackageDetail(redPackageDetail);
 
                         redPackage.remove(i);
 
@@ -388,6 +424,7 @@ public class IMOperationService {
             String senderNickName = sender.getNickName();
             String senderIcon = sender.getUserIcon();
 
+            System.out.println(redPackageId);
             sendRedPackageMessage(senderId, storeId, redPackageId, senderNickName, senderIcon);
 
         } catch (Exception e) {
@@ -633,7 +670,7 @@ public class IMOperationService {
 //        List<Long> storeIds = getLongListFromStringSet(user2Store.keySet());
 
         // 查询店存储的红包信息
-        List<RedPackage> redPackageInfoList = storeService.findRedPackageByIsUse(2);
+        List<RedPackage> redPackageInfoList = redPackageService.findRedPackageByIsUse(2);
 
         if (null == redPackageInfoList || redPackageInfoList.size() == 0){
             logger.info("没有查询到需要发送的红包");
@@ -680,7 +717,7 @@ public class IMOperationService {
         Long redPackageInfoId = redPackageInfo.getRedPackageId();
 
         // 查询红包优惠券模板
-        List<RedPackageCouponTemplate> redPackageCouponTemplates = storeService.findRedPackageCouponTemplateByRedPackageId(redPackageInfoId);
+        List<RedPackageCouponTemplate> redPackageCouponTemplates = redPackageService.findRedPackageCouponTemplateByRedPackageId(redPackageInfoId);
 
         List<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
 
@@ -729,7 +766,12 @@ public class IMOperationService {
         // 创建优惠券Id
         String redPackageId = UUID.randomUUID() + "";
 
-        redPackageMap.put(redPackageId, redPackage);
+        if(redPackage.size()!=0){
+            redPackageMap.put(redPackageId, redPackage);
+        }else{
+            return;
+        }
+
 
         // 发送红包 到  群
         try {

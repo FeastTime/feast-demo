@@ -164,4 +164,8 @@ public class UserServiceImpl implements UserService{
         userDao.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
     }
 
+    public User checkWeChatUserBindStatus(String openId) {
+        return userDao.findByOpenId(openId);
+    }
+
 }
