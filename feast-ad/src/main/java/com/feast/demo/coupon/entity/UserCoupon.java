@@ -41,4 +41,8 @@ public class UserCoupon implements Serializable{
 
     private Integer couponType;
 
+    private Date takeTime;
+
+    private String storeName;
+
 }

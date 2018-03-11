@@ -21,7 +21,7 @@ public interface TableService {
 
     public ArrayList<TableInfoExpand> queryMyTableList(Long userId);
 
-    public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId);
+    public TableInfo findTableInfoByStoreIdAndTableId(Long storeId, Long tableId);
 
     public void updateTableInfo(TableInfo tableInfo);
 

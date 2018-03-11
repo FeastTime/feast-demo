@@ -5,6 +5,7 @@ import com.feast.demo.coupon.dao.UserCouponDao;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.coupon.entity.UserCoupon;
 import com.feast.demo.coupon.service.CouponService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,27 +60,34 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findByStoreIdOrderByLastModifiedDesc(storeId);
     }
 
+    public HashMap<String,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag) {
 
+        HashMap<String,ArrayList<UserCoupon>> userCouponMap = Maps.newHashMap();
 
-    public HashMap<Long,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag, ArrayList<Long> storeIds) {
-
-        HashMap<Long,ArrayList<UserCoupon>> userCoupons = Maps.newHashMap();
-
-        for (Long storeId : storeIds) {
-
-            ArrayList<UserCoupon> couponList = null;
-            //1:未使用(未使用 && 未过期)
-            if (flag == 1) {
-                couponList = userCouponDao.findIsUseAndCouponValidity(userId, storeId, UserCoupon.ISUSE_UNUSED, new Date());
-            } else if (flag == 2) {
-                couponList = userCouponDao.findByUserIdAndStoreIdAndIsUse(userId, storeId, UserCoupon.ISUSE_USED);
-                //3:已过期(未使用 && 过期)
-            } else if (flag == 3) {
-                couponList = userCouponDao.findIsUseAndCouponInValidity(userId, storeId, UserCoupon.ISUSE_UNUSED, new Date());
-            }
-            userCoupons.put(storeId, couponList);
+        ArrayList<UserCoupon> couponList = null;
+        //1:未使用(未使用 && 未过期)
+        if (flag == 1) {
+            couponList = userCouponDao.findByIsUseAndCouponValidityOrderByStoreIdAndTakeTime(userId,UserCoupon.ISUSE_UNUSED, new Date());
+        } else if (flag == 2) {
+            couponList = userCouponDao.findByUserIdAndIsUseOrderByStoreIdAndTakeTime(userId,UserCoupon.ISUSE_USED);
+            //3:已过期(未使用 && 过期)
+        } else if (flag == 3) {
+            couponList = userCouponDao.findByIsUseAndCouponInValidityOrderByStoreIdAndTakeTime(userId, UserCoupon.ISUSE_UNUSED, new Date());
         }
-        return userCoupons;
+
+        for (UserCoupon userCoupon : couponList) {
+            String storeId = userCoupon.getStoreId()+"";
+            if(!userCouponMap.containsKey(storeId)){
+                ArrayList<UserCoupon> coupons = Lists.newArrayList();
+                coupons.add(userCoupon);
+                userCouponMap.put(storeId+"",coupons);
+            }else{
+                userCouponMap.get(storeId).add(userCoupon);
+            }
+
+        }
+
+        return userCouponMap;
     }
 
     public Iterable<CouponTemplate> findAllCouponTemplate() {

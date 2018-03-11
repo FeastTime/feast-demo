@@ -152,6 +152,7 @@ public class UserController {
 
                 result.put("storeId", store.getStoreId());
                 result.put("storeName", store.getStoreName());
+                result.put("storeIcon",store.getStoreIcon());
             }
 
             LoginMemory.set(user.getUsername() + "", user);

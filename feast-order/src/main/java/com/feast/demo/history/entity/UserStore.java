@@ -1,10 +1,12 @@
 package com.feast.demo.history.entity;
 
+import com.feast.demo.store.entity.Store;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="user_store")
@@ -35,4 +37,5 @@ public class UserStore implements Serializable{
     private Long count;
     // 每桌人数
     private Integer numberPerTable;
+
 }

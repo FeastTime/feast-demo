@@ -42,6 +42,8 @@ public class TableInfo implements Serializable{
 
     private String description;
 
+    private String storeName;
+
     // 剩余 秒
     @Transient
     private Long  expirationTime;

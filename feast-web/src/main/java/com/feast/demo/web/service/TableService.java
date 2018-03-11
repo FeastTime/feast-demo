@@ -43,8 +43,8 @@ public class TableService {
         return tableRemoteService.queryMyTableList(userId);
     }
 
-    public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId) {
-        return tableRemoteService.findTableInfoByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
+    public TableInfo findTableInfoByStoreIdAndTableId(Long storeId, Long tableId) {
+        return tableRemoteService.findTableInfoByStoreIdAndTableId(storeId,tableId);
     }
 
     public TableInfo saveTableInfo(TableInfo tableInfo) {

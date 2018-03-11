@@ -15,6 +15,10 @@ import com.feast.demo.web.service.RedPackageService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
+import io.rong.RYConfig;
+import io.rong.RongCloud;
+import io.rong.messages.ReceivedRedPackageMessage;
+import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -146,6 +150,7 @@ public class RedPackageController {
 
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
+            User user = userService.findByStoreId(storeId);
 
             RedPackage redPackageInfo = redPackageService.findByIsUseAndStoreId(2,storeId);
             if(redPackageInfo==null){
@@ -159,6 +164,8 @@ public class RedPackageController {
 
             resultCode = 0;
             resultMsg = "倒计时成功";
+
+            IMOperationService.countDown(storeId+"",user.getUserId()+"",redPackageInfo.getRedPackageId()+"",2);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -263,6 +270,7 @@ public class RedPackageController {
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
             Long storeId = obj.getLong("storeId");
+            User user = userService.findByStoreId(storeId);
 
             System.out.println("storeId" + storeId);
             System.out.println("redPackageId   : " + redPackageId);
@@ -270,6 +278,8 @@ public class RedPackageController {
             redPackageService.setRedPackageIsUse(redPackageId,storeId);
             resultCode = 0;
             resultMsg = "设置红包为使用状态成功";
+
+            IMOperationService.countDown(storeId+"",user.getUserId()+"",redPackageId+"",2);
         }catch (Exception e){
             e.printStackTrace();
             resultMsg = "设置红包为使用状态失败";
@@ -291,8 +301,12 @@ public class RedPackageController {
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
+            Long storeId = obj.getLong("storeId");
+            Long userId = obj.getLong("userId");
 
             redPackageService.setRedPackageIsNotUse(redPackageId);
+
+            IMOperationService.countDown(storeId+"",userId+"",redPackageId+"",1);
             resultCode = 0;
             resultMsg = "关闭自动发红包成功";
         }catch (Exception e){

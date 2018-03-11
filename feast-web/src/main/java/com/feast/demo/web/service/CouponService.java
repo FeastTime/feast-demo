@@ -91,22 +91,9 @@ public class CouponService {
         return couponRemoteService.queryCouponTemplateList(storeId);
     }
 
-    public HashMap<Long,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag, ArrayList<Long> storeIds) {
+    public HashMap<String,ArrayList<UserCoupon>> queryCouponList(Long userId, Integer flag) {
         System.out.println("couponRemoteService   : " + couponRemoteService);
-//        System.out.println(userId);
-//        System.out.println(flag);
-//        System.out.println(storeIds);
-//
-////        return couponRemoteService.queryCouponList(userId,flag,storeIds);
-//        Long a = 10003L;
-//        Integer b = new Integer(1);
-//        ArrayList c = new ArrayList<Long>();
-//        c.add(1L);
-//        System.out.println("调用");
-//        System.out.println(couponRemoteService.queryMyCouponList(a, b, c));
-//        System.out.println("调用-end");
-
-        return couponRemoteService.queryCouponList(userId, flag, storeIds);
+        return couponRemoteService.queryCouponList(userId, flag);
     }
 
     public UserCoupon saveUserCoupon(UserCoupon userCoupon) {
@@ -115,10 +102,6 @@ public class CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id) {
         return couponRemoteService.findCouponTemplateById(id);
-    }
-
-    public ArrayList<Long> findStoreIdByUserId(Long userId) {
-        return couponRemoteService.findStoreIdByUserId(userId);
     }
 
 }

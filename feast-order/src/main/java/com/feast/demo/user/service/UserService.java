@@ -12,53 +12,45 @@ import java.util.Set;
  */
 public interface UserService {
 
-    public User findByMobileNo(String mobileNo);
+    User findByMobileNo(String mobileNo);
 
-    public void create(User user);
+    void create(User user);
 
-    public void update(User user);
+    void update(User user);
 
-    public User findByMobileAndPwd(String mobileNo, String pwd);
+    User findByMobileAndPwd(String mobileNo, String pwd);
 
     /**
      * @param user
      */
-    public User saveWeChatUserInfo(User user);
+    User saveWeChatUserInfo(User user);
 
-    public String checkWeChatUserBindStatus(Long openId);
+    String checkWeChatUserBindStatus(Long openId);
 
-    public void saveUserPhone(Long userId, String mobileNo);
+    void saveUserPhone(Long userId, String mobileNo);
 
-    public User findById(Long userId);
+    User findById(Long userId);
 
-    public User queryUserInfo(Long userId);
+    User queryUserInfo(Long userId);
 
-    public void setRelationshipWithStore(Long userId, Long storeId, Integer status);
+    User storeLogin(String username, String password);
 
-    public User storeLogin(String username, String password);
+    ArrayList<User> findByUsername(String username);
 
-    public ArrayList<User> findByUsername(String username);
+    ArrayList<Store> queryHadEatenStore(Long userId, Integer order);
 
-    public ArrayList<Store> queryHadEatenStore(Long userId, Integer order);
+    UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId);
 
-    public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId);
+    void saveUserStore(UserStore us);
 
-    public void saveUserStore(UserStore us);
+    ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType);
 
-    public Long findUserId(String openId);
+    void saveUserInfo(User user);
 
-    public Set<Long> findStoreIdByUserId(Long userId);
+    void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
 
-    public ArrayList<Long> findUserIdByStoreId(Long storeId);
+    User checkWeChatUserBindStatus(String openId);
 
-    public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType);
-
-    public void saveUserInfo(User user);
-
-    public User findByOpenId(String openId);
-
-    public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId);
-
-    public User checkWeChatUserBindStatus(String openId);
+    User findByStoreId(Long storeId);
 }
 

@@ -18,10 +18,10 @@ public class RYConfig {
     //    测试服务器
 
     // appKey
-//    public static final String appKey = "cpj2xarlc7pgn";
+   // public static final String appKey = "cpj2xarlc7pgn";
 //
 //    key的secret
-//    public static final String appSecret = "9XBLUGM7sNx9u";
+ //  public static final String appSecret = "9XBLUGM7sNx9u";
 
 
 

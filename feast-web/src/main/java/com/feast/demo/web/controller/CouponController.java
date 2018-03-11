@@ -39,12 +39,11 @@ public class CouponController {
     public String queryCouponList(HttpServletRequest servletRequest){
 
         logger.info("查询优惠券列表信息");
-        System.out.println("查询优惠券列表信息");
         Map<String,Object> result = Maps.newHashMap();
         String resultMsg = "";
         Byte resultCode = 1;
 
-        HashMap<Long,ArrayList<UserCoupon>> couponMap = null;
+        HashMap<String,ArrayList<UserCoupon>> couponMap = null;
         List<Map<String,Object>> couponList = Lists.newArrayList();
         try{
             String params = (String) servletRequest.getAttribute("json");
@@ -53,28 +52,27 @@ public class CouponController {
             JSONObject jsono = JSON.parseObject(params);
             Integer flag = jsono.getInteger("flag");
             Long userId = jsono.getLong("userId");
-            ArrayList<Long> storeIds = couponService.findStoreIdByUserId(userId);
-            if(storeIds!=null){
 
-                couponMap = couponService.queryCouponList(userId,flag,storeIds);
 
-                if(couponMap==null&&flag==0){
-                    resultMsg = "您没有未过期未使用的优惠券";
-                }else if(couponMap==null&&flag==2){
-                    resultMsg = "您没有已过期未使用优惠券";
-                }else if(couponMap!=null){
-                    for (Long storeId : storeIds) {
-                        String storeName = storeService.findStoreName(storeId);
-                        Map<String,Object> map = Maps.newHashMap();
-                        map.put("storeName",storeName);
-                        map.put("dataList",couponMap.get(storeId));
-                        couponList.add(map);
-                    }
-                    resultMsg = "查询优惠券列表成功";
+            couponMap = couponService.queryCouponList(userId,flag);
+
+            if(couponMap==null&&flag==1){
+                resultMsg = "您没有未过期未使用的优惠券";
+            }else if(couponMap==null&&flag==3){
+                resultMsg = "您没有已过期未使用优惠券";
+            }else if(couponMap==null&&flag==2){
+                resultMsg = "您没有已使用的优惠券";
+            }else if(couponMap!=null){
+                Set<String> storeIds = couponMap.keySet();
+                for (String storeId : storeIds) {
+                    Map<String,Object> map = Maps.newHashMap();
+                    map.put("storeName",couponMap.get(storeId).get(0).getStoreName());
+                    map.put("dataList",couponMap.get(storeId));
+                    couponList.add(map);
                 }
-            }else{
-                resultMsg = "您没有优惠券";
+                resultMsg = "查询优惠券列表成功";
             }
+
             resultCode = 0;
         }catch (Exception e){
             e.printStackTrace();
@@ -159,7 +157,7 @@ public class CouponController {
                 }else if(userCoupon.getIsUse()==UserCoupon.ISUSE_USED){
                     resultMsg = "优惠券已经使用过";
                 }else{
-                    userCoupon.setIsUse(UserCoupon.ISUSE_UNUSED);
+                    userCoupon.setIsUse(UserCoupon.ISUSE_USED);
                     couponService.updateUserCoupon(userCoupon);
                     isSuccess = 0;
                     resultMsg = "优惠券可用";

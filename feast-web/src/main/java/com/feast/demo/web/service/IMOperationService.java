@@ -215,6 +215,8 @@ public class IMOperationService {
 
                 List<Long> waiters = getWaiters(storeId);
 
+                String storeName = storeService.findStoreName(Long.parseLong(storeId));
+
                 if (lastObject instanceof TableInfo) {
 
                     TableInfo tableInfo = (TableInfo) lastObject;
@@ -233,6 +235,7 @@ public class IMOperationService {
                             tableInfo.setIsCome(1);
                             Date date = new Date();
                             tableInfo.setTaketableTime(date);
+                            tableInfo.setStoreName(storeName);
 
                             tableInfo= tableService.saveTableInfo(tableInfo);
 
@@ -240,7 +243,7 @@ public class IMOperationService {
 
                             result.put("tableInfo", tableInfo);
                             result.put("takeRedPackageResultType",3);
-                            redPackage.remove(0);
+                            redPackage.remove(redPackage.size() - 1);
                             result.put("message", "恭喜您获得一个桌位");
 
                             //保存红包详情信息
@@ -256,9 +259,10 @@ public class IMOperationService {
                             String[] messagePublishGroupToGroupId = {storeId};
 
 
-                             Map<String ,Object> sendMessageMap = new HashMap<>();
+                            Map<String ,Object> sendMessageMap = new HashMap<>();
                             sendMessageMap.put("date", new Date());
                             sendMessageMap.put("message", user.getNickName()+"手气太棒了！，恭喜您获得一个桌位！");
+                            sendMessageMap.put("userIcon",user.getUserIcon());
 
 
                             ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(), JSON.toJSONString(sendMessageMap));
@@ -284,6 +288,7 @@ public class IMOperationService {
                     if(randomSize<=0){
 
                         result.put("message", "对不起，您来晚了");
+                        result.put("takeRedPackageResultType",1);
                     }else{
                         int i = random.nextInt(randomSize);
 
@@ -297,12 +302,14 @@ public class IMOperationService {
                         userCoupon.setCouponType(couponTemplate.getCouponType());
                         Date date = new Date();
                         userCoupon.setStartTime(date);
+                        userCoupon.setTakeTime(date);
                         userCoupon.setIsUse(UserCoupon.ISUSE_UNUSED);
                         userCoupon.setCouponValidity(new Date(new Date().getTime() + couponTemplate.getCouponValidity() * 24 * 60 * 60 * 1000));
                         userCoupon.setStoreId(couponTemplate.getStoreId());
                         userCoupon.setPermissionsDescribed(couponTemplate.getPermissionsDescribed());
                         userCoupon = couponService.saveUserCoupon(userCoupon);
                         userCoupon.setUserId(Long.parseLong(userId));
+                        userCoupon.setStoreName(storeName);
                         couponService.saveUserCoupon(userCoupon);
 
                         redId2UserIdMap.get(redPackageId+"").add(userId);
@@ -328,6 +335,7 @@ public class IMOperationService {
                         Map<String ,Object> sendMessageMap = new HashMap<>();
                         sendMessageMap.put("date", new Date());
                         sendMessageMap.put("message", user.getNickName()+"手气不错哦！，恭喜获得一个优惠券！");
+                        sendMessageMap.put("userIcon",user.getUserIcon());
 
 
                         ChatTextMessage messagePublishGroupTxtMessage = new ChatTextMessage(new Date().getTime(), JSON.toJSONString(sendMessageMap));
@@ -449,7 +457,6 @@ public class IMOperationService {
         result.put("nickname", senderNickName);
         result.put("userIcon", senderIcon);
         result.put("redPackageId", redPackageId);
-
 
         String[] messagePublishGroupToGroupId = {storeId};
         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
@@ -779,6 +786,7 @@ public class IMOperationService {
             User firstWaiter = userService.findById(waiters.get(0));
             sendRedPackageMessage(firstWaiter.getUserId().toString(), redPackageInfo.getStoreId().toString(), redPackageId, firstWaiter.getNickName(), firstWaiter.getUserIcon());
 
+            countDown(redPackageInfo.getStoreId().toString(),firstWaiter.getUserId().toString(),redPackageId,2);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -824,6 +832,24 @@ public class IMOperationService {
         return userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
     }
 
+
+    public static void countDown(String storeId,String senderId,String redPackageId,Integer isUse) throws Exception{
+        Map<String,Object> result = Maps.newHashMap();
+        if(isUse==2){
+            result.put("isCountDown",true);
+            long countDown = new Date().getTime() - redPackageSendTime.get(redPackageId);
+            result.put("countDownTime",countDown);
+        }else{
+            result.put("isCountDown",false);
+            result.put("countDownTime",null);
+        }
+
+        String[] messagePublishGroupToGroupId = {storeId};
+        RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
+        ReceivedRedPackageMessage messagePublishGroupTxtMessage = new ReceivedRedPackageMessage(new Date().getTime(), JSON.toJSONString(result));
+        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(senderId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+        System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
+    }
 //    /**
 //     * 格式转换
 //     *

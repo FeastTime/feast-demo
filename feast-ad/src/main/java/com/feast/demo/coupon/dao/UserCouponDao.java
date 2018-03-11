@@ -17,11 +17,13 @@ public interface UserCouponDao extends PagingAndSortingRepository<UserCoupon,Lon
     @Query("select distinct uc.storeId from UserCoupon uc where uc.userId =?1")
     ArrayList<Long> findStoreIdByUserId(Long userId);
 
-    ArrayList<UserCoupon> findByUserIdAndStoreIdAndIsUse(Long userId, Long storeId, Integer isUse);
+    @Query("select uc from UserCoupon uc where uc.userId = ?1 and uc.isUse = ?2 and uc.couponValidity > ?3 order by uc.storeId asc,uc.takeTime desc")
+    ArrayList<UserCoupon> findByIsUseAndCouponValidityOrderByStoreIdAndTakeTime(Long userId, int isuseUnused, Date date);
 
-    @Query("select uc from UserCoupon uc where uc.userId = ?1 and uc.storeId = ?2 and uc.isUse = ?3 and uc.couponValidity > ?4")
-    ArrayList<UserCoupon> findIsUseAndCouponValidity(Long userId, Long storeId, int isuseUnused,Date date);
+    @Query("select uc from UserCoupon uc where uc.userId = ?1 and uc.isUse = ?2 order by uc.storeId asc,uc.takeTime desc")
+    ArrayList<UserCoupon> findByUserIdAndIsUseOrderByStoreIdAndTakeTime(Long userId, int isuseUsed);
 
-    @Query("select uc from UserCoupon uc where uc.userId = ?1 and uc.storeId = ?2 and uc.isUse = ?3 and uc.couponValidity < ?4")
-    ArrayList<UserCoupon> findIsUseAndCouponInValidity(Long userId, Long storeId, int isuseUnused, Date date);
+    @Query("select uc from UserCoupon uc where uc.userId = ?1 and uc.isUse = ?2 and uc.couponValidity < ?3 order by uc.storeId asc,uc.takeTime desc")
+    ArrayList<UserCoupon> findByIsUseAndCouponInValidityOrderByStoreIdAndTakeTime(Long userId, int isuseUnused, Date date);
+
 }

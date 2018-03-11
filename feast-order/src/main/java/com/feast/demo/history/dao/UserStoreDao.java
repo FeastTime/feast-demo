@@ -16,11 +16,14 @@ public interface UserStoreDao extends PagingAndSortingRepository<UserStore,Long>
 
     UserStore findByUserIdAndStoreId(Long userId, Long storeId);
 
-    ArrayList<Store> findByUserIdOrderByCount(Long userId);
+    @Query(value = "select s.*,us.last_modified,us.create_time,us.count,us.status from store_info s join user_store us on s.store_id = us.store_id where us.user_id = ?1 order by us.count asc",nativeQuery = true)
+    ArrayList<Object[]> findByUserIdOrderByCount(Long userId);
 
-    ArrayList<Store> findByUserIdOrderByCountDesc(Long userId);
+    @Query(value = "select s.*,us.last_modified,us.create_time,us.count,us.status from store_info s join user_store us on s.store_id = us.store_id where us.user_id = ?1 order by us.count desc",nativeQuery = true)
+    ArrayList<Object[]> findByUserIdOrderByCountDesc(Long userId);
 
-    ArrayList<Store> findByUserIdOrderByLastModifiedDesc(Long userId);
+    @Query(value = "select s.*,us.last_modified,us.create_time,us.count,us.status from store_info s join user_store us on s.store_id = us.store_id where us.user_id = ?1 order by us.last_modified desc",nativeQuery = true)
+    ArrayList<Object[]> findByUserIdOrderByLastModifiedDesc(Long userId);
 
     ArrayList<User> findByStoreId(Long storeId);
 

@@ -170,5 +170,9 @@ public class UserService {
     public User checkWeChatUserBindStatus(String openId) {
         return userRemoteService.checkWeChatUserBindStatus(openId);
     }
+
+    public User findByStoreId(Long storeId) {
+        return userRemoteService.findByStoreId(storeId);
+    }
 }
 

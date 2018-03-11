@@ -14,7 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -90,14 +93,6 @@ public class UserServiceImpl implements UserService{
         return userDao.findOne(userId);
     }
 
-    public void setRelationshipWithStore(Long userId, Long storeId, Integer status) {
-        UserStore us = userStoreDao.findByUserIdAndStoreId(userId,storeId);
-        if(us!=null){
-            us.setStatus(status);
-            userStoreDao.save(us);
-        }
-    }
-
     public User storeLogin(String username, String password) {
         return userDao.findByUsernameAndPassword(username,password);
     }
@@ -107,15 +102,33 @@ public class UserServiceImpl implements UserService{
     }
 
     public ArrayList<Store> queryHadEatenStore(Long userId, Integer order) {
-        ArrayList<Store> userStoreList = null;
+        ArrayList<Object[]> storeList = null;
         if(order==1){
-            userStoreList = userStoreDao.findByUserIdOrderByCount(userId);
+            storeList = userStoreDao.findByUserIdOrderByCount(userId);
         }else if(order==2){
-            userStoreList = userStoreDao.findByUserIdOrderByCountDesc(userId);
+            storeList = userStoreDao.findByUserIdOrderByCountDesc(userId);
         }else{
-            userStoreList = userStoreDao.findByUserIdOrderByLastModifiedDesc(userId);
+            storeList = userStoreDao.findByUserIdOrderByLastModifiedDesc(userId);
         }
-        return userStoreList;
+
+        ArrayList<Store> storeList_ = Lists.newArrayList();
+        for (Object[] objects : storeList) {
+            Store store = new Store();
+            store.setStoreId(((BigInteger)objects[0]).longValue());
+            store.setStoreName((String)objects[1]);
+            store.setLocate((String)objects[2]);
+            store.setPhone((String)objects[3]);
+            store.setLongitude((BigDecimal)objects[4]);
+            store.setLatitude((BigDecimal)objects[5]);
+            store.setStoreIcon((String)objects[6]);
+            store.setStorePicture((String)objects[7]);
+            store.setLastModified((Date)objects[8]);
+            store.setCreateTime((Date)objects[9]);
+            store.setCount(((BigInteger)objects[10]).longValue());
+            store.setStatus((Integer)objects[11]);
+            storeList_.add(store);
+        }
+        return storeList_;
     }
 
     public UserStore findUserStoreByUserIdAndStoreId(Long userId, Long storeId) {
@@ -127,18 +140,6 @@ public class UserServiceImpl implements UserService{
         userStoreDao.save(us);
     }
 
-    public Long findUserId(String openId) {
-        return userDao.findUserId(openId);
-    }
-
-    public Set<Long> findStoreIdByUserId(Long userId) {
-        return userStoreDao.findStoreIdByUserId(userId);
-    }
-
-    public ArrayList<Long> findUserIdByStoreId(Long storeId) {
-        return userDao.findUserIdByStoreId(storeId);
-    }
-
     public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType) {
         return userDao.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),userType);
     }
@@ -148,10 +149,6 @@ public class UserServiceImpl implements UserService{
         userDao.save(user);
     }
 
-    public User findByOpenId(String openId) {
-        return userDao.findByOpenId(openId);
-    }
-
     @Transactional(readOnly = false)
     public void updateUserInfo(String deviceId, String mobileNo, String nickName, String userIcon, String openId) {
         userDao.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
@@ -159,6 +156,10 @@ public class UserServiceImpl implements UserService{
 
     public User checkWeChatUserBindStatus(String openId) {
         return userDao.findByOpenId(openId);
+    }
+
+    public User findByStoreId(Long storeId) {
+        return userDao.findByStoreId(storeId);
     }
 
 }

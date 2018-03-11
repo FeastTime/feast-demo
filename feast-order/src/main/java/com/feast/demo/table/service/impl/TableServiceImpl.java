@@ -64,8 +64,8 @@ public class TableServiceImpl implements TableService{
         return tableInfoLists;
     }
 
-    public TableInfo findTableInfoByUserIdAndStoreIdAndTableId(Long userId, Long storeId, Long tableId) {
-        return tableInfoDao.findByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
+    public TableInfo findTableInfoByStoreIdAndTableId( Long storeId, Long tableId) {
+        return tableInfoDao.findByStoreIdAndTableId(storeId,tableId);
     }
 
     @Transactional(readOnly = false)

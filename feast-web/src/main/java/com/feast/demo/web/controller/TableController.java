@@ -43,12 +43,11 @@ public class TableController {
             logger.info(text);
             JSONObject jsono  = JSON.parseObject(text);
             Byte operateType = jsono.getByte("operateType");
-            Long userId = jsono.getLong("userId");
             Long storeId = jsono.getLong("storeId");
             Long tableId = jsono.getLong("tableId");
             Integer delayTime = jsono.getInteger("delayTime");
             //operateType==1延时，operateType==2到店
-            TableInfo tableInfo = tableService.findTableInfoByUserIdAndStoreIdAndTableId(userId,storeId,tableId);
+            TableInfo tableInfo = tableService.findTableInfoByStoreIdAndTableId(storeId,tableId);
             if(tableInfo!=null){
                 if(operateType==1){
                     //修改预留时间
