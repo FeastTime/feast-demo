@@ -1,5 +1,6 @@
 package io.rong.messages;
 
+import com.feast.demo.web.service.IMEvent;
 import io.rong.util.GsonUtil;
 
 public class CountDownMessage extends BaseMessage{
@@ -7,7 +8,7 @@ public class CountDownMessage extends BaseMessage{
     private long mSendTime;
     private String content;
 
-    private transient static final String TYPE = "CM:sendRedPackage";
+    private transient static final String TYPE = IMEvent.COUNT_DOWN;
 
     public CountDownMessage(long mSendTime, String content) {
         this.mSendTime = mSendTime;
@@ -38,6 +39,6 @@ public class CountDownMessage extends BaseMessage{
     @Override
 
     public String toString() {
-        return GsonUtil.toJson(this, SendRedPackageMessage.class);
+        return GsonUtil.toJson(this, CountDownMessage.class);
     }
 }

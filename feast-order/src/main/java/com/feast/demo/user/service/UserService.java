@@ -43,7 +43,7 @@ public interface UserService {
 
     void saveUserStore(UserStore us);
 
-    ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType);
+    ArrayList<Long> findWaitersIdByStoreIdAndUserType(Long storeId, Integer userType);
 
     void saveUserInfo(User user);
 

@@ -21,4 +21,7 @@ public class IMEvent {
     // 优惠券不足
     public static final String COUPON_NOT_ENOUGH = "CM:couponNotEnough";
 
+    // 倒计时
+    public static final String COUNT_DOWN = "CM:countdown";
+
 }

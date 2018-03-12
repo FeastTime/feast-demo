@@ -104,4 +104,19 @@ public class CouponService {
         return couponRemoteService.findCouponTemplateById(id);
     }
 
+    public Integer findTakePeopleNumber(Long storeId) {
+        return couponRemoteService.findTakePeopleNumber(storeId);
+    }
+
+    public Integer findTakeCouponNumber(Long storeId) {
+        return couponRemoteService.findTakeCouponNumber(storeId);
+    }
+
+    public Integer findUsePeopleNumber(Long storeId) {
+        return couponRemoteService.findUsePeopleNumber(storeId);
+    }
+
+    public Integer findUseCouponNumber(Long storeId) {
+        return couponRemoteService.findUseCouponNumber(storeId);
+    }
 }

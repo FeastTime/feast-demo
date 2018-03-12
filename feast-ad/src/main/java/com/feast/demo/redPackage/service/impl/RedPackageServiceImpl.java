@@ -109,4 +109,8 @@ public class RedPackageServiceImpl implements RedPackageService {
         redPackageCouponTemplateDao.deleteByRedPackageId(redPackageId);
     }
 
+    public long findAutoSendTimeByRedPackageId(Long redPackageId) {
+        return redPackageDao.findAutoSendTimeByRedPackageId(redPackageId)*60*1000;
+    }
+
 }

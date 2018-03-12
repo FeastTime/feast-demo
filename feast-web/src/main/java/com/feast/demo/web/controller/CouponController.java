@@ -250,4 +250,42 @@ public class CouponController {
         result.put("couponList",couponList);
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping(value="/couponForms",method = RequestMethod.POST,produces="text/html;charset=UTF-8")
+    public String couponForms(HttpServletRequest servletRequest){
+        Map<String,Object> result = null;
+        String resultMsg = "";
+        Byte resultCode = 1;
+        try{
+            result = new HashMap<>();
+            String params = (String) servletRequest.getAttribute("json");
+            params = StringUtils.decode(params);
+            logger.info(params);
+
+            JSONObject jsonObject = JSONObject.parseObject(params);
+            Long storeId = jsonObject.getLong("storeId");
+
+            Integer takePeopleNumber = couponService.findTakePeopleNumber(storeId);
+
+            Integer takeCouponNumber = couponService.findTakeCouponNumber(storeId);
+
+            Integer usePeopleNumber = couponService.findUsePeopleNumber(storeId);
+
+            Integer useCouponNumber = couponService.findUseCouponNumber(storeId);
+
+            result.put("takePeopleNumber",takePeopleNumber);
+            result.put("takeCouponNumber",takeCouponNumber);
+            result.put("usePeopleNumber",usePeopleNumber);
+            result.put("useCouponNumber",useCouponNumber);
+
+            resultMsg = "查询优惠券报表成功";
+            resultCode = 0;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultMsg = "查询优惠券报表失败";
+        }
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+        return JSON.toJSONString(result);
+    }
 }

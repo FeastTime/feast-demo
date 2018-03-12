@@ -140,8 +140,8 @@ public class UserServiceImpl implements UserService{
         userStoreDao.save(us);
     }
 
-    public ArrayList<Long> findWaitersIdByStoreIdAndUserType(String storeId, Integer userType) {
-        return userDao.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),userType);
+    public ArrayList<Long> findWaitersIdByStoreIdAndUserType(Long storeId, Integer userType) {
+        return userDao.findWaitersIdByStoreIdAndUserType(storeId,userType);
     }
 
     @Transactional(readOnly = false)

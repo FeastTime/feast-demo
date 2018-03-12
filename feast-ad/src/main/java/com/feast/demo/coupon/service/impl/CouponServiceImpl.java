@@ -103,8 +103,21 @@ public class CouponServiceImpl implements CouponService {
         return couponTemplateDao.findOne(id);
     }
 
-    public ArrayList<Long> findStoreIdByUserId(Long userId) {
-        return userCouponDao.findStoreIdByUserId(userId);
+    public Integer findTakePeopleNumber(Long storeId) {
+        return userCouponDao.findTakePeopleNumberByStoreIdGroupByUserId(storeId);
     }
+
+    public Integer findTakeCouponNumber(Long storeId) {
+        return userCouponDao.findTakeCouponNumberByStoreId(storeId);
+    }
+
+    public Integer findUsePeopleNumber(Long storeId) {
+        return userCouponDao.findUsePeopleNumberByStoreIdAndIsUse(storeId);
+    }
+
+    public Integer findUseCouponNumber(Long storeId) {
+        return userCouponDao.findUseCouponNumberByStoreIdAndIsUse(storeId);
+    }
+
 
 }

@@ -20,8 +20,6 @@ public interface RedPackageService {
 
     public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id);
 
-    public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse);
-
     public List<RedPackage> findRedPackageByIsUse(Integer isUse);
 
     public RedPackage findByIsUseAndStoreId(Integer isUse, Long storeId);
@@ -31,4 +29,6 @@ public interface RedPackageService {
     public ArrayList<CouponTemplate> queryCouponInRedPackage(Long redPackageId);
 
     public void deleteAutoRedPackage(Long redPackageId);
+
+    long findAutoSendTimeByRedPackageId(Long redPackageId);
 }

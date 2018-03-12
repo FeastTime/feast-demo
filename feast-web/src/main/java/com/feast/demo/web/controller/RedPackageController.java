@@ -136,6 +136,7 @@ public class RedPackageController {
         return JSON.toJSONString(result);
     }
 
+    //获取倒计时时间
     @RequestMapping(value = "/countDown",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
     public String countDown(HttpServletRequest servletRequest){
 
@@ -150,22 +151,21 @@ public class RedPackageController {
 
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
-            User user = userService.findByStoreId(storeId);
+            ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
 
             RedPackage redPackageInfo = redPackageService.findByIsUseAndStoreId(2,storeId);
+
             if(redPackageInfo==null){
-                result.put("isCountDown",false);
-                result.put("countDownTime",null);
+                imOperationService.countDown(storeId,false,null,waiterIds);
             }else{
-                result.put("isCountDown",true);
-                long countDown = new Date().getTime() - IMOperationService.redPackageSendTime.get(redPackageInfo.getRedPackageId());
-                result.put("countDownTime",countDown);
+                long countDownTime = new Date().getTime() - IMOperationService.redPackageSendTime.get(redPackageInfo.getRedPackageId());
+                imOperationService.countDown(storeId,true,countDownTime,waiterIds);
             }
 
             resultCode = 0;
             resultMsg = "倒计时成功";
 
-            IMOperationService.countDown(storeId+"",user.getUserId()+"",redPackageInfo.getRedPackageId()+"",2);
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -258,8 +258,8 @@ public class RedPackageController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping(value = "/setRedPackageIsUse",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
-    public String setRedPackageIsUse(HttpServletRequest servletRequest){
+    @RequestMapping(value = "/openAutoSendRedPackage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String openAutoSendRedPackage(HttpServletRequest servletRequest){
         Map<String,Object> result = null;
         String resultMsg = "";
         Integer resultCode = 1;
@@ -270,19 +270,21 @@ public class RedPackageController {
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
             Long storeId = obj.getLong("storeId");
-            User user = userService.findByStoreId(storeId);
+            ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
 
             System.out.println("storeId" + storeId);
             System.out.println("redPackageId   : " + redPackageId);
 
             redPackageService.setRedPackageIsUse(redPackageId,storeId);
             resultCode = 0;
-            resultMsg = "设置红包为使用状态成功";
+            resultMsg = "开启自动发红包成功";
 
-            IMOperationService.countDown(storeId+"",user.getUserId()+"",redPackageId+"",2);
+            IMOperationService.redPackageSendTime.put(redPackageId,new Date().getTime());
+            long countDownTime = redPackageService.findAutoSendTimeByRedPackageId(redPackageId);
+            imOperationService.countDown(storeId,true,countDownTime,waiterIds);
         }catch (Exception e){
             e.printStackTrace();
-            resultMsg = "设置红包为使用状态失败";
+            resultMsg = "开启自动发红包失败";
         }
         result = Maps.newHashMap();
         result.put("resultCode",resultCode);
@@ -302,11 +304,11 @@ public class RedPackageController {
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
             Long storeId = obj.getLong("storeId");
-            Long userId = obj.getLong("userId");
-
             redPackageService.setRedPackageIsNotUse(redPackageId);
 
-            IMOperationService.countDown(storeId+"",userId+"",redPackageId+"",1);
+            ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
+            IMOperationService.redPackageSendTime.put(redPackageId,0l);
+            imOperationService.countDown(storeId,false,null,waiterIds);
             resultCode = 0;
             resultMsg = "关闭自动发红包成功";
         }catch (Exception e){
@@ -349,7 +351,7 @@ public class RedPackageController {
         String resultMsg;
         Integer resultCode = 1;
         try{
-            String text = (String) servletRequest.getAttribute("json");
+            String text = (String)servletRequest.getAttribute("json");
             text = StringUtils.decode(text);
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);

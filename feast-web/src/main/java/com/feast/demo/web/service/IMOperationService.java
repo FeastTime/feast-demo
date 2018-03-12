@@ -22,6 +22,8 @@ import io.rong.RongCloud;
 import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.xml.rpc.holders.IntegerWrapperHolder;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -230,7 +232,7 @@ public class IMOperationService {
                             tableInfo.setUserPhone(user.getMobileNo());
                             tableInfo.setUserIcon(user.getUserIcon());
                             tableInfo.setUserNickname(user.getNickName());
-
+                            tableInfo.setNumberOfMeals(Integer.parseInt(supportSeatNumber));
                             tableInfo.setUserId(Long.parseLong(userId));
                             tableInfo.setIsCome(1);
                             Date date = new Date();
@@ -681,6 +683,7 @@ public class IMOperationService {
 
         if (null == redPackageInfoList || redPackageInfoList.size() == 0){
             logger.info("没有查询到需要发送的红包");
+
             return;
         }
 
@@ -706,6 +709,8 @@ public class IMOperationService {
                 // 发送红包
                 sendRedPackage(redPackageInfo);
 
+
+
             }
         }
     }
@@ -726,11 +731,15 @@ public class IMOperationService {
         // 查询红包优惠券模板
         List<RedPackageCouponTemplate> redPackageCouponTemplates = redPackageService.findRedPackageCouponTemplateByRedPackageId(redPackageInfoId);
 
-        List<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
+        ArrayList<Long> waiters = getWaiters(redPackageInfo.getStoreId().toString());
 
         if (null == waiters || waiters.size() == 0){
-
             logger.info("没有店员 不发送红包");
+            try {
+                countDown(redPackageInfo.getStoreId(),false,null,waiters);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
         logger.info("waiters.toString()" + waiters.toString());
@@ -750,6 +759,7 @@ public class IMOperationService {
             if (Long.compare(couponTemplate.getCouponCount() , couponCount) < 0) {
 
                 try {
+                    redPackageService.setRedPackageIsNotUse(redPackageInfoId);
                     sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -785,8 +795,8 @@ public class IMOperationService {
 
             User firstWaiter = userService.findById(waiters.get(0));
             sendRedPackageMessage(firstWaiter.getUserId().toString(), redPackageInfo.getStoreId().toString(), redPackageId, firstWaiter.getNickName(), firstWaiter.getUserIcon());
-
-            countDown(redPackageInfo.getStoreId().toString(),firstWaiter.getUserId().toString(),redPackageId,2);
+            long countDownTime = new Date().getTime() - IMOperationService.redPackageSendTime.get(redPackageInfoId);
+            countDown(redPackageInfo.getStoreId(),true,countDownTime,waiters);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -829,25 +839,28 @@ public class IMOperationService {
 
 
     private ArrayList<Long> getWaiters(String storeId){
-        return userService.findWaitersIdByStoreIdAndUserType(storeId,UserBean.STORE);
+        return userService.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),UserBean.STORE);
     }
 
 
-    public static void countDown(String storeId,String senderId,String redPackageId,Integer isUse) throws Exception{
+    /**
+     * 倒计时
+     *
+     * @param storeId
+     * @param isCountDown
+     * @param countDownTime
+     * @param waiterIds
+     * @throws Exception
+     */
+    public void countDown(Long storeId,boolean isCountDown,Long countDownTime,ArrayList<Long> waiterIds) throws Exception{
         Map<String,Object> result = Maps.newHashMap();
-        if(isUse==2){
-            result.put("isCountDown",true);
-            long countDown = new Date().getTime() - redPackageSendTime.get(redPackageId);
-            result.put("countDownTime",countDown);
-        }else{
-            result.put("isCountDown",false);
-            result.put("countDownTime",null);
-        }
+        result.put("isCountDown",isCountDown);
+        result.put("countDownTime",countDownTime);
 
-        String[] messagePublishGroupToGroupId = {storeId};
+        String[] messagePublishGroupToGroupId = {storeId+""};
         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
-        ReceivedRedPackageMessage messagePublishGroupTxtMessage = new ReceivedRedPackageMessage(new Date().getTime(), JSON.toJSONString(result));
-        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(senderId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
+        CountDownMessage countDownMessage = new CountDownMessage(new Date().getTime(), JSON.toJSONString(result));
+        CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(waiterIds.get(0)+"", messagePublishGroupToGroupId, countDownMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
         System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
     }
 //    /**

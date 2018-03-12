@@ -58,4 +58,8 @@ public class RedPackageService {
     public void deleteAutoRedPackage(Long redPackageId) {
         redPackageRemoteService.deleteAutoRedPackage(redPackageId);
     }
+
+    public long findAutoSendTimeByRedPackageId(Long redPackageId) {
+        return redPackageRemoteService.findAutoSendTimeByRedPackageId(redPackageId);
+    }
 }

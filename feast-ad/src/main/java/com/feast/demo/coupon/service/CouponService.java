@@ -35,6 +35,11 @@ public interface CouponService {
 
     public CouponTemplate findCouponTemplateById(Long id);
 
-    public ArrayList<Long> findStoreIdByUserId(Long userId);
+    Integer findTakePeopleNumber(Long storeId);
 
+    Integer findTakeCouponNumber(Long storeId);
+
+    Integer findUsePeopleNumber(Long storeId);
+
+    Integer findUseCouponNumber(Long storeId);
 }
