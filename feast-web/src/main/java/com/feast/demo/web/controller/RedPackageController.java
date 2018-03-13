@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageAutoSendTime;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackageDetail;
 import com.feast.demo.table.entity.TableInfo;
@@ -15,10 +16,6 @@ import com.feast.demo.web.service.RedPackageService;
 import com.feast.demo.web.service.UserService;
 import com.feast.demo.web.util.StringUtils;
 import com.google.common.collect.Maps;
-import io.rong.RYConfig;
-import io.rong.RongCloud;
-import io.rong.messages.ReceivedRedPackageMessage;
-import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,19 +59,15 @@ public class RedPackageController {
             logger.info(text);
 
             JSONObject jsonObject = JSONObject.parseObject(text);
-            JSONArray couponArray = jsonObject.getJSONArray("couponInfo");
+            Long redPackageId = jsonObject.getLong("redPackageId");
 
-            List<CouponTemplate> couponList = null;
-
-            if(couponArray!=null) {
-                couponList = JSONArray.parseArray(JSON.toJSONString(couponArray), CouponTemplate.class);
-            }
+            ArrayList<RedPackageCouponTemplate> couponTemplateList = redPackageService.findRedPackageCouponTemplateByRedPackageId(redPackageId);
 
             tableInfo = jsonObject.getObject("tableInfo", TableInfo.class);
             String storeId = jsonObject.getString("storeId");
             String userId = jsonObject.getString("userId");
 
-            imOperationService.sendRedPackage(userId,storeId,tableInfo,couponList);
+            imOperationService.sendRedPackage(userId,storeId,tableInfo,couponTemplateList);
 
             resultCode = 0;
             resultMsg = "发红包成功";
@@ -151,21 +144,28 @@ public class RedPackageController {
 
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
-            ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
 
             RedPackage redPackageInfo = redPackageService.findByIsUseAndStoreId(2,storeId);
 
+            System.out.println(redPackageInfo+"00000000");
             if(redPackageInfo==null){
-                imOperationService.countDown(storeId,false,null,waiterIds);
+                result.put("isCountDown",false);
+                result.put("countDownTime",null);
             }else{
-                long countDownTime = new Date().getTime() - IMOperationService.redPackageSendTime.get(redPackageInfo.getRedPackageId());
-                imOperationService.countDown(storeId,true,countDownTime,waiterIds);
+                if(IMOperationService.redPackageSendTime.get(redPackageInfo.getStoreId())==null){
+                    result.put("isCountDown",false);
+                    result.put("countDownTime",null);
+                }else{
+                    long autoSendTime = redPackageService.findAutoSendTimeByStoreId(storeId)*60*1000;
+
+                    long countDownTime =IMOperationService.redPackageSendTime.get(redPackageInfo.getStoreId()) + autoSendTime - new Date().getTime();
+                    result.put("isCountDown",true);
+                    result.put("countDownTime",countDownTime);
+                }
             }
 
             resultCode = 0;
             resultMsg = "倒计时成功";
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -278,10 +278,12 @@ public class RedPackageController {
             redPackageService.setRedPackageIsUse(redPackageId,storeId);
             resultCode = 0;
             resultMsg = "开启自动发红包成功";
-
-            IMOperationService.redPackageSendTime.put(redPackageId,new Date().getTime());
-            long countDownTime = redPackageService.findAutoSendTimeByRedPackageId(redPackageId);
-            imOperationService.countDown(storeId,true,countDownTime,waiterIds);
+            if(!IMOperationService.redPackageSendTime.containsKey(storeId)){
+                IMOperationService.redPackageSendTime.put(storeId,new Date().getTime());
+                long autoSendTime = redPackageService.findAutoSendTimeByStoreId(storeId)*60*1000;
+                long countDownTime = autoSendTime+60*1000;
+                imOperationService.countDown(storeId,true,countDownTime,waiterIds);
+            }
         }catch (Exception e){
             e.printStackTrace();
             resultMsg = "开启自动发红包失败";
@@ -307,8 +309,8 @@ public class RedPackageController {
             redPackageService.setRedPackageIsNotUse(redPackageId);
 
             ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
-            IMOperationService.redPackageSendTime.put(redPackageId,0l);
-            imOperationService.countDown(storeId,false,null,waiterIds);
+            IMOperationService.redPackageSendTime.remove(storeId);
+            imOperationService.countDown(storeId,false,0l,waiterIds);
             resultCode = 0;
             resultMsg = "关闭自动发红包成功";
         }catch (Exception e){
@@ -357,7 +359,24 @@ public class RedPackageController {
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
             Integer time = obj.getInteger("time");
-            redPackageService.setRedPackageAutoSendTime(time,storeId);
+            RedPackageAutoSendTime redPackageAutoSendTime = redPackageService.findByStoreId(storeId);
+            if(redPackageAutoSendTime==null){
+                RedPackageAutoSendTime redPackageAutoSendTime_ = new RedPackageAutoSendTime();
+                redPackageAutoSendTime_.setStoreId(storeId);
+                redPackageAutoSendTime_.setAutoSendTime(time);
+                redPackageService.save(redPackageAutoSendTime_);
+            }else{
+                redPackageService.setRedPackageAutoSendTime(time,storeId);
+            }
+
+            ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
+            if(!IMOperationService.redPackageSendTime.containsKey(storeId)){
+                imOperationService.countDown(storeId,false,0l,waiterIds);
+            }else{
+                long countDownTime = IMOperationService.redPackageSendTime.get(storeId) + time*60*1000 - new Date().getTime();
+
+                imOperationService.countDown(storeId,true,countDownTime,waiterIds);
+            }
             resultCode = 0;
             resultMsg = "设置红包自动发送周期成功";
         }catch (Exception e){

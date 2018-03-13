@@ -3,6 +3,7 @@ package com.feast.demo.redPackage.service;
 import com.alibaba.dubbo.common.json.JSONArray;
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageAutoSendTime;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public interface RedPackageService {
 
     public void setRedPackageAutoSendTime(Integer time,Long storeId);
 
-    public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id);
+    public ArrayList<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id);
 
     public List<RedPackage> findRedPackageByIsUse(Integer isUse);
 
@@ -30,5 +31,10 @@ public interface RedPackageService {
 
     public void deleteAutoRedPackage(Long redPackageId);
 
-    long findAutoSendTimeByRedPackageId(Long redPackageId);
+    int findAutoSendTimeByStoreId(Long storeId);
+
+    RedPackageAutoSendTime findByStoreId(Long storeId);
+
+    void save(RedPackageAutoSendTime redPackageAutoSendTime_);
+
 }

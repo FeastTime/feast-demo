@@ -35,8 +35,8 @@ public class AppTest {
     @Test
     public void test2(){
         List<Advertisement> list = adService.findBySizeUseNativeSql(243,146,5,true);
-        for(Advertisement ad:list){
-            System.out.println(ad);
-        }
+//        for(Advertisement ad:list){
+//            System.out.println(ad);
+//        }
     }
 }

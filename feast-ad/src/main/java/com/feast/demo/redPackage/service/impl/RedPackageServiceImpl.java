@@ -1,9 +1,11 @@
 package com.feast.demo.redPackage.service.impl;
 import com.feast.demo.coupon.dao.CouponTemplateDao;
 import com.feast.demo.coupon.entity.CouponTemplate;
+import com.feast.demo.redPackage.dao.RedPackageAutoSendTimeDao;
 import com.feast.demo.redPackage.dao.RedPackageCouponTemplateDao;
 import com.feast.demo.redPackage.dao.RedPackageDao;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageAutoSendTime;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.redPackage.service.RedPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +28,20 @@ public class RedPackageServiceImpl implements RedPackageService {
     @Autowired
     private CouponTemplateDao couponTemplateDao;
 
+    @Autowired
+    private RedPackageAutoSendTimeDao redPackageAutoSendTimeDao;
 
     public void createRedPackage(RedPackage redPackage, List<RedPackageCouponTemplate> redPackageCouponTemplateIds) {
 
         redPackage.setCreateTime(new Date());
         redPackage = redPackageDao.save(redPackage);
         Long redPackageId = redPackage.getRedPackageId();
-        System.out.println(redPackageId);
+
         for (RedPackageCouponTemplate redPackageCouponTemplate : redPackageCouponTemplateIds) {
             redPackageCouponTemplate.setRedPackageId(redPackageId);
             redPackageCouponTemplateDao.save(redPackageCouponTemplate);
         }
+
     }
 
     @Transactional(readOnly = false)
@@ -69,15 +74,11 @@ public class RedPackageServiceImpl implements RedPackageService {
 
     @Transactional(readOnly = false)
     public void setRedPackageAutoSendTime( Integer time,Long storeId) {
-        redPackageDao.updateByStoreId(time,storeId);
+        redPackageAutoSendTimeDao.updateAutoSendTimeByStoreId(time,storeId);
     }
 
-    public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
+    public ArrayList<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
         return redPackageCouponTemplateDao.findByRedPackageId(id);
-    }
-
-    public List<RedPackage> findRedPackageByStoreIdAndIsUse(List<Long> storeIds, Integer isUse) {
-        return redPackageDao.findByIsUseAndStoreIdIn(isUse,storeIds);
     }
 
     public List<RedPackage> findRedPackageByIsUse(Integer isUse){
@@ -109,8 +110,19 @@ public class RedPackageServiceImpl implements RedPackageService {
         redPackageCouponTemplateDao.deleteByRedPackageId(redPackageId);
     }
 
-    public long findAutoSendTimeByRedPackageId(Long redPackageId) {
-        return redPackageDao.findAutoSendTimeByRedPackageId(redPackageId)*60*1000;
+    public int findAutoSendTimeByStoreId(Long storeId) {
+        int autoSendTime = redPackageAutoSendTimeDao.findAutoSendTimeByStoreId(storeId);
+
+        return autoSendTime;
     }
+
+    public RedPackageAutoSendTime findByStoreId(Long storeId) {
+        return redPackageAutoSendTimeDao.findByStoreId(storeId);
+    }
+
+    public void save(RedPackageAutoSendTime redPackageAutoSendTime_) {
+        redPackageAutoSendTimeDao.save(redPackageAutoSendTime_);
+    }
+
 
 }

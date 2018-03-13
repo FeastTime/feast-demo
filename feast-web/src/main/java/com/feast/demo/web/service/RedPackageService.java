@@ -2,6 +2,7 @@ package com.feast.demo.web.service;
 
 import com.feast.demo.coupon.entity.CouponTemplate;
 import com.feast.demo.redPackage.entity.RedPackage;
+import com.feast.demo.redPackage.entity.RedPackageAutoSendTime;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class RedPackageService {
         redPackageRemoteService.createRedPackage(redPackage, redPackageCouponTemplates);
     }
 
-    public List<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
+    public ArrayList<RedPackageCouponTemplate> findRedPackageCouponTemplateByRedPackageId(Long id) {
         return redPackageRemoteService.findRedPackageCouponTemplateByRedPackageId(id);
     }
 
@@ -59,7 +60,18 @@ public class RedPackageService {
         redPackageRemoteService.deleteAutoRedPackage(redPackageId);
     }
 
-    public long findAutoSendTimeByRedPackageId(Long redPackageId) {
-        return redPackageRemoteService.findAutoSendTimeByRedPackageId(redPackageId);
+    public int findAutoSendTimeByStoreId(Long storeId) {
+        int autoSendTime = redPackageRemoteService.findAutoSendTimeByStoreId(storeId);
+        System.out.println(autoSendTime+"  ooooooooooo");
+        return autoSendTime;
     }
+
+    public RedPackageAutoSendTime findByStoreId(Long storeId) {
+        return redPackageRemoteService.findByStoreId(storeId);
+    }
+
+    public void save(RedPackageAutoSendTime redPackageAutoSendTime_) {
+        redPackageRemoteService.save(redPackageAutoSendTime_);
+    }
+
 }

@@ -9,10 +9,6 @@ import java.util.List;
 
 public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Long>{
 
-    @Modifying
-    @Query("update RedPackage rp set rp.autoSendTime = ?1 where rp.storeId = ?2")
-    void updateByStoreId(Integer time,Long storeId);
-
     List<RedPackage> findByIsUseAndStoreIdIn(Integer isUse, List<Long> storeIds);
 
     List<RedPackage> findRedPackageByIsUse(Integer isUse);
@@ -23,12 +19,11 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     @Query("update RedPackage rp set rp.isUse = ?1 where rp.storeId = ?2 and rp.redPackageId <> ?3")
     void updateRedPackageId(Integer isUse,Long storeId, Long redPackageId);
 
+    @Query("select rd from RedPackage rd where rd.isUse = ?1 and rd.storeId = ?2")
     RedPackage findByIsUseAndStoreId(Integer isUse, Long storeId);
 
     @Modifying
     @Query("update RedPackage rp set rp.isUse = ?1 where rp.redPackageId = ?2")
     void updateByRedPackageIdAndIsUse(Integer isUse,Long redPackageId);
 
-    @Query("select rd.autoSendTime from RedPackage rd where rd.redPackageId = ?1")
-    Integer findAutoSendTimeByRedPackageId(Long redPackageId);
 }

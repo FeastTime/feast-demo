@@ -21,8 +21,6 @@ public class RedPackage implements Serializable{
 
     private Integer isUse;
 
-    private Integer autoSendTime;
-
     private Date createTime;
 
     // 红包正在使用

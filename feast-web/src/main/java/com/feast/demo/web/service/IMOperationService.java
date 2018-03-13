@@ -23,7 +23,6 @@ import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.xml.rpc.holders.IntegerWrapperHolder;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -72,6 +71,7 @@ public class IMOperationService {
 
     @Autowired
     private RedPackageDetailService redPackageDetailRemoteService;
+
 
     /**
      * 设置就餐人数
@@ -370,7 +370,7 @@ public class IMOperationService {
      * @param tableInfo 桌位信息
      * @param couponList 优惠券信息
      */
-    public void sendRedPackage(String senderId,String storeId,TableInfo tableInfo,List<CouponTemplate> couponList) {
+    public void sendRedPackage(String senderId,String storeId,TableInfo tableInfo,List<RedPackageCouponTemplate> couponList) {
 
         List<Object> redPackage = Lists.newArrayList();
 
@@ -378,11 +378,11 @@ public class IMOperationService {
             User sender = userService.findById(Long.parseLong(senderId));
 
             //红包中添加优惠券
-            for (CouponTemplate couponTemplate : couponList) {
+            for (RedPackageCouponTemplate couponTemplate : couponList) {
 
-                Long count = couponTemplate.getCouponCount();
+                Integer count = couponTemplate.getCouponCount();
 
-                CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getId());
+                CouponTemplate couponTemplate_ = couponService.findCouponTemplateById(couponTemplate.getCouponTemplateId());
 
                 if (null == count || null == couponTemplate_) {
                     continue;
@@ -413,6 +413,7 @@ public class IMOperationService {
                     redPackage.add(couponTemplate_);
                 }
 
+                System.out.println(redPackage.size()+"iiiiiiiiiiiiii");
                 couponTemplate_.setCouponCount(couponTemplate_.getCouponCount()-count);
                 couponService.createCouponTemplate(couponTemplate_);
 
@@ -683,28 +684,37 @@ public class IMOperationService {
 
         if (null == redPackageInfoList || redPackageInfoList.size() == 0){
             logger.info("没有查询到需要发送的红包");
-
             return;
         }
 
         logger.info("循环发送红包");
 
+        System.out.println(redPackageInfoList.size()+"kkkkkk");
+
         // 循环发送红包
         for (RedPackage redPackageInfo : redPackageInfoList) {
 
+
+            logger.info("hahaha"+redPackageInfo.getStoreId()+"ooo"+redPackageInfo.getRedPackageId());
             // 如果之前没法送过红包，则设置发红包时间为0
-            redPackageSendTime.putIfAbsent(redPackageInfo.getRedPackageId(), 0L);
+
+            redPackageSendTime.putIfAbsent(redPackageInfo.getStoreId(), 0L);
 
             // 当前时间 - 最后一次发送时间  超过    设置的时间间隔   则发红包
 
-            long distanceTime = nowTime - redPackageSendTime.get(redPackageInfo.getRedPackageId());
+            long distanceTime = nowTime - redPackageSendTime.get(redPackageInfo.getStoreId());
+            logger.info(distanceTime+"lllllll");
 
-            if (distanceTime > redPackageInfo.getAutoSendTime()*60*1000 ){
+            int autoSendTime = redPackageService.findAutoSendTimeByStoreId(redPackageInfo.getStoreId());
+            logger.info(autoSendTime+"222222222");
+
+            if (distanceTime+5*1000 > autoSendTime*60*1000 ){
 
                 System.out.println("时间超过 设置时间 红包发送");
 
                 // 设置最后发送红包的时间
-                redPackageSendTime.put(redPackageInfo.getRedPackageId(), nowTime);
+                System.out.println(nowTime+"           ppppppppppppppp");
+                redPackageSendTime.put(redPackageInfo.getStoreId(), nowTime);
 
                 // 发送红包
                 sendRedPackage(redPackageInfo);
@@ -761,6 +771,7 @@ public class IMOperationService {
                 try {
                     redPackageService.setRedPackageIsNotUse(redPackageInfoId);
                     sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
+                    countDown(redPackageInfo.getStoreId(),false,null,waiters);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -774,6 +785,7 @@ public class IMOperationService {
                 redPackage.add(couponTemplate);
             }
 
+            System.out.println(redPackageCouponTemplate.getCouponTemplateId()+"ddddddddddddddd");
             // 扣减  优惠券模板中的  优惠券张数
             couponTemplate.setCouponCount(couponTemplate.getCouponCount() - couponCount);
             couponService.updateCouponTemplate(couponTemplate);
@@ -789,13 +801,14 @@ public class IMOperationService {
             return;
         }
 
-
         // 发送红包 到  群
         try {
 
+            System.out.println("发红包了ccccccccc");
             User firstWaiter = userService.findById(waiters.get(0));
             sendRedPackageMessage(firstWaiter.getUserId().toString(), redPackageInfo.getStoreId().toString(), redPackageId, firstWaiter.getNickName(), firstWaiter.getUserIcon());
-            long countDownTime = new Date().getTime() - IMOperationService.redPackageSendTime.get(redPackageInfoId);
+            long autoSendTime = redPackageService.findAutoSendTimeByStoreId(redPackageInfo.getStoreId())*60*1000;
+            long countDownTime = IMOperationService.redPackageSendTime.get(redPackageInfo.getStoreId())+autoSendTime-new Date().getTime()  ;
             countDown(redPackageInfo.getStoreId(),true,countDownTime,waiters);
         } catch (Exception e) {
             e.printStackTrace();
@@ -857,6 +870,8 @@ public class IMOperationService {
         result.put("isCountDown",isCountDown);
         result.put("countDownTime",countDownTime);
 
+        logger.info(JSON.toJSONString(result));
+        logger.info("countDown00000000000");
         String[] messagePublishGroupToGroupId = {storeId+""};
         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
         CountDownMessage countDownMessage = new CountDownMessage(new Date().getTime(), JSON.toJSONString(result));

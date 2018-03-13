@@ -100,7 +100,10 @@ public class CouponServiceImpl implements CouponService {
     }
 
     public CouponTemplate findCouponTemplateById(Long id) {
-        return couponTemplateDao.findOne(id);
+        System.out.println(id+"      id");
+        CouponTemplate couponTemplate = couponTemplateDao.findOne(id);
+        System.out.println(couponTemplate+"          couponTemplate");
+        return couponTemplate;
     }
 
     public Integer findTakePeopleNumber(Long storeId) {

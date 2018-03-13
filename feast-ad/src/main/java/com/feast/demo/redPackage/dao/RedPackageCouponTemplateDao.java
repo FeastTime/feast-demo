@@ -11,7 +11,7 @@ import java.util.List;
 public interface RedPackageCouponTemplateDao extends PagingAndSortingRepository<RedPackageCouponTemplate,Long>{
 
 
-    List<RedPackageCouponTemplate> findByRedPackageId(Long id);
+    ArrayList<RedPackageCouponTemplate> findByRedPackageId(Long id);
 
     @Query("select rc.couponTemplateId from RedPackageCouponTemplate rc where rc.redPackageId = ?1")
     ArrayList<Long> findCouponTemplateIdByRedPackageId(Long redPackageId);
