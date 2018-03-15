@@ -12,6 +12,12 @@ import java.util.Date;
 @Data
 public class TableInfo implements Serializable{
 
+    //已到店
+    public static int IS_COME = 2;
+
+    //未到店
+    public static int IS_NOT_COME = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tableId;
@@ -80,6 +86,8 @@ public class TableInfo implements Serializable{
                 this.expirationTime = 0L;
         }
     }
+
+
 
 
 }

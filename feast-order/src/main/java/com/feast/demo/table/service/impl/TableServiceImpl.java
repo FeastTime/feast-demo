@@ -78,4 +78,9 @@ public class TableServiceImpl implements TableService{
         return tableInfoDao.save(tableInfo);
     }
 
+    public TableInfo findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(Long userId, Long storeId, Integer isCome) {
+        return tableInfoDao.findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(userId,storeId,isCome);
+    }
+
+
 }

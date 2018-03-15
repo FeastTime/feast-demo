@@ -26,4 +26,6 @@ public interface TableService {
     public void updateTableInfo(TableInfo tableInfo);
 
     public TableInfo saveTableInfo(TableInfo tableInfo);
+
+    TableInfo findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(Long userId, Long storeId, Integer isCome);
 }

@@ -51,4 +51,8 @@ public class TableService {
         return tableRemoteService.saveTableInfo(tableInfo);
     }
 
+
+    public TableInfo findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(Long userId, Long storeId, Integer isCome) {
+        return tableRemoteService.findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(userId,storeId,isCome);
+    }
 }

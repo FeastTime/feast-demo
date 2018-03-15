@@ -22,8 +22,8 @@ public class RedPackageService {
 
     }
 
-    public List<RedPackage> queryRedPackageList(Long storeId) {
-        return redPackageRemoteService.queryRedPackageList(storeId);
+    public List<RedPackage> queryRedPackageList(Long storeId, Integer isCouponEnough) {
+        return redPackageRemoteService.queryRedPackageList(storeId,isCouponEnough);
     }
 
     public void setRedPackageAutoSendTime( Integer time,Long storeId) {

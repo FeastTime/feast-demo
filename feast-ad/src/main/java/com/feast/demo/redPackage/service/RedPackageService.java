@@ -15,7 +15,7 @@ public interface RedPackageService {
 
     public void setAutoRedPackageIsUse(Long redPackageId, Long storeId);
 
-    public List<RedPackage> queryRedPackageList(Long storeId);
+    public List<RedPackage> queryRedPackageList(Long storeId,Integer isCouponEnough);
 
     public void setRedPackageAutoSendTime(Integer time,Long storeId);
 

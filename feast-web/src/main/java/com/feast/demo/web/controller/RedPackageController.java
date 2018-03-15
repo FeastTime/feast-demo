@@ -343,7 +343,8 @@ public class RedPackageController {
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
             Long storeId = obj.getLong("storeId");
-            List<RedPackage> redPackages = redPackageService.queryRedPackageList(storeId);
+            Integer isCouponEnough = obj.getInteger("isCouponEnough");
+            List<RedPackage> redPackages = redPackageService.queryRedPackageList(storeId,isCouponEnough);
             result.put("redPackages",redPackages);
             resultCode = 0;
             resultMsg = "查询红包列表成功";

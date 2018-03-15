@@ -9,11 +9,7 @@ import java.util.List;
 
 public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Long>{
 
-    List<RedPackage> findByIsUseAndStoreIdIn(Integer isUse, List<Long> storeIds);
-
     List<RedPackage> findRedPackageByIsUse(Integer isUse);
-
-    List<RedPackage> findByStoreIdOrderByCreateTimeDesc(Long storeId);
 
     @Modifying
     @Query("update RedPackage rp set rp.isUse = ?1 where rp.storeId = ?2 and rp.redPackageId <> ?3")
@@ -26,4 +22,6 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
     @Query("update RedPackage rp set rp.isUse = ?1 where rp.redPackageId = ?2")
     void updateByRedPackageIdAndIsUse(Integer isUse,Long redPackageId);
 
+    @Query(value = "select ifnull(min(c.coupon_count >= b.coupon_count),0) as is_coupon_enough, a.* from red_package a left join redpackage_coupontemplate b on a.red_package_id = b.red_package_id left join coupon_template c on b.coupon_template_id = c.id where a.store_id = ?1 group by a.red_package_id",nativeQuery = true)
+    List<Object[]> queryRedPackageList(Long storeId);
 }

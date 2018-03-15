@@ -66,6 +66,7 @@
                 <value>com.feast.demo.redPackage</value>
             </list>
         </property>
+        <property name="persistenceXmlLocation" value="classpath:/META-INF/spring/persistence.xml" />
     </bean>
 
     <bean id="entityManagerFactory" parent="parentEntityManagerFactory">

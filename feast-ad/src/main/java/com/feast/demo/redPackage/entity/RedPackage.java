@@ -23,6 +23,9 @@ public class RedPackage implements Serializable{
 
     private Date createTime;
 
+    @Transient
+    private Integer isCouponEnough;
+
     // 红包正在使用
     public static final Integer IS_USE = 2;
 

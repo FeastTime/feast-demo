@@ -219,7 +219,11 @@ public class IMOperationService {
 
                 String storeName = storeService.findStoreName(Long.parseLong(storeId));
 
-                if (lastObject instanceof TableInfo) {
+
+                TableInfo tableInfo_ = tableService.findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(Long.parseLong(userId),Long.parseLong(storeId),TableInfo.IS_NOT_COME);
+
+
+                if (tableInfo_!=null && lastObject instanceof TableInfo) {
 
                     TableInfo tableInfo = (TableInfo) lastObject;
                     String[] supportSeatNumbers = tableInfo.getSuportSeatNumber().split(",");
@@ -280,6 +284,8 @@ public class IMOperationService {
                         }
                     }
                 }
+
+
 
                 if (!hasGetTable) {
 

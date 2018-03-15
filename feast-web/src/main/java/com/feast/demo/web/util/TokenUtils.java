@@ -9,6 +9,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
+import java.util.Date;
 
 
 public class TokenUtils {
@@ -29,6 +30,7 @@ public class TokenUtils {
             userService = context.getBean(UserService.class);
         }
 
+        System.out.println(userService.findUserDeviceByUserIdAndDeviceId(Long.parseLong(userId),deviceId+"     999"));
         return null != userService.findUserDeviceByUserIdAndDeviceId(Long.parseLong(userId),deviceId);
     }
     /**
@@ -206,11 +208,13 @@ public class TokenUtils {
      */
     public static void main(String[] args) {
 
-        String token = getToken("999", "18");
+        String token = getToken("869868021336748", "18");
         System.out.println("获取  token  ：  " + token);
 
-        boolean result = isValidToken(token, "999", "18");
+        boolean result = isValidToken(token, "869868021336748", "18");
         System.out.println("验证结果  ：  " + result);
+
+        System.out.println(new Date().getTime());
     }
 
 }

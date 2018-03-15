@@ -313,8 +313,11 @@ public class UserController {
             userDevice.setUserId(userId);
 
             userService.saveUserDevice(userDevice);
+            System.out.println("保存UserDevice");
         }else{
             userService.updateUserDeviceByUserId(userId,deviceId);
+            System.out.println(deviceId);
+            System.out.println("修改UserDevice");
         }
     }
 

@@ -8,10 +8,16 @@ import com.feast.demo.redPackage.entity.RedPackage;
 import com.feast.demo.redPackage.entity.RedPackageAutoSendTime;
 import com.feast.demo.redPackage.entity.RedPackageCouponTemplate;
 import com.feast.demo.redPackage.service.RedPackageService;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,9 +73,40 @@ public class RedPackageServiceImpl implements RedPackageService {
 
 
 
-    public List<RedPackage> queryRedPackageList(Long storeId) {
-        List<RedPackage> redPackages = redPackageDao.findByStoreIdOrderByCreateTimeDesc(storeId);
-        return redPackages;
+    public List<RedPackage> queryRedPackageList(Long storeId,Integer isCouponEnough) {
+
+        List<Object[]> objectArrayList = redPackageDao.queryRedPackageList(storeId);
+
+        System.out.println(objectArrayList.size());
+        ArrayList<RedPackage> redPackageList = Lists.newArrayList();
+        if(isCouponEnough==1){
+            for(int i=0;i<objectArrayList.size();i++) {
+                Object[] obj = (Object[]) objectArrayList.get(i);
+                RedPackage redPackage = new RedPackage();
+                redPackage.setIsCouponEnough(((BigInteger)obj[0]).intValue());
+                redPackage.setRedPackageId(((BigInteger)obj[1]).longValue());
+                redPackage.setRedPackageName((String)obj[2]);
+                redPackage.setStoreId(((BigInteger)obj[3]).longValue());
+                redPackage.setIsUse((Integer)obj[4]);
+                redPackage.setCreateTime((Date)obj[5]);
+                redPackageList.add(redPackage);
+            }
+        }else {
+            for(int i=0;i<objectArrayList.size();i++) {
+                Object[] obj = (Object[]) objectArrayList.get(i);
+                if(((BigInteger)obj[0]).intValue()>0){
+                    RedPackage redPackage = new RedPackage();
+                    redPackage.setIsCouponEnough(((BigInteger)obj[0]).intValue());
+                    redPackage.setRedPackageId(((BigInteger)obj[1]).longValue());
+                    redPackage.setRedPackageName((String)obj[2]);
+                    redPackage.setStoreId(((BigInteger)obj[3]).longValue());
+                    redPackage.setIsUse((Integer)obj[4]);
+                    redPackage.setCreateTime((Date)obj[5]);
+                    redPackageList.add(redPackage);
+                }
+            }
+        }
+        return redPackageList;
     }
 
     @Transactional(readOnly = false)
