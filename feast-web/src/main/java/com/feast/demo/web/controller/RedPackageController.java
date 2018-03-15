@@ -269,6 +269,15 @@ public class RedPackageController {
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
+            ArrayList<CouponTemplate> couponTemplateList = redPackageService.queryCouponInRedPackage(redPackageId);
+            result = Maps.newHashMap();
+            for (CouponTemplate couponTemplate : couponTemplateList) {
+                if(couponTemplate.getCouponCount()<=0){
+                    result.put("resultCode",2);
+                    result.put("resultMsg","红包中优惠券数量不足");
+                    return JSON.toJSONString(result);
+                }
+            }
             Long storeId = obj.getLong("storeId");
             ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);
 
@@ -288,7 +297,6 @@ public class RedPackageController {
             e.printStackTrace();
             resultMsg = "开启自动发红包失败";
         }
-        result = Maps.newHashMap();
         result.put("resultCode",resultCode);
         result.put("resultMsg",resultMsg);
         return JSON.toJSONString(result);

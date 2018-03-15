@@ -19,7 +19,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
 
         String requestURI = httpServletRequest.getRequestURI();
-        String method = httpServletRequest.getMethod();
 
         if(requestURI.contains("/websocket")
                 || requestURI.contains("/im/message")
@@ -46,21 +45,22 @@ public class LoginInterceptor implements HandlerInterceptor {
         String userId = jsono.getString("userId");
         String token = jsono.getString("token");
 
-        boolean b = TokenUtils.isValidToken(token, deviceId, userId);
 
-        logger.info("token 验证结果   ： " + b
+        boolean b2 = TokenUtils.isValidToken(token, deviceId, userId);
+
+        logger.info("token 验证结果   ： " + b2
                 + "/n deviceId : " + deviceId
                 + "/n userId : " + userId
                 + "/n token : " + token);
 
-        if (!b) {
+        if (!b2) {
             httpServletResponse.getWriter().write("{\"resultCode\":\"201\",\"resultMsg\":\"token invalid!\"}");
             return false;
         }
 
 
-        logger.info("TokenUtils" + b);
-        return b;
+        logger.info("TokenUtils" + (b2));
+        return b2;
     }
 
     @Override

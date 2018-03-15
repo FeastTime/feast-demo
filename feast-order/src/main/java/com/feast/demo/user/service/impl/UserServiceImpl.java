@@ -5,7 +5,9 @@ import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.dao.StoreDao;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.dao.UserDao;
+import com.feast.demo.user.dao.UserDeviceDao;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserDevice;
 import com.feast.demo.user.service.UserService;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -34,7 +37,7 @@ public class UserServiceImpl implements UserService{
     private UserStoreDao userStoreDao;
 
     @Autowired
-    private StoreDao storeDao;
+    private UserDeviceDao userDeviceDao;
 
     public User findByMobileNo(String mobileNo) {
         if(mobileNo == null){
@@ -158,8 +161,22 @@ public class UserServiceImpl implements UserService{
         return userDao.findByOpenId(openId);
     }
 
-    public User findByStoreId(Long storeId) {
-        return userDao.findByStoreId(storeId);
+    public UserDevice findUserDeviceByUserIdAndDeviceId(Long userId, String deviceId) {
+        return userDeviceDao.findByUserIdAndDeviceId(userId,deviceId);
+    }
+
+    @Transactional(readOnly = false)
+    public void saveUserDevice(UserDevice userDevice) {
+        userDeviceDao.save(userDevice);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateUserDeviceByUserId(Long userId,String deviceId) {
+        userDeviceDao.updateUserDeviceByUserId(deviceId,userId);
+    }
+
+    public UserDevice findUserDeviceByUserId(Long userId) {
+        return userDeviceDao.findByUserId(userId);
     }
 
 }

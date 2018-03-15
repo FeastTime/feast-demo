@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserDevice;
 import com.feast.demo.web.entity.UserObj;
 import com.feast.demo.web.memory.LoginMemory;
 import com.feast.demo.web.util.StringUtils;
@@ -171,8 +172,20 @@ public class UserService {
         return userRemoteService.checkWeChatUserBindStatus(openId);
     }
 
-    public User findByStoreId(Long storeId) {
-        return userRemoteService.findByStoreId(storeId);
+    public UserDevice findUserDeviceByUserIdAndDeviceId(Long userId, String deviceId) {
+        return userRemoteService.findUserDeviceByUserIdAndDeviceId(userId,deviceId);
+    }
+
+    public void updateUserDeviceByUserId(Long userId, String deviceId) {
+        userRemoteService.updateUserDeviceByUserId(userId,deviceId);
+    }
+
+    public void saveUserDevice(UserDevice userDevice) {
+        userRemoteService.saveUserDevice(userDevice);
+    }
+
+    public UserDevice findUserDeviceByUserId(Long userId) {
+        return userRemoteService.findUserDeviceByUserId(userId);
     }
 }
 

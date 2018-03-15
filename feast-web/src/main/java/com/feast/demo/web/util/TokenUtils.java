@@ -1,6 +1,9 @@
 package com.feast.demo.web.util;
 
+import com.feast.demo.web.service.UserService;
 import org.bouncycastle.util.encoders.UrlBase64;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import sun.misc.BASE64Decoder;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,6 +19,18 @@ public class TokenUtils {
     // 分隔符
     private static String splitSymbols = "#====#";
 
+    public static UserService userService = null;
+
+    public static boolean isValidLogin(String deviceId, String userId){
+
+        if(userService==null){
+            String configLocation = "classpath*:/spring*/*.xml";
+            ApplicationContext context = new ClassPathXmlApplicationContext(configLocation);
+            userService = context.getBean(UserService.class);
+        }
+
+        return null != userService.findUserDeviceByUserIdAndDeviceId(Long.parseLong(userId),deviceId);
+    }
     /**
      * 验证token 正确性
      *
@@ -47,7 +62,8 @@ public class TokenUtils {
 
             return tokens.length == 3
                     && tokens[0].equals(deviceID)
-                    && tokens[1].equals(userID);
+                    && tokens[1].equals(userID)
+                    &&isValidLogin(deviceID, userID);
 
         } catch (Exception ignored) {
         }

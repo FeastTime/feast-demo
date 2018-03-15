@@ -746,7 +746,7 @@ public class IMOperationService {
         if (null == waiters || waiters.size() == 0){
             logger.info("没有店员 不发送红包");
             try {
-                countDown(redPackageInfo.getStoreId(),false,null,waiters);
+                countDown(redPackageInfo.getStoreId(),false,0l,waiters);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -771,7 +771,7 @@ public class IMOperationService {
                 try {
                     redPackageService.setRedPackageIsNotUse(redPackageInfoId);
                     sendCouponNotEnoughMessage(couponTemplate.getCouponTitle(), waiters);
-                    countDown(redPackageInfo.getStoreId(),false,null,waiters);
+                    countDown(redPackageInfo.getStoreId(),false,0l,waiters);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -785,7 +785,6 @@ public class IMOperationService {
                 redPackage.add(couponTemplate);
             }
 
-            System.out.println(redPackageCouponTemplate.getCouponTemplateId()+"ddddddddddddddd");
             // 扣减  优惠券模板中的  优惠券张数
             couponTemplate.setCouponCount(couponTemplate.getCouponCount() - couponCount);
             couponService.updateCouponTemplate(couponTemplate);
@@ -803,8 +802,6 @@ public class IMOperationService {
 
         // 发送红包 到  群
         try {
-
-            System.out.println("发红包了ccccccccc");
             User firstWaiter = userService.findById(waiters.get(0));
             sendRedPackageMessage(firstWaiter.getUserId().toString(), redPackageInfo.getStoreId().toString(), redPackageId, firstWaiter.getNickName(), firstWaiter.getUserIcon());
             long autoSendTime = redPackageService.findAutoSendTimeByStoreId(redPackageInfo.getStoreId())*60*1000;
@@ -859,19 +856,18 @@ public class IMOperationService {
     /**
      * 倒计时
      *
-     * @param storeId
-     * @param isCountDown
-     * @param countDownTime
-     * @param waiterIds
+     * @param storeId  店铺ID
+     * @param isCountDown  是否倒计时
+     * @param countDownTime  倒计时时间
+     * @param waiterIds  服务员ID
      * @throws Exception
      */
-    public void countDown(Long storeId,boolean isCountDown,Long countDownTime,ArrayList<Long> waiterIds) throws Exception{
+    public void countDown(Long storeId,boolean isCountDown,long countDownTime,ArrayList<Long> waiterIds) throws Exception{
         Map<String,Object> result = Maps.newHashMap();
         result.put("isCountDown",isCountDown);
         result.put("countDownTime",countDownTime);
 
         logger.info(JSON.toJSONString(result));
-        logger.info("countDown00000000000");
         String[] messagePublishGroupToGroupId = {storeId+""};
         RongCloud rongCloud = RongCloud.getInstance(RYConfig.appKey, RYConfig.appSecret);
         CountDownMessage countDownMessage = new CountDownMessage(new Date().getTime(), JSON.toJSONString(result));

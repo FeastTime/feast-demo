@@ -3,6 +3,7 @@ package com.feast.demo.user.service;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.store.entity.Store;
 import com.feast.demo.user.entity.User;
+import com.feast.demo.user.entity.UserDevice;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -51,6 +52,12 @@ public interface UserService {
 
     User checkWeChatUserBindStatus(String openId);
 
-    User findByStoreId(Long storeId);
+    UserDevice findUserDeviceByUserIdAndDeviceId(Long userId, String deviceId);
+
+    void saveUserDevice(UserDevice userDevice);
+
+    void updateUserDeviceByUserId(Long userId,String deviceId);
+
+    UserDevice findUserDeviceByUserId(Long userId);
 }
 

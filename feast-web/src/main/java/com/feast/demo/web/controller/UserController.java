@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.feedback.entity.Feedback;
 import com.feast.demo.history.entity.UserStore;
+import com.feast.demo.user.entity.UserDevice;
 import com.feast.demo.web.entity.UserStatus;
 import com.feast.demo.web.service.*;
 import com.feast.demo.store.entity.Store;
@@ -161,6 +162,10 @@ public class UserController {
             result.put("userType", user.getUserType());
             result.put("userId", user.getUserId());
 
+            //保存单点登录对应关系
+
+            saveUserDevice(user.getUserId(),deviceId);
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -237,7 +242,10 @@ public class UserController {
     public String saveWeChatUserInfo(@RequestBody String text){
 
         Map<String,Object> result = Maps.newHashMap();
+
         User user = new User();
+
+        User savedUser = null;
 
         try{
             text = StringUtils.decode(text);
@@ -255,16 +263,24 @@ public class UserController {
             user.setMobileNo(mobileNo);
             user.setDeviceId(deviceId);
 
-            User user_ = userService.checkWeChatUserBindStatus(openId);
+            savedUser = userService.checkWeChatUserBindStatus(openId);
 
-            if(user_ != null) {
 
+            if(savedUser != null) {
                 userService.updateUserInfo(deviceId,mobileNo,nickName,userIcon,openId);
-                user.setUserId(user_.getUserId());
+                savedUser.setMobileNo(mobileNo);
+                savedUser.setDeviceId(deviceId);
+                savedUser.setNickName(nickName);
+                savedUser.setUserIcon(userIcon);
+
             } else {
-                User user_1 = userService.saveWeChatUserInfo(user);
-                user.setUserId(user_1.getUserId());
+                savedUser = userService.saveWeChatUserInfo(user);
             }
+
+            //保存单点登录对应关系
+
+            saveUserDevice(savedUser.getUserId(),savedUser.getDeviceId());
+
 
         } catch (Exception e) {
 
@@ -276,17 +292,30 @@ public class UserController {
 
         // 注册融云获取token
 
-        if (!getRYToken(user, result)) {
+        if (!getRYToken(savedUser, result)) {
 
             return JSON.toJSONString(result);
         }
 
         result.put("resultMsg", "保存成功");
         result.put("resultCode",0);
-        result.put("userId",user.getUserId());
-        result.put("token",TokenUtils.getToken(user.getDeviceId(),user.getUserId() + ""));
+        result.put("userId",savedUser.getUserId());
+        result.put("mobileNo",savedUser.getMobileNo());
+        result.put("token",TokenUtils.getToken(savedUser.getDeviceId(),savedUser.getUserId() + ""));
 
         return JSON.toJSONString(result);
+    }
+
+    private void saveUserDevice(Long userId,String deviceId) {
+        if(userService.findUserDeviceByUserId(userId)==null){
+            UserDevice userDevice = new UserDevice();
+            userDevice.setDeviceId(deviceId);
+            userDevice.setUserId(userId);
+
+            userService.saveUserDevice(userDevice);
+        }else{
+            userService.updateUserDeviceByUserId(userId,deviceId);
+        }
     }
 
     /**
