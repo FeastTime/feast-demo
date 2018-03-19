@@ -269,14 +269,12 @@ public class RedPackageController {
             logger.info(text);
             JSONObject obj = JSONObject.parseObject(text);
             Long redPackageId = obj.getLong("redPackageId");
-            ArrayList<CouponTemplate> couponTemplateList = redPackageService.queryCouponInRedPackage(redPackageId);
+            int isCouponEnough = redPackageService.queryRedPackageIsCouponEnough(redPackageId);
             result = Maps.newHashMap();
-            for (CouponTemplate couponTemplate : couponTemplateList) {
-                if(couponTemplate.getCouponCount()<=0){
-                    result.put("resultCode",2);
-                    result.put("resultMsg","红包中优惠券数量不足");
-                    return JSON.toJSONString(result);
-                }
+            if(isCouponEnough==0){
+                result.put("resultCode",2);
+                result.put("resultMsg","红包中优惠券数量不足");
+                return JSON.toJSONString(result);
             }
             Long storeId = obj.getLong("storeId");
             ArrayList<Long> waiterIds = userService.findWaitersIdByStoreIdAndUserType(storeId,2);

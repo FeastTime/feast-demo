@@ -208,10 +208,10 @@ public class TokenUtils {
      */
     public static void main(String[] args) {
 
-        String token = getToken("869868021336748", "18");
+        String token = getToken("ogD330CZTAe3l-b3YbDIPFCRWvi4", "10030");
         System.out.println("获取  token  ：  " + token);
 
-        boolean result = isValidToken(token, "869868021336748", "18");
+        boolean result = isValidToken(token, "ogD330CZTAe3l-b3YbDIPFCRWvi4", "10030");
         System.out.println("验证结果  ：  " + result);
 
         System.out.println(new Date().getTime());

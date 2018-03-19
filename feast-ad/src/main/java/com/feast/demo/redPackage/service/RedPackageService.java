@@ -37,4 +37,6 @@ public interface RedPackageService {
 
     void save(RedPackageAutoSendTime redPackageAutoSendTime_);
 
+    int queryRedPackageIsCouponEnough(Long redPackageId);
+
 }

@@ -21,6 +21,7 @@ import io.rong.RYConfig;
 import io.rong.RongCloud;
 import io.rong.messages.*;
 import io.rong.models.CodeSuccessResult;
+import io.rong.models.TokenResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -108,7 +109,7 @@ public class IMOperationService {
      *
      * @param storeId 商家ID
      */
-    private void sendDinnerListChangeMessage(String storeId, List<Long> waiters) throws Exception {
+    public void sendDinnerListChangeMessage(String storeId, List<Long> waiters) throws Exception {
 
 
         if (null == waiters || waiters.size() == 0) {
@@ -133,6 +134,7 @@ public class IMOperationService {
 
 
         CodeSuccessResult messagePublishPrivateResult = rongCloud.message.publishPrivate(messagePublishPrivateToUserId[0], messagePublishPrivateToUserId, messagePublishPrivateVoiceMessage, "thisisapush", "{\"pushData\":\"hello\"}", "4", 0, 0, 0, 0);
+        System.out.println("返回桌位列表");
         System.out.println("publishPrivate:  " + messagePublishPrivateResult.toString());
     }
 
@@ -142,35 +144,39 @@ public class IMOperationService {
      * @param storeId 店铺Id
      * @return 食客人数列表
      */
-    private List<DinnerInfo> getDinnerList(String storeId) {
+    public List<DinnerInfo> getDinnerList(String storeId) {
 
         Map<Integer, Integer> personMap = new HashMap<>();
 
         Integer oneNumberPerTable;
 
-        for (UserBean oneUser : user2Store.get(storeId).values()) {
+        if(null!=user2Store.get(storeId)&&null!=user2Store.get(storeId).values()){
+            for (UserBean oneUser : user2Store.get(storeId).values()) {
 
-            oneNumberPerTable = oneUser.getNumberPerTable();
+                oneNumberPerTable = oneUser.getNumberPerTable();
 
-            personMap.putIfAbsent(oneNumberPerTable, 0);
-            personMap.put(oneNumberPerTable, personMap.get(oneNumberPerTable) + 1);
-        }
-
-        List<DinnerInfo> dinnerInfoList = new ArrayList<>();
-        DinnerInfo dinnerInfo;
-
-        for (Integer noPerTable : personMap.keySet()) {
-
-            if(noPerTable==0){
-                continue;
+                personMap.putIfAbsent(oneNumberPerTable, 0);
+                personMap.put(oneNumberPerTable, personMap.get(oneNumberPerTable) + 1);
             }
-            dinnerInfo = new DinnerInfo();
-            dinnerInfo.setNumberPerTable(noPerTable);
-            dinnerInfo.setWaitingCount(personMap.get(noPerTable));
 
-            dinnerInfoList.add(dinnerInfo);
+            List<DinnerInfo> dinnerInfoList = new ArrayList<>();
+            DinnerInfo dinnerInfo;
+
+            for (Integer noPerTable : personMap.keySet()) {
+
+                if(noPerTable==0){
+                    continue;
+                }
+                dinnerInfo = new DinnerInfo();
+                dinnerInfo.setNumberPerTable(noPerTable);
+                dinnerInfo.setWaitingCount(personMap.get(noPerTable));
+
+                dinnerInfoList.add(dinnerInfo);
+            }
+            return dinnerInfoList;
         }
-        return dinnerInfoList;
+        return null;
+
     }
 
     /**
@@ -223,7 +229,7 @@ public class IMOperationService {
                 TableInfo tableInfo_ = tableService.findTableInfoByUserIdAndStoreIdAndIsUseAndValidTime(Long.parseLong(userId),Long.parseLong(storeId),TableInfo.IS_NOT_COME);
 
 
-                if (tableInfo_!=null && lastObject instanceof TableInfo) {
+                if (tableInfo_==null && lastObject instanceof TableInfo) {
 
                     TableInfo tableInfo = (TableInfo) lastObject;
                     String[] supportSeatNumbers = tableInfo.getSuportSeatNumber().split(",");
@@ -473,7 +479,6 @@ public class IMOperationService {
         CodeSuccessResult messagePublishGroupResult = rongCloud.message.publishGroup(senderId, messagePublishGroupToGroupId, messagePublishGroupTxtMessage, "thisisapush", "{\"pushData\":\"hello\"}", 1, 1, 0);
         System.out.println("publishGroup:  " + messagePublishGroupResult.toString());
     }
-
 
     /**
      * 用户扫码进店
@@ -854,7 +859,7 @@ public class IMOperationService {
     }
 
 
-    private ArrayList<Long> getWaiters(String storeId){
+    public ArrayList<Long> getWaiters(String storeId){
         return userService.findWaitersIdByStoreIdAndUserType(Long.parseLong(storeId),UserBean.STORE);
     }
 

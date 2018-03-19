@@ -105,7 +105,6 @@ public class MD5Utils {
     /**
      * HMAC加密
      * @param data 需要加密的字符串
-     * @param key 密钥
      * @return 字符串
      */
     public static String encryptHMAC(String data) {
@@ -155,5 +154,7 @@ public class MD5Utils {
         System.out.println("Mac密钥:\n" + key);
         String word = "123456";
         System.out.println(encryptHMAC(word));
+        System.out.println(new String(decryptBase64("14bdcf311291e56b5752cfa2fbfb438f")));
+
     }
 }

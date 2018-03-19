@@ -74,4 +74,7 @@ public class RedPackageService {
         redPackageRemoteService.save(redPackageAutoSendTime_);
     }
 
+    public int queryRedPackageIsCouponEnough(Long redPackageId){
+        return redPackageRemoteService.queryRedPackageIsCouponEnough(redPackageId);
+    }
 }

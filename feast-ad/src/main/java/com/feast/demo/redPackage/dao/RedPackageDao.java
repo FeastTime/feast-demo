@@ -24,4 +24,9 @@ public interface RedPackageDao extends PagingAndSortingRepository<RedPackage,Lon
 
     @Query(value = "select ifnull(min(c.coupon_count >= b.coupon_count),0) as is_coupon_enough, a.* from red_package a left join redpackage_coupontemplate b on a.red_package_id = b.red_package_id left join coupon_template c on b.coupon_template_id = c.id where a.store_id = ?1 group by a.red_package_id",nativeQuery = true)
     List<Object[]> queryRedPackageList(Long storeId);
+
+    @Query(value = "select ifnull(min(c.coupon_count >= b.coupon_count),0) as is_coupon_enough from red_package a left join redpackage_coupontemplate b on a.red_package_id = b.red_package_id \n" +
+            "left join coupon_template c on b.coupon_template_id = c.id \n" +
+            "where a.red_package_id = ?1",nativeQuery = true)
+    Object queryRedPackageIsCouponEnough(Long redPackageId);
 }

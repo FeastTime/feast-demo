@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.feast.demo.feedback.entity.Feedback;
 import com.feast.demo.history.entity.UserStore;
 import com.feast.demo.user.entity.UserDevice;
+import com.feast.demo.web.entity.DinnerInfo;
 import com.feast.demo.web.entity.UserStatus;
 import com.feast.demo.web.service.*;
 import com.feast.demo.store.entity.Store;
@@ -184,6 +185,7 @@ public class UserController {
 
         result.put("resultMsg", "欢迎您登录成功!");
         result.put("resultCode", 0);
+
         return JSON.toJSONString(result);
 
     }
@@ -660,4 +662,43 @@ public class UserController {
     }
 
 
+    /**
+     * 用餐人数变更通知
+     *
+     * @param servletRequest
+     * @return
+     */
+    @RequestMapping(value = "/sendDinnerListChangeMessage",method = RequestMethod.POST,produces = "text/html;charset=UTF-8")
+    public String sendDinnerListChangeMessage(HttpServletRequest servletRequest){
+
+        String resultMsg;
+        Byte resultCode;
+        Map<String,Object> result = Maps.newHashMap();
+
+        try {
+            String text = (String) servletRequest.getAttribute("json");
+            text = StringUtils.decode(text);
+            logger.info(text);
+
+            JSONObject obj = JSONObject.parseObject(text);
+            String storeId = obj.getString("storeId");
+
+            List<Long> waiters = imOperationService.getWaiters(storeId+"");
+            List<DinnerInfo> dinnerList = imOperationService.getDinnerList(storeId + "");
+            resultCode = 0;
+            resultMsg = "发送 用餐人数变更通知成功";
+            result.put("dinnerList",dinnerList);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            resultCode = 1;
+            resultMsg = "发送用餐人数变更通知失败";
+        }
+
+
+        result.put("resultCode",resultCode);
+        result.put("resultMsg",resultMsg);
+
+        return JSON.toJSONString(result);
+    }
 }

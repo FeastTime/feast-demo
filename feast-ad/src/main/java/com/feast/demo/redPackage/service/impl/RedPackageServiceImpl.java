@@ -162,4 +162,10 @@ public class RedPackageServiceImpl implements RedPackageService {
     }
 
 
+    public int queryRedPackageIsCouponEnough(Long redPackageId){
+        int isCouponEnough = ((BigInteger)redPackageDao.queryRedPackageIsCouponEnough(redPackageId)).intValue();
+
+        return isCouponEnough;
+    }
+
 }
